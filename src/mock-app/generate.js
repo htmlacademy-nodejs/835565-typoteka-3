@@ -6,6 +6,7 @@ const {
   getRandomDate
 } = require(`./utils`);
 const fs = require(`fs`);
+const chalk = require(`chalk`);
 
 const {
   DEFAULT_COUNT,
@@ -37,8 +38,8 @@ module.exports = {
     fs.writeFile(FILE_NAME, articles, (err) => {
       return (
         err
-          ? console.error(`Can't write data to file...`)
-          : console.info(`Operation success. File created.`)
+          ? console.error(chalk.red(`Can't write data to file...`))
+          : console.info(chalk.green(`Operation success. File created.`))
       );
     });
   }

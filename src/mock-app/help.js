@@ -1,5 +1,5 @@
 'use strict';
-
+const chalk = require(`chalk`);
 const {helpTitle} = require(`./const`);
 const generate = require(`./generate`);
 const version = require(`./version`);
@@ -19,6 +19,6 @@ const helpMessage = `
 module.exports = {
   name: moduleName,
   run: () => {
-    console.info(helpMessage);
+    console.info(chalk.gray(helpMessage));
   },
 };
