@@ -5,6 +5,7 @@ const {
   shuffle,
   getRandomDate
 } = require(`./utils`);
+const {ExitCode} = require(`../mock-app/const`);
 const fs = require(`fs`);
 const chalk = require(`chalk`);
 
@@ -38,8 +39,8 @@ module.exports = {
     fs.writeFile(FILE_NAME, articles, (err) => {
       return (
         err
-          ? console.error(chalk.red(`Can't write data to file...`))
-          : console.info(chalk.green(`Operation success. File created.`))
+          ? console.error(chalk.red(`Can't write data to file...`)) && process.exit(ExitCode.ERROR)
+          : console.info(chalk.green(`Operation success. File created.`)) && process.exit(ExitCode.SUCCESS)
       );
     });
   }
