@@ -12,7 +12,7 @@ const helpMessage = `
   service.js <command>
   Команды:
   ${version.name}: выводит номер версии
-  ${generate.name}: формирует файл mocks.json
+  ${generate.name} <count>: формирует файл mocks.json
   ${moduleName}: справка
 `;
 
