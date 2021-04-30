@@ -18,7 +18,5 @@ const helpMessage = `
 
 module.exports = {
   name: moduleName,
-  run: () => {
-    console.info(chalk.gray(helpMessage));
-  },
+  run: () => console.info(chalk.gray(helpMessage))
 };

@@ -10,6 +10,4 @@ const MockApp = {
   [version.name]: version,
 };
 
-module.exports = {
-  MockApp,
-};
+module.exports = {MockApp};
