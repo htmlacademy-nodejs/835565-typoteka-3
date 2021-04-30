@@ -14,27 +14,41 @@ const {
   FILE_NAME,
   SentencesNum,
   CategoriesNum,
-  TITLES,
-  TEXT,
-  CATEGORY,
+  ARTICLE_TITLES_PATH,
+  ARTICLE_DESCRIPTIONS_PATH,
+  ARTICLE_CATEGORIES_PATH,
 } = require(`./const`);
 
-const generateMockData = (count) => {
+const readContent = async (filePath) => {
+  try {
+    const content = await fs.readFile(filePath, `utf8`);
+    return content.trim().split(`\n`);
+  } catch (error) {
+    console.error(chalk.red(error));
+    return [];
+  }
+};
+
+const generateMockData = (count, titles, descriptions, categories) => {
   return Array(count).fill({}).map(() => ({
-    title: TITLES[getRandomNum(0, TITLES.length - 1)],
+    title: titles[getRandomNum(0, titles.length - 1)],
     createdDate: getRandomDate(),
-    announce: shuffle(TEXT).slice(0, getRandomNum(SentencesNum.MIN, SentencesNum.MAX)).join(` `),
-    fullText: shuffle(TEXT).slice(0, getRandomNum(SentencesNum.MIN, TEXT.length - 1)).join(` `),
-    сategory: shuffle(CATEGORY).slice(0, getRandomNum(CategoriesNum.MIN, CategoriesNum.MAX)),
+    announce: shuffle(descriptions).slice(0, getRandomNum(SentencesNum.MIN, SentencesNum.MAX)).join(` `),
+    fullText: shuffle(descriptions).slice(0, getRandomNum(SentencesNum.MIN, descriptions.length - 1)).join(` `),
+    сategory: shuffle(categories).slice(0, getRandomNum(CategoriesNum.MIN, CategoriesNum.MAX)),
   }));
 };
 
 module.exports = {
   name: `--generate`,
   async run(args) {
+    const titles = await readContent(ARTICLE_TITLES_PATH);
+    const descriptions = await readContent(ARTICLE_DESCRIPTIONS_PATH);
+    const categories = await readContent(ARTICLE_CATEGORIES_PATH);
+
     const [count] = args;
     const articlesCount = Number.parseInt(count, 10) || DEFAULT_COUNT;
-    const articles = JSON.stringify(generateMockData(articlesCount));
+    const articles = JSON.stringify(generateMockData(articlesCount, titles, descriptions, categories));
 
     try {
       await fs.writeFile(FILE_NAME, articles);
