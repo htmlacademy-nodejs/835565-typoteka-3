@@ -1,13 +1,12 @@
 'use strict';
 const chalk = require(`chalk`);
-const {helpTitle} = require(`./const`);
 const generate = require(`./generate`);
 const version = require(`./version`);
 
 const moduleName = `--help`;
 
 const helpMessage = `
-  ${helpTitle}
+  Программа для генерации файла с моковыми публикациями
   Гайд:
   service.js <command>
   Команды:
@@ -18,7 +17,5 @@ const helpMessage = `
 
 module.exports = {
   name: moduleName,
-  run: () => {
-    console.info(chalk.gray(helpMessage));
-  },
+  run: () => console.info(chalk.gray(helpMessage))
 };
