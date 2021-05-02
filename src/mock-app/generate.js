@@ -6,7 +6,7 @@ const {
   getRandomDate
 } = require(`./utils`);
 const {ExitCode} = require(`../mock-app/const`);
-const fs = require(`fs`);
+const fs = require(`fs`).promises;
 const chalk = require(`chalk`);
 
 const {
@@ -31,17 +31,18 @@ const generateMockData = (count) => {
 
 module.exports = {
   name: `--generate`,
-  run(args) {
+  async run(args) {
     const [count] = args;
     const articlesCount = Number.parseInt(count, 10) || DEFAULT_COUNT;
     const articles = JSON.stringify(generateMockData(articlesCount));
 
-    fs.writeFile(FILE_NAME, articles, (err) => {
-      return (
-        err
-          ? console.error(chalk.red(`Can't write data to file...`)) && process.exit(ExitCode.ERROR)
-          : console.info(chalk.green(`Operation success. File created.`)) && process.exit(ExitCode.SUCCESS)
-      );
-    });
+    try {
+      await fs.writeFile(FILE_NAME, articles);
+      console.info(chalk.green(`Operation success. File created.`));
+      process.exit(ExitCode.SUCCESS);
+    } catch (error) {
+      console.error(chalk.red(`Can't write data to file...`));
+      process.exit(ExitCode.ERROR);
+    }
   }
 };
