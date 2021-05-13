@@ -22,9 +22,27 @@ const getRandomDate = () => {
   return dayjs().add(-randomDaysGap, `day`).format();
 };
 
+const sendResponse = (response, statusCode, message) => {
+  const template = `
+    <!Doctype html>
+      <html lang="ru">
+      <head>
+        <title>Mocks Generator</title>
+      </head>
+      <body>${message}</body>
+    </html>`.trim();
+
+  response.statusCode = statusCode;
+  response.writeHead(statusCode, {
+    'Content-Type': `text/html; charset=UTF-8`,
+  });
+  response.end(template);
+};
+
 module.exports = {
   getRandomNum,
   shuffle,
   getRandomDate,
+  sendResponse,
 };
 
