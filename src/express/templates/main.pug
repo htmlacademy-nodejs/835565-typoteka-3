@@ -1,0 +1,34 @@
+extends layout.pug
+block content
+    .wrapper
+      main.main-page
+        h1.visually-hidden Главная страница личного блога Типотека
+        p
+          | Это приветственный текст, который владелец блога может выбрать, чтобы описать себя 👏
+        section.main-page__theme-list
+          h2.visually-hidden Список тем
+
+          include partials/themes-list.pug
+
+        .main-page__section-flex
+          section.main-page__hot.hot
+            h2.hot__name
+              | Самое обсуждаемое
+              span.hot__icon.hot__icon--fire
+
+            include partials/hot-list.pug
+
+          section.main-page__last.last
+            h2.last__name
+              | Последние комментарии
+              span.last__icon.last__icon--cloud
+
+            include partials/last-list.pug
+
+        section.main-page__list.preview
+          h2.visually-hidden Список превью статей
+
+          include partials/preview-list.pug
+
+        .preview__toggle-wrapper
+          include partials/preview-pagination.pug
