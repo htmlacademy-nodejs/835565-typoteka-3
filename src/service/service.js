@@ -1,11 +1,11 @@
 'use strict';
 
-const {MockApp} = require(`../mock-app`);
+const {MockApp} = require(`../cli`);
 const {
   DEFAULT_COMMAND,
   USER_ARGV_INDEX,
   ExitCode
-} = require(`../mock-app/const`);
+} = require(`../const`);
 
 const userArguments = process.argv.slice(USER_ARGV_INDEX);
 const [userCommand] = userArguments;

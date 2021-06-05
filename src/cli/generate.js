@@ -4,8 +4,8 @@ const {
   getRandomNum,
   shuffle,
   getRandomDate
-} = require(`./utils`);
-const {ExitCode} = require(`../mock-app/const`);
+} = require(`../utils`);
+const {ExitCode} = require(`../const`);
 const fs = require(`fs`).promises;
 const chalk = require(`chalk`);
 
@@ -17,7 +17,7 @@ const {
   ARTICLE_TITLES_PATH,
   ARTICLE_DESCRIPTIONS_PATH,
   ARTICLE_CATEGORIES_PATH,
-} = require(`./const`);
+} = require(`../const`);
 
 const readContent = async (filePath) => {
   try {

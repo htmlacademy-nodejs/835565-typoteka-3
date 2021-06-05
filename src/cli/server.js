@@ -11,7 +11,7 @@ const {
   NOT_FOUND_MESSAGE,
   url,
   HttpCode,
-} = require(`./const`);
+} = require(`../const`);
 
 const app = express();
 const articlesRouter = new Router();
