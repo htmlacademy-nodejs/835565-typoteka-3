@@ -1,6 +1,15 @@
 'use strict';
 
-const {DaysGap} = require(`./const`);
+const {nanoid} = require(`nanoid`);
+
+const {
+  MAX_ID_LENGTH,
+  DaysGap,
+  CommentsNum,
+  CommentsSentencesNum,
+  SentencesNum,
+  CategoriesNum,
+} = require(`./const`);
 const dayjs = require(`dayjs`);
 
 const getRandomNum = (min, max) => {
@@ -22,9 +31,28 @@ const getRandomDate = () => {
   return dayjs().add(-randomDaysGap, `day`).format();
 };
 
+const generateComments = (count, comments) => {
+  return Array(count).fill({}).map(() => ({
+    id: nanoid(MAX_ID_LENGTH),
+    text: shuffle(comments).slice(0, getRandomNum(CommentsSentencesNum.MIN, CommentsSentencesNum.MAX)).join(` `),
+  }));
+};
+
+const generateMockData = (count, titles, descriptions, categories, comments) => {
+  return Array(count).fill({}).map(() => ({
+    title: titles[getRandomNum(0, titles.length - 1)],
+    createdDate: getRandomDate(),
+    announce: shuffle(descriptions).slice(0, getRandomNum(SentencesNum.MIN, SentencesNum.MAX)).join(` `),
+    fullText: shuffle(descriptions).slice(0, getRandomNum(SentencesNum.MIN, descriptions.length - 1)).join(` `),
+    сategories: shuffle(categories).slice(0, getRandomNum(CategoriesNum.MIN, CategoriesNum.MAX)),
+    comments: generateComments(getRandomNum(CommentsNum.MIN, CommentsNum.MAX), comments),
+  }));
+};
+
 module.exports = {
   getRandomNum,
   shuffle,
   getRandomDate,
+  generateMockData,
 };
 
