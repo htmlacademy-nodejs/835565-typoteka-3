@@ -27,14 +27,17 @@ const readContent = async (filePath) => {
 module.exports = {
   name: `--generate`,
   async run(args) {
-    const titles = await readContent(ARTICLE_TITLES_PATH);
-    const descriptions = await readContent(ARTICLE_DESCRIPTIONS_PATH);
-    const categories = await readContent(ARTICLE_CATEGORIES_PATH);
-    const comments = await readContent(COMMENTS_PATH);
+
+    const options = {
+      titles: await readContent(ARTICLE_TITLES_PATH),
+      descriptions: await readContent(ARTICLE_DESCRIPTIONS_PATH),
+      categories: await readContent(ARTICLE_CATEGORIES_PATH),
+      comments: await readContent(COMMENTS_PATH),
+    };
 
     const [count] = args;
     const articlesCount = Number.parseInt(count, 10) || DEFAULT_COUNT;
-    const articles = JSON.stringify(generateMockData(articlesCount, titles, descriptions, categories, comments));
+    const articles = JSON.stringify(generateMockData(articlesCount, options));
 
     try {
       await fs.writeFile(FILE_NAME, articles);

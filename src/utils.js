@@ -38,8 +38,9 @@ const generateComments = (count, comments) => {
   }));
 };
 
-const generateMockData = (count, titles, descriptions, categories, comments) => {
+const generateMockData = (count, {titles, descriptions, categories, comments}) => {
   return Array(count).fill({}).map(() => ({
+    id: nanoid(MAX_ID_LENGTH),
     title: titles[getRandomNum(0, titles.length - 1)],
     createdDate: getRandomDate(),
     announce: shuffle(descriptions).slice(0, getRandomNum(SentencesNum.MIN, SentencesNum.MAX)).join(` `),
