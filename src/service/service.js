@@ -1,6 +1,6 @@
 'use strict';
 
-const {MockApp} = require(`../cli`);
+const {MockApp} = require(`./cli`);
 const {
   DEFAULT_COMMAND,
   USER_ARGV_INDEX,

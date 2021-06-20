@@ -2,14 +2,14 @@
 
 const chalk = require(`chalk`);
 const express = require(`express`);
-const routes = require(`../service/api`);
+const routes = require(`../api`);
 
 const {
   DEFAULT_PORT,
   NOT_FOUND_MESSAGE,
   API_PREFIX,
   HttpCode,
-} = require(`../const`);
+} = require(`../../const`);
 
 const app = express();
 app.use(express.json());
