@@ -6,7 +6,6 @@ const routes = require(`../service/api`);
 
 const {
   DEFAULT_PORT,
-  FILE_PATH,
   NOT_FOUND_MESSAGE,
   API_PREFIX,
   HttpCode,
