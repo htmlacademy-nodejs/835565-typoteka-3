@@ -17,6 +17,11 @@ const API_PREFIX = `/api`;
 const defaultArticleKeys = [`title`, `createdDate`, `announce`, `fullText`, `сategories`];
 const defaultCommentKeys = [`text`];
 
+const Env = {
+  DEVELOPMENT: `development`,
+  PRODUCTION: `production`
+};
+
 const url = {
   ROOT: `/`,
 };
@@ -78,4 +83,5 @@ module.exports = {
   CommentsSentencesNum,
   defaultArticleKeys,
   defaultCommentKeys,
+  Env,
 };
