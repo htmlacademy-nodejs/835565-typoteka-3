@@ -57,25 +57,25 @@ module.exports = (app, articlesService, commentService) => {
           .json(newComment);
       });
 
-  articlesRouter.put(`/:articleId`, articleValidator, (req, res) => {
+  articlesRouter.put(`/:articleId`, [articleExists(articlesService), articleValidator], (req, res) => {
     const {articleId} = req.params;
     const updatedArticle = articlesService.update(articleId, req.body);
     if (!updatedArticle) {
-      res.status(HttpCode.NOT_FOUND)
+      return res.status(HttpCode.NOT_FOUND)
         .send(`Unable to find article with id:${articleId}`);
     }
-    res.status(HttpCode.OK)
-      .send(`Article updated successfully`);
+    return res.status(HttpCode.OK)
+      .json(updatedArticle);
   });
 
   articlesRouter.delete(`/:articleId`, (req, res) => {
     const {articleId} = req.params;
     const deletedArticle = articlesService.delete(articleId);
     if (!deletedArticle) {
-      res.status(HttpCode.NOT_FOUND)
+      return res.status(HttpCode.NOT_FOUND)
         .send(`Unable to delete unexisting article!`);
     }
-    res.status(HttpCode.OK)
+    return res.status(HttpCode.OK)
       .json(deletedArticle);
   });
 
@@ -85,10 +85,10 @@ module.exports = (app, articlesService, commentService) => {
     const {commentId} = req.params;
     const deletedComment = commentService.delete(commentId);
     if (!deletedComment) {
-      res.status(HttpCode.NOT_FOUND)
+      return res.status(HttpCode.NOT_FOUND)
         .send(`Cannot delete unexisting comment`);
     }
-    res.status(HttpCode.OK)
+    return res.status(HttpCode.OK)
       .json(deletedComment);
   });
 };

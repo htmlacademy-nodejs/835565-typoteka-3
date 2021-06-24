@@ -50,10 +50,20 @@ const generateMockData = (count, {titles, descriptions, categories, comments}) =
   }));
 };
 
+const getCategories = (items) => {
+  const сategories = items.reduce((acc, currentItem) => {
+    currentItem.сategories.forEach((categoryItem) => acc.add(categoryItem));
+    return acc;
+  }, new Set());
+
+  return [...сategories];
+};
+
 module.exports = {
   getRandomNum,
   shuffle,
   getRandomDate,
   generateMockData,
+  getCategories,
 };
 

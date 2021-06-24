@@ -5,17 +5,22 @@ const DEFAULT_COMMAND = `--help`;
 const USER_ARGV_INDEX = 2;
 const FILE_NAME = `mocks.json`;
 const DEFAULT_PORT = 3000;
-const FILE_PATH = `./src/service/mocks.json`;
+const FILE_PATH = `./mocks.json`;
 const NOT_FOUND_MESSAGE = `NOT FOUND`;
-const ARTICLE_TITLES_PATH = `../data/titles.txt`;
-const ARTICLE_DESCRIPTIONS_PATH = `../data/descriptions.txt`;
-const ARTICLE_CATEGORIES_PATH = `../data/categories.txt`;
-const COMMENTS_PATH = `../data/comments.txt`;
+const ARTICLE_TITLES_PATH = `./src/data/titles.txt`;
+const ARTICLE_DESCRIPTIONS_PATH = `./src/data/descriptions.txt`;
+const ARTICLE_CATEGORIES_PATH = `./src/data/categories.txt`;
+const COMMENTS_PATH = `./src/data/comments.txt`;
 const MAX_ID_LENGTH = 10;
 const API_PREFIX = `/api`;
 
 const defaultArticleKeys = [`title`, `createdDate`, `announce`, `fullText`, `сategories`];
 const defaultCommentKeys = [`text`];
+
+const Env = {
+  DEVELOPMENT: `development`,
+  PRODUCTION: `production`
+};
 
 const url = {
   ROOT: `/`,
@@ -78,4 +83,5 @@ module.exports = {
   CommentsSentencesNum,
   defaultArticleKeys,
   defaultCommentKeys,
+  Env,
 };
