@@ -8,8 +8,8 @@ class CommentService {
     this._comments = [];
   }
 
-  getComments(offer) {
-    this._comments = offer.comments;
+  getComments(article) {
+    this._comments = article.comments;
   }
 
   create(comment) {
