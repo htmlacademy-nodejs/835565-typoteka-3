@@ -13,9 +13,12 @@ const ARTICLE_CATEGORIES_PATH = `./src/data/categories.txt`;
 const COMMENTS_PATH = `./src/data/comments.txt`;
 const MAX_ID_LENGTH = 10;
 const API_PREFIX = `/api`;
+const HOT_ARTICLES_MAX_NUM = 4;
+const PREVIEW_ARTICLES_MAX_NUM = 4;
+const LAST_COMMENTS_MAX_NUM = 4;
 
 const defaultArticleKeys = [`title`, `createdDate`, `announce`, `fullText`, `сategories`];
-const defaultCommentKeys = [`text`];
+const defaultCommentKeys = [`text`, `date`];
 
 const Env = {
   DEVELOPMENT: `development`,
@@ -70,6 +73,9 @@ module.exports = {
   COMMENTS_PATH,
   MAX_ID_LENGTH,
   API_PREFIX,
+  HOT_ARTICLES_MAX_NUM,
+  PREVIEW_ARTICLES_MAX_NUM,
+  LAST_COMMENTS_MAX_NUM,
   ExitCode,
   SentencesNum,
   CategoriesNum,
