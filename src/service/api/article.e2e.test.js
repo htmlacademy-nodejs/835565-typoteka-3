@@ -61,13 +61,13 @@ describe(`Articles API.`, () => {
 
     test(`Received status 200`, () => expect(response.statusCode).toBe(HttpCode.OK));
 
-    test(`Received item should match corresponding mock offer by title`, () =>
+    test(`Received item should match corresponding mock article by title`, () =>
       expect(response.body.title).toBe(requestedMockArticle.title)
     );
 
-    test(`Received status 404 if unexisting offer is requested`, async () => {
+    test(`Received status 404 if unexisting article is requested`, async () => {
       response = await request(app)
-        .get(`/offers/unext`);
+        .get(`/acticles/unext`);
       expect(response.statusCode).toBe(HttpCode.NOT_FOUND);
     });
   });
@@ -99,7 +99,7 @@ describe(`Articles API.`, () => {
     });
   });
 
-  describe(`API does not create offer if data is invalid.`, () => {
+  describe(`API does not create article if data is invalid.`, () => {
     const app = createAPI();
 
     test(`Unvalidated article post should receive status 400`, async () => {
@@ -142,7 +142,7 @@ describe(`Articles API.`, () => {
         .expect(HttpCode.NOT_FOUND);
     });
 
-    test(`Trying to send invalid offer should receive status 400`, () => {
+    test(`Trying to send invalid article should receive status 400`, () => {
       const invalidArticle = {
         title: `Это невалидная статья`,
         createdDate: ``,
