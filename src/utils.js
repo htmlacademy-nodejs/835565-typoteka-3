@@ -13,6 +13,7 @@ const {
   HOT_ARTICLES_MAX_NUM,
   LAST_COMMENTS_MAX_NUM,
   PREVIEW_ARTICLES_MAX_NUM,
+  HUMANIZED_DATE_FORMAT,
 } = require(`./const`);
 
 const getRandomNum = (min, max) => {
@@ -79,13 +80,47 @@ const getPreviewArticles = (articles) => {
     .slice(0, PREVIEW_ARTICLES_MAX_NUM);
 };
 
-const getLastComments = (articles) => {
-  return articles.reduce((acc, currentArticle) => {
-    currentArticle.comments.forEach((comment) => acc.push(comment));
-    return acc
-      .sort((left, right) => right.date - left.date)
-      .slice(0, LAST_COMMENTS_MAX_NUM);
+const parseCommentsForCommentPage = (articles) => {
+  const comments = getCommentsByLatestDate(articles);
+  return comments.reduce((acc, currentComment) => {
+    articles.forEach((article) => {
+      article.comments.forEach((comment) => {
+        if (comment.id === currentComment.id) {
+          acc.push(
+              Object.assign(
+                  {},
+                  currentComment,
+                  {
+                    "articleTitle": article.title,
+                    "humanizedDate": humanizeDate(HUMANIZED_DATE_FORMAT, comment.date)
+                  }
+              )
+          );
+        }
+      });
+    });
+    return acc;
   }, []);
+};
+
+const getCommentsByLatestDate = (articles) => {
+  const comments = articles.reduce((acc, currentArticle) => {
+    currentArticle.comments.forEach((comment) => acc.push(comment));
+    return acc;
+  }, []);
+  return comments.sort((left, right) => {
+    if (left.date > right.date) {
+      return -1;
+    }
+    if (left.date < right.date) {
+      return 1;
+    }
+    return 0;
+  });
+};
+
+const getLastComments = (articles) => {
+  return getCommentsByLatestDate(articles).slice(0, LAST_COMMENTS_MAX_NUM);
 };
 
 const humanizeDate = (format, date) => {
@@ -109,6 +144,8 @@ module.exports = {
   getCategories,
   getHotArticles,
   getPreviewArticles,
+  parseCommentsForCommentPage,
+  getCommentsByLatestDate,
   getLastComments,
   adaptArticleToClient,
 };
