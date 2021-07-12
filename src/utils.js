@@ -54,13 +54,17 @@ const generateMockData = (count, {titles, descriptions, categories, comments}) =
   }));
 };
 
-const getCategories = (items) => {
-  const сategories = items.reduce((acc, currentItem) => {
-    currentItem.сategories.forEach((categoryItem) => acc.add(categoryItem));
+const getCategories = (articles) => {
+  return articles.reduce((acc, currentArticle) => {
+    currentArticle.сategories.forEach((categoryItem) => {
+      if (!acc.some((item) => item.name === categoryItem)) {
+        acc.push({name: categoryItem, count: 1});
+      } else {
+        acc.find((item) => item.name === categoryItem).count += 1;
+      }
+    });
     return acc;
-  }, new Set());
-
-  return [...сategories];
+  }, []);
 };
 
 const getHotArticles = (articles) => {
