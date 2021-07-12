@@ -1,7 +1,12 @@
 'use strict';
 
 const {Router} = require(`express`);
-const {getHotArticles, getLastComments, getPreviewArticles, adaptArticleToClient, getCategories} = require(`../../utils`);
+const {
+  getHotArticles,
+  getLastComments,
+  getPreviewArticles,
+  getCategories
+} = require(`../../utils`);
 const api = require(`../api`).getAPI();
 const {getLogger} = require(`../../service/lib/logger`);
 
@@ -10,8 +15,7 @@ const logger = getLogger({name: `front-api`});
 
 mainRouter.get(`/`, async (req, res) => {
   try {
-    const articles = await api.getArticles()
-      .then((results) => results.map((item) => adaptArticleToClient(item)));
+    const articles = await api.getArticles();
 
     const options = {
       previewArticles: getPreviewArticles(articles),

@@ -2,6 +2,7 @@
 
 const axios = require(`axios`);
 const {TIMEOUT} = require(`../const`);
+const {adaptArticleToClient} = require(`../utils`);
 
 const port = process.env.API_PORT || 3000;
 const defaultUrl = `http://localhost:${port}/api/`;
@@ -20,7 +21,8 @@ class API {
   }
 
   getArticles() {
-    return this._load(`/articles`);
+    return this._load(`/articles`)
+      .then((results) => results.map((item) => adaptArticleToClient(item)));
   }
 
   getArticle(id) {

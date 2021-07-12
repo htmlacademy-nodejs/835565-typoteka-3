@@ -96,7 +96,7 @@ const adaptArticleToClient = (article) => {
   const adaptedArticle = Object.assign(
       {},
       article,
-      {"humanizedDate": humanizeDate(`DD.MM.YYYY, HH:mm`, article.createdDate)}
+      {"humanizedDate": humanizeDate(HUMANIZED_DATE_FORMAT, article.createdDate)}
   );
   return adaptedArticle;
 };
