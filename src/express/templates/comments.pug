@@ -9,9 +9,7 @@ block content
             .publication__header
               img.publication__list-image(src='../img/avatar-small-2.png' width='20' height='20' alt='Аватар пользователя')
               b.publication__list-name Александр Петров
-              include utils/utils.js.pug
-              - const currentCommentDate = comment.date;
-              time.publication__item-time(datetime=comment.date) #{comment.humanizedDate}
+              time.publication__item-time(datetime=comment.date) #{humanizeDate(HumanizedDateFormat.FULL, comment.date)}
             a.publication__item-text(href='#') #{comment.articleTitle}
             p.publication__text-strong #{comment.text}
             button.publication__button.button.button--close-item(type='button')

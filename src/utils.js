@@ -13,7 +13,6 @@ const {
   HOT_ARTICLES_MAX_NUM,
   LAST_COMMENTS_MAX_NUM,
   PREVIEW_ARTICLES_MAX_NUM,
-  HUMANIZED_DATE_FORMAT,
 } = require(`./const`);
 
 const getRandomNum = (min, max) => {
@@ -90,10 +89,7 @@ const parseCommentsForCommentPage = (articles) => {
               Object.assign(
                   {},
                   currentComment,
-                  {
-                    "articleTitle": article.title,
-                    "humanizedDate": humanizeDate(HUMANIZED_DATE_FORMAT, comment.date)
-                  }
+                  {"articleTitle": article.title}
               )
           );
         }
@@ -127,15 +123,6 @@ const humanizeDate = (format, date) => {
   return dayjs(date).format(format);
 };
 
-const adaptArticleToClient = (article) => {
-  const adaptedArticle = Object.assign(
-      {},
-      article,
-      {"humanizedDate": humanizeDate(HUMANIZED_DATE_FORMAT, article.createdDate)}
-  );
-  return adaptedArticle;
-};
-
 module.exports = {
   getRandomNum,
   shuffle,
@@ -147,6 +134,6 @@ module.exports = {
   parseCommentsForCommentPage,
   getCommentsByLatestDate,
   getLastComments,
-  adaptArticleToClient,
+  humanizeDate,
 };
 

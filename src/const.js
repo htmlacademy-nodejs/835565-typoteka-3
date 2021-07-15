@@ -16,10 +16,14 @@ const API_PREFIX = `/api`;
 const HOT_ARTICLES_MAX_NUM = 4;
 const PREVIEW_ARTICLES_MAX_NUM = 4;
 const LAST_COMMENTS_MAX_NUM = 4;
-const HUMANIZED_DATE_FORMAT = `DD.MM.YYYY, HH:mm`;
 
 const defaultArticleKeys = [`title`, `createdDate`, `announce`, `fullText`, `сategories`];
 const defaultCommentKeys = [`text`, `date`];
+
+const HumanizedDateFormat = {
+  SHORT: `YYYY-MM-DD`,
+  FULL: `DD.MM.YYYY, HH:mm`,
+};
 
 const Env = {
   DEVELOPMENT: `development`,
@@ -77,7 +81,7 @@ module.exports = {
   HOT_ARTICLES_MAX_NUM,
   PREVIEW_ARTICLES_MAX_NUM,
   LAST_COMMENTS_MAX_NUM,
-  HUMANIZED_DATE_FORMAT,
+  HumanizedDateFormat,
   ExitCode,
   SentencesNum,
   CategoriesNum,
