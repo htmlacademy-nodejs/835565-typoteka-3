@@ -51,6 +51,7 @@ const generateMockData = (count, {titles, descriptions, categories, comments}) =
     fullText: shuffle(descriptions).slice(0, getRandomNum(SentencesNum.MIN, descriptions.length - 1)).join(` `),
     сategories: shuffle(categories).slice(0, getRandomNum(CategoriesNum.MIN, CategoriesNum.MAX)),
     comments: generateComments(getRandomNum(CommentsNum.MIN, CommentsNum.MAX), comments),
+    picture: ``,
   }));
 };
 

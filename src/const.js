@@ -20,13 +20,19 @@ const TEMPLATES_DIR = `templates`;
 const UPLOAD_PATH = `../upload/img/`;
 const PUBLIC_DIR = `public`;
 const UPLOAD_DIR = `upload`;
+const MAX_UPLOAD_FILE_SIZE = 1048576;
+const NEW_POST_FILE_INPUT_NAME = `upload`;
 
-const defaultArticleKeys = [`title`, `createdDate`, `announce`, `fullText`, `сategories`];
+const defaultArticleKeys = [`title`, `createdDate`, `announce`, `fullText`, `сategories`, `picture`];
 const defaultCommentKeys = [`text`, `date`];
 
 const HumanizedDateFormat = {
   SHORT: `YYYY-MM-DD`,
   FULL: `DD.MM.YYYY, HH:mm`,
+};
+
+const ErrorMessage = {
+  SERVER_ERROR: `Bad connection, try again later.`
 };
 
 const Env = {
@@ -89,7 +95,10 @@ module.exports = {
   UPLOAD_PATH,
   PUBLIC_DIR,
   UPLOAD_DIR,
+  MAX_UPLOAD_FILE_SIZE,
+  NEW_POST_FILE_INPUT_NAME,
   HumanizedDateFormat,
+  ErrorMessage,
   ExitCode,
   SentencesNum,
   CategoriesNum,
