@@ -16,6 +16,10 @@ const API_PREFIX = `/api`;
 const HOT_ARTICLES_MAX_NUM = 4;
 const PREVIEW_ARTICLES_MAX_NUM = 4;
 const LAST_COMMENTS_MAX_NUM = 4;
+const TEMPLATES_DIR = `templates`;
+const UPLOAD_PATH = `../upload/img/`;
+const PUBLIC_DIR = `public`;
+const UPLOAD_DIR = `upload`;
 
 const defaultArticleKeys = [`title`, `createdDate`, `announce`, `fullText`, `сategories`];
 const defaultCommentKeys = [`text`, `date`];
@@ -81,6 +85,10 @@ module.exports = {
   HOT_ARTICLES_MAX_NUM,
   PREVIEW_ARTICLES_MAX_NUM,
   LAST_COMMENTS_MAX_NUM,
+  TEMPLATES_DIR,
+  UPLOAD_PATH,
+  PUBLIC_DIR,
+  UPLOAD_DIR,
   HumanizedDateFormat,
   ExitCode,
   SentencesNum,

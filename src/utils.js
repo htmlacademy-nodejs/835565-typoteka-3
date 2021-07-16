@@ -123,6 +123,8 @@ const humanizeDate = (format, date) => {
   return dayjs(date).format(format);
 };
 
+const ensureArray = (value) => Array.isArray(value) ? value : [value];
+
 module.exports = {
   getRandomNum,
   shuffle,
@@ -135,5 +137,6 @@ module.exports = {
   getCommentsByLatestDate,
   getLastComments,
   humanizeDate,
+  ensureArray,
 };
 
