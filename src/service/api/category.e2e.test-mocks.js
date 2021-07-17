@@ -13,7 +13,8 @@ module.exports.mockData = [
         "id": `OFVAR-81fb`,
         "text": `Совсем немного... Мне не нравится ваш стиль. Ощущение, что вы меня поучаете.`
       },
-    ]
+    ],
+    "picture": ``
   },
   {
     "id": `BXEApcziYf`,
@@ -31,7 +32,8 @@ module.exports.mockData = [
         "id": `SQTZi5Dsez`,
         "text": `Совсем немного... Плюсую, но слишком много буквы! Согласен с автором!`
       }
-    ]
+    ],
+    "picture": ``
   },
   {
     "id": `z5v-pkldJ8`,
@@ -49,6 +51,7 @@ module.exports.mockData = [
         "id": `Mt4L-axnDc`,
         "text": `Мне кажется или я уже читал это где-то?`
       },
-    ]
+    ],
+    "picture": ``
   },
 ];

@@ -12,7 +12,8 @@ module.exports.mockData = [
       {
         "id": `OBos3BH60c`, "text": `Плюсую, но слишком много буквы!`
       }
-    ]
+    ],
+    "picture": ``
   },
   {
     "id": `X73R3KpHNz`,
@@ -30,7 +31,8 @@ module.exports.mockData = [
         "id": `ZOsmQ4Bx3n`,
         "text": `Хочу такую же футболку :-)`
       }
-    ]
+    ],
+    "picture": ``
   },
   {
     "id": `Z8JxDQaYzt`,
@@ -56,6 +58,7 @@ module.exports.mockData = [
         "id": `WbtEQ_zrmN`,
         "text": `Давно не пользуюсь стационарными компьютерами. Ноутбуки победили.`
       }
-    ]
+    ],
+    "picture": ``
   },
 ];
