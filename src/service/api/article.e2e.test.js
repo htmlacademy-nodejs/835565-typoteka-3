@@ -20,7 +20,7 @@ const createAPI = () => {
 
 const newArticle = {
   title: `Новая статья`,
-  createdDate: ``,
+  date: ``,
   announce: `Аоывашоыашрвыа`,
   fullText: `Ырвыащгпацлрилпгк. Шываы выаиышвгп ыщврагвыщгр щывравыщр`,
   сategories: [`Самообразование`, `Программирование`, `Математика`],
@@ -145,7 +145,7 @@ describe(`Articles API.`, () => {
     test(`Trying to send invalid article should receive status 400`, () => {
       const invalidArticle = {
         title: `Это невалидная статья`,
-        createdDate: ``,
+        date: ``,
         announce: `Отсутсвует поле fullText`,
         сategories: [`Самообразование`, `Программирование`, `Математика`],
       };

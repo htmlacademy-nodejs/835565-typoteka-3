@@ -3,7 +3,7 @@
 const {Router} = require(`express`);
 const {HumanizedDateFormat} = require(`../../const`);
 const {getLogger} = require(`../../service/lib/logger`);
-const {parseCommentsForCommentPage, humanizeDate} = require(`../../utils`);
+const {parseCommentsForCommentPage, humanizeDate, sortByLatestDate} = require(`../../utils`);
 const api = require(`../api`).getAPI();
 
 const myRouter = new Router();
@@ -12,7 +12,8 @@ const logger = getLogger({name: `front-api`});
 myRouter.get(`/`, async (req, res) => {
   try {
     const options = {
-      articles: await api.getArticles(),
+      articles: await api.getArticles()
+        .then((results) => results.sort(sortByLatestDate)),
       humanizeDate,
       HumanizedDateFormat,
     };

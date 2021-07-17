@@ -23,7 +23,7 @@ const UPLOAD_DIR = `upload`;
 const MAX_UPLOAD_FILE_SIZE = 1048576;
 const NEW_POST_FILE_INPUT_NAME = `upload`;
 
-const defaultArticleKeys = [`title`, `createdDate`, `announce`, `fullText`, `сategories`, `picture`];
+const defaultArticleKeys = [`title`, `date`, `announce`, `fullText`, `сategories`, `picture`];
 const defaultCommentKeys = [`text`, `date`];
 
 const HumanizedDateFormat = {

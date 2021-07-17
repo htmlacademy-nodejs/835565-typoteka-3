@@ -46,7 +46,7 @@ const generateMockData = (count, {titles, descriptions, categories, comments}) =
   return Array(count).fill({}).map(() => ({
     id: nanoid(MAX_ID_LENGTH),
     title: titles[getRandomNum(0, titles.length - 1)],
-    createdDate: getRandomDate(),
+    date: getRandomDate(),
     announce: shuffle(descriptions).slice(0, getRandomNum(SentencesNum.MIN, SentencesNum.MAX)).join(` `),
     fullText: shuffle(descriptions).slice(0, getRandomNum(SentencesNum.MIN, descriptions.length - 1)).join(` `),
     сategories: shuffle(categories).slice(0, getRandomNum(CategoriesNum.MIN, CategoriesNum.MAX)),
@@ -76,7 +76,7 @@ const getHotArticles = (articles) => {
 
 const getPreviewArticles = (articles) => {
   return articles.slice()
-    .sort((left, right) => right.createdDate - left.createdDate)
+    .sort(sortByLatestDate)
     .slice(0, PREVIEW_ARTICLES_MAX_NUM);
 };
 
@@ -105,15 +105,7 @@ const getCommentsByLatestDate = (articles) => {
     currentArticle.comments.forEach((comment) => acc.push(comment));
     return acc;
   }, []);
-  return comments.sort((left, right) => {
-    if (left.date > right.date) {
-      return -1;
-    }
-    if (left.date < right.date) {
-      return 1;
-    }
-    return 0;
-  });
+  return comments.sort(sortByLatestDate);
 };
 
 const getLastComments = (articles) => {

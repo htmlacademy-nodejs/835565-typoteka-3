@@ -17,8 +17,8 @@ block content
                       name='date'
                       required=''
                       placeholder=humanizeDate(HumanizedDateFormat.SHORT, new Date())
-                      value=(createdDate
-                        ? humanizeDate(HumanizedDateFormat.SHORT, createdDate)
+                      value=(date
+                        ? humanizeDate(HumanizedDateFormat.SHORT, date)
                         : humanizeDate(HumanizedDateFormat.SHORT, new Date()))
                     )
               button.new-publication__button.button.button--colored(type='submit') Опубликовать

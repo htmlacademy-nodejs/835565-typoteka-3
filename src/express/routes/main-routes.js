@@ -30,6 +30,7 @@ mainRouter.get(`/`, async (req, res) => {
       hotArticles: getHotArticles(articles),
       lastComments: getLastComments(articles),
       currentCategories: getCategories(articles),
+      ...utils
     };
 
     res.render(`main`, {...options});

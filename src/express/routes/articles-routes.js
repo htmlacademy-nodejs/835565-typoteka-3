@@ -71,7 +71,7 @@ articlesRouter.post(`/add`, async (req, res) => {
       picture: file.filename,
       announce: body.announcement,
       fullText: body[`full-text`],
-      createdDate: body[`date`],
+      date: body[`date`],
       сategories: ensureArray(body.сategories),
     };
 
