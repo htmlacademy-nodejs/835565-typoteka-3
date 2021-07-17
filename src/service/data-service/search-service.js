@@ -1,5 +1,7 @@
 'use strict';
 
+const {sortByLatestDate} = require(`../../utils`);
+
 class SearchService {
   constructor(articles) {
     this._articles = articles;
@@ -7,13 +9,14 @@ class SearchService {
 
   findAll(searchText) {
     const relevantArticles = this._articles.reduce((acc, currentArticle) => {
-      if (currentArticle.title.includes(searchText)) {
+      const formattedArticleTitle = currentArticle.title.toLowerCase();
+      if (formattedArticleTitle.includes(searchText.toLowerCase())) {
         acc.push(currentArticle);
       }
       return acc;
     }, []);
 
-    return relevantArticles;
+    return relevantArticles.sort(sortByLatestDate);
   }
 }
 

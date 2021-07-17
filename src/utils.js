@@ -126,6 +126,16 @@ const humanizeDate = (format, date) => {
 
 const ensureArray = (value) => Array.isArray(value) ? value : [value];
 
+const sortByLatestDate = (left, right) => {
+  if (left.date > right.date) {
+    return -1;
+  }
+  if (left.date < right.date) {
+    return 1;
+  }
+  return 0;
+};
+
 module.exports = {
   getRandomNum,
   shuffle,
@@ -139,5 +149,6 @@ module.exports = {
   getLastComments,
   humanizeDate,
   ensureArray,
+  sortByLatestDate,
 };
 
