@@ -1,17 +1,14 @@
 'use strict';
 
+const {getCategories} = require(`../../utils`);
+
 class CategoryService {
   constructor(articles) {
     this._articles = articles;
   }
 
   findAll() {
-    const categories = this._articles.reduce((acc, currentArticle) => {
-      currentArticle.сategories.forEach((categoryItem) => acc.add(categoryItem));
-      return acc;
-    }, new Set());
-
-    return [...categories];
+    return getCategories(this._articles);
   }
 }
 

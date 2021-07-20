@@ -13,5 +13,8 @@ node_modules/
 mocks.json
 *http
 
+# Директория с загруженными изображениями
+src/express/upload/img/
+
 # Папка с собранными файлами проекта
 build/
