@@ -24,7 +24,7 @@ CREATE TABLE articles
   (
     id INTEGER PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
     title VARCHAR(255) NOT NULL,
-    announce VARCHAR(255) NOT NULL,
+    announce VARCHAR(1024) NOT NULL,
     fulltext text,
     picture VARCHAR(50),
     date DATE DEFAULT CURRENT_DATE,
@@ -40,7 +40,6 @@ CREATE TABLE comments
     article_id INTEGER NOT NULL,
     user_id INTEGER NOT NULL,
     text text NOT NULL,
-    author VARCHAR(255) NOT NULL,
     date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (user_id) REFERENCES users(id)
       ON DELETE CASCADE
