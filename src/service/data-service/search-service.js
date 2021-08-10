@@ -1,6 +1,6 @@
 'use strict';
 
-const {sortByLatestDate} = require(`../../utils`);
+const {sortByLatestDate} = require(`../../utils/utils-common`);
 
 class SearchService {
   constructor(articles) {

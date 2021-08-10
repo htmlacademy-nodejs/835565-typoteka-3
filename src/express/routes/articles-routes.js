@@ -4,7 +4,7 @@ const {Router} = require(`express`);
 const multer = require(`multer`);
 const path = require(`path`);
 const {nanoid} = require(`nanoid`);
-const {humanizeDate, ensureArray} = require(`../../utils`);
+const {humanizeDate, ensureArray} = require(`../../utils/utils-common`);
 const {getLogger} = require(`../../service/lib/logger`);
 const {
   HumanizedDateFormat,

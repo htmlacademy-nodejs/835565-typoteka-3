@@ -6,8 +6,8 @@ const {
   getLastComments,
   getPreviewArticles,
   getCategories,
-  humanizeDate
-} = require(`../../utils`);
+} = require(`../../utils/utils-data`);
+const {humanizeDate} = require(`../../utils/utils-common`);
 const {HumanizedDateFormat} = require(`../../const`);
 const api = require(`../api`).getAPI();
 const {getLogger} = require(`../../service/lib/logger`);

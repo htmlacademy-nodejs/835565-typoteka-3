@@ -6,7 +6,7 @@ const request = require(`supertest`);
 const category = require(`./category`);
 const CategoryService = require(`../data-service/category-service`);
 const {mockData} = require(`./category.e2e.test-mocks`);
-const {getCategories} = require(`../../utils`);
+const {getCategories} = require(`../../utils/utils-data`);
 const {HttpCode} = require(`../../const`);
 
 const app = express();
