@@ -78,6 +78,11 @@ const CommentsSentencesNum = {
   MAX: 2,
 };
 
+const mockImgsNum = {
+  MIN: 1,
+  MAX: 3,
+};
+
 module.exports = {
   DEFAULT_COUNT,
   DEFAULT_COMMAND,
@@ -104,6 +109,7 @@ module.exports = {
   SentencesNum,
   CategoriesNum,
   DaysGap,
+  mockImgsNum,
   DEFAULT_PORT,
   FILE_PATH,
   DB_FILE_PATH,

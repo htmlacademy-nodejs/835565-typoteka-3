@@ -7,11 +7,16 @@ const {
   CommentsSentencesNum,
   SentencesNum,
   CategoriesNum,
+  mockImgsNum,
   HOT_ARTICLES_MAX_NUM,
   LAST_COMMENTS_MAX_NUM,
   PREVIEW_ARTICLES_MAX_NUM,
 } = require(`../const`);
 const {shuffle, getRandomDate, getRandomNum, sortByLatestDate} = require(`./utils-common`);
+
+const getRandomImgFileName = () => {
+  return `${getRandomNum(mockImgsNum.MIN, mockImgsNum.MAX)}.jpg`;
+};
 
 const generateComments = (count, comments) => {
   return Array(count).fill({}).map(() => ({
@@ -30,7 +35,7 @@ const generateMockData = (count, {titles, descriptions, categories, comments}) =
     fullText: shuffle(descriptions).slice(0, getRandomNum(SentencesNum.MIN, descriptions.length - 1)).join(` `),
     сategories: shuffle(categories).slice(0, getRandomNum(CategoriesNum.MIN, CategoriesNum.MAX)),
     comments: generateComments(getRandomNum(CommentsNum.MIN, CommentsNum.MAX), comments),
-    picture: ``,
+    picture: getRandomImgFileName(),
   }));
 };
 
@@ -118,7 +123,7 @@ const generateMockDataForDB = (count, {titles, descriptions, commentsSentences, 
     fullText: shuffle(descriptions).slice(0, getRandomNum(SentencesNum.MIN, descriptions.length - 1)).join(` `),
     сategories: getRandomCategoriesId(getRandomNum(CategoriesNum.MIN, CategoriesNum.MAX), categoriesCount),
     comments: generateCommentsForDB(getRandomNum(CommentsNum.MIN, CommentsNum.MAX), index + 1, mockUsersCount, commentsSentences),
-    picture: ``,
+    picture: getRandomImgFileName(),
   }));
 };
 
