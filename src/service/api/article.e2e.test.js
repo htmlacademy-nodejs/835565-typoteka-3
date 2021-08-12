@@ -6,7 +6,7 @@ const request = require(`supertest`);
 const article = require(`./article`);
 const ArticleService = require(`../data-service/article-service`);
 const CommentService = require(`../data-service/comment-service`);
-const {getRandomNum} = require(`../../utils`);
+const {getRandomNum} = require(`../../utils/utils-common`);
 const {HttpCode} = require(`../../const`);
 const {mockData} = require(`./article.e2e.test-mocks`);
 

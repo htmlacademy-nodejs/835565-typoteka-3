@@ -1,37 +1,21 @@
 'use strict';
 
 const {nanoid} = require(`nanoid`);
-const dayjs = require(`dayjs`);
-
 const {
   MAX_ID_LENGTH,
-  DaysGap,
   CommentsNum,
   CommentsSentencesNum,
   SentencesNum,
   CategoriesNum,
+  mockImgsNum,
   HOT_ARTICLES_MAX_NUM,
   LAST_COMMENTS_MAX_NUM,
   PREVIEW_ARTICLES_MAX_NUM,
-} = require(`./const`);
+} = require(`../const`);
+const {shuffle, getRandomDate, getRandomNum, sortByLatestDate} = require(`./utils-common`);
 
-const getRandomNum = (min, max) => {
-  min = Math.ceil(min);
-  max = Math.floor(max);
-  return Math.floor(Math.random() * (max - min + 1)) + min;
-};
-
-const shuffle = (someArray) => {
-  for (let i = someArray.length - 1; i > 0; i--) {
-    const randomPosition = Math.floor(Math.random() * i);
-    [someArray[i], someArray[randomPosition]] = [someArray[randomPosition], someArray[i]];
-  }
-  return someArray;
-};
-
-const getRandomDate = () => {
-  const randomDaysGap = getRandomNum(DaysGap.MIN, DaysGap.MAX);
-  return dayjs().add(-randomDaysGap, `day`).format();
+const getRandomImgFileName = () => {
+  return `${getRandomNum(mockImgsNum.MIN, mockImgsNum.MAX)}.jpg`;
 };
 
 const generateComments = (count, comments) => {
@@ -51,7 +35,7 @@ const generateMockData = (count, {titles, descriptions, categories, comments}) =
     fullText: shuffle(descriptions).slice(0, getRandomNum(SentencesNum.MIN, descriptions.length - 1)).join(` `),
     сategories: shuffle(categories).slice(0, getRandomNum(CategoriesNum.MIN, CategoriesNum.MAX)),
     comments: generateComments(getRandomNum(CommentsNum.MIN, CommentsNum.MAX), comments),
-    picture: ``,
+    picture: getRandomImgFileName(),
   }));
 };
 
@@ -112,35 +96,64 @@ const getLastComments = (articles) => {
   return getCommentsByLatestDate(articles).slice(0, LAST_COMMENTS_MAX_NUM);
 };
 
-const humanizeDate = (format, date) => {
-  return dayjs(date).format(format);
+const getRandomCategoriesId = (categoriesNum, categoriesCount) => {
+  const categories = [];
+  for (let i = 0; i < categoriesNum; i++) {
+    categories.push(getRandomNum(1, categoriesCount));
+  }
+  return categories;
 };
 
-const ensureArray = (value) => Array.isArray(value) ? value : [value];
+const generateCommentsForDB = (count, articleId, usersCount, comments) => (
+  Array(count).fill({}).map(() => ({
+    userId: getRandomNum(1, usersCount),
+    articleId,
+    text: shuffle(comments)
+      .slice(0, getRandomNum(CommentsSentencesNum.MIN, CommentsSentencesNum.MAX))
+      .join(` `),
+  }))
+);
 
-const sortByLatestDate = (left, right) => {
-  if (left.date > right.date) {
-    return -1;
-  }
-  if (left.date < right.date) {
-    return 1;
-  }
-  return 0;
+const generateMockDataForDB = (count, {titles, descriptions, commentsSentences, categoriesCount, mockUsersCount}) => {
+  return Array(count).fill({}).map((_, index) => ({
+    userId: getRandomNum(1, mockUsersCount),
+    title: titles[getRandomNum(0, titles.length - 1)],
+    date: getRandomDate(),
+    announce: shuffle(descriptions).slice(0, getRandomNum(SentencesNum.MIN, SentencesNum.MAX)).join(` `),
+    fullText: shuffle(descriptions).slice(0, getRandomNum(SentencesNum.MIN, descriptions.length - 1)).join(` `),
+    сategories: getRandomCategoriesId(getRandomNum(CategoriesNum.MIN, CategoriesNum.MAX), categoriesCount),
+    comments: generateCommentsForDB(getRandomNum(CommentsNum.MIN, CommentsNum.MAX), index + 1, mockUsersCount, commentsSentences),
+    picture: getRandomImgFileName(),
+  }));
+};
+
+const generateQueryToFillDB = ({userValues, categoryValues, articlesValues, articleCategoryValues, commentValues}) => {
+  return `
+INSERT INTO users(email, password_hash, first_name, last_name, avatar) VALUES
+${userValues};
+INSERT INTO categories(name) VALUES
+${categoryValues};
+ALTER TABLE articles DISABLE TRIGGER ALL;
+INSERT INTO articles(user_id, title, date, announce, fullText, picture) VALUES
+${articlesValues};
+ALTER TABLE articles ENABLE TRIGGER ALL;
+ALTER TABLE articles_categories DISABLE TRIGGER ALL;
+INSERT INTO articles_categories(article_id, category_id) VALUES
+${articleCategoryValues};
+ALTER TABLE articles_categories ENABLE TRIGGER ALL;
+ALTER TABLE comments DISABLE TRIGGER ALL;
+INSERT INTO comments(text, user_id, article_id) VALUES
+${commentValues};
+ALTER TABLE comments ENABLE TRIGGER ALL;`;
 };
 
 module.exports = {
-  getRandomNum,
-  shuffle,
-  getRandomDate,
   generateMockData,
   getCategories,
   getHotArticles,
   getPreviewArticles,
   parseCommentsForCommentPage,
-  getCommentsByLatestDate,
   getLastComments,
-  humanizeDate,
-  ensureArray,
-  sortByLatestDate,
+  generateMockDataForDB,
+  generateQueryToFillDB,
 };
-

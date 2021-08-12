@@ -1,6 +1,6 @@
 'use strict';
 
-const {getCategories} = require(`../../utils`);
+const {getCategories} = require(`../../utils/utils-data`);
 
 class CategoryService {
   constructor(articles) {

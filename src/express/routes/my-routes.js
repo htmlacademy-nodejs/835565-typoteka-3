@@ -3,7 +3,8 @@
 const {Router} = require(`express`);
 const {HumanizedDateFormat} = require(`../../const`);
 const {getLogger} = require(`../../service/lib/logger`);
-const {parseCommentsForCommentPage, humanizeDate, sortByLatestDate} = require(`../../utils`);
+const {humanizeDate, sortByLatestDate} = require(`../../utils/utils-common`);
+const {parseCommentsForCommentPage} = require(`../../utils/utils-data`);
 const api = require(`../api`).getAPI();
 
 const myRouter = new Router();
