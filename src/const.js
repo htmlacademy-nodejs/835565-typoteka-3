@@ -6,7 +6,8 @@ const USER_ARGV_INDEX = 2;
 const FILE_NAME = `mocks.json`;
 const DEFAULT_PORT = 3000;
 const FILE_PATH = `./mocks.json`;
-const DB_FILE_PATH = `./sql/fill-db.sql`;
+const DB_FILL_FILE_PATH = `./sql/fill-db.sql`;
+const DB_QUERIES_FILE_PATH = `./sql/queries.sql`;
 const NOT_FOUND_MESSAGE = `NOT FOUND`;
 const ARTICLE_TITLES_PATH = `./src/data/titles.txt`;
 const ARTICLE_DESCRIPTIONS_PATH = `./src/data/descriptions.txt`;
@@ -112,7 +113,8 @@ module.exports = {
   mockImgsNum,
   DEFAULT_PORT,
   FILE_PATH,
-  DB_FILE_PATH,
+  DB_FILL_FILE_PATH,
+  DB_QUERIES_FILE_PATH,
   NOT_FOUND_MESSAGE,
   url,
   HttpCode,
