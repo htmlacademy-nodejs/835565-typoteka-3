@@ -3,16 +3,21 @@
 const fs = require(`fs`).promises;
 const chalk = require(`chalk`);
 
-const {readContent} = require(`../../utils/utils-common`);
-const {generateMockDataForDB, generateQueryToFillDB} = require(`../../utils/utils-data`);
+const {readContent, getRandomNum} = require(`../../utils/utils-common`);
+const {
+  generateMockDataForDB,
+  generateQueryToFillDB,
+  generateQueryToGetDataFromDB
+} = require(`../../utils/utils-data`);
 const {
   DEFAULT_COUNT,
-  DB_FILE_PATH,
   ARTICLE_TITLES_PATH,
   ARTICLE_DESCRIPTIONS_PATH,
   ARTICLE_CATEGORIES_PATH,
   COMMENTS_PATH,
   ExitCode,
+  DB_FILL_FILE_PATH,
+  DB_QUERIES_FILE_PATH,
 } = require(`../../const`);
 
 const mockUsers = [
@@ -58,7 +63,7 @@ module.exports = {
       return acc;
     }, []);
 
-    const values = {
+    const valuesToFill = {
       userValues: mockUsers.map(
           ({email, passwordHash, firstName, lastName, avatar}) =>
             `('${email}', '${passwordHash}', '${firstName}', '${lastName}', '${avatar}')`
@@ -82,14 +87,24 @@ module.exports = {
       ).join(`,\n`),
     };
 
-    const content = generateQueryToFillDB(values);
+    const valuesToGetData = {
+      articleId: getRandomNum(1, articles.length),
+      newCommentsLimit: 5,
+      commentsArticleId: getRandomNum(1, articles.length),
+      updatedTitle: `New Title`,
+      updatedArticleId: getRandomNum(1, articles.length),
+    };
+
+    const contentToFill = generateQueryToFillDB(valuesToFill);
+    const contentToGetData = generateQueryToGetDataFromDB(valuesToGetData);
 
     try {
-      await fs.writeFile(DB_FILE_PATH, content);
-      console.info(chalk.green(`Operation success. File created.`));
-      process.exit(ExitCode.SUCCESS);
+      await fs.writeFile(DB_FILL_FILE_PATH, contentToFill);
+      await fs.writeFile(DB_QUERIES_FILE_PATH, contentToGetData);
+      console.info(chalk.green(`Operation success. Files created.`));
+      process.exit();
     } catch (error) {
-      console.error(chalk.red(`Can't write data to file...`));
+      console.error(chalk.red(`Can't write data to file. Error: ${error.message}`));
       process.exit(ExitCode.ERROR);
     }
   }
