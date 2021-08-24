@@ -6,7 +6,7 @@ const version = require(`./version`);
 const server = require(`./server`);
 const fill = require(`./fill`);
 
-const MockApp = {
+const Cli = {
   [generate.name]: generate,
   [help.name]: help,
   [version.name]: version,
@@ -14,4 +14,4 @@ const MockApp = {
   [fill.name]: fill,
 };
 
-module.exports = {MockApp};
+module.exports = {Cli};

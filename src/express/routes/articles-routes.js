@@ -9,7 +9,7 @@ const {getLogger} = require(`../../service/lib/logger`);
 const {
   HumanizedDateFormat,
   MAX_ID_LENGTH,
-  UPLOAD_PATH,
+  UPLOAD_DIR_PATH,
   MAX_UPLOAD_FILE_SIZE,
   NEW_POST_FILE_INPUT_NAME,
   ErrorMessage
@@ -18,7 +18,7 @@ const {
 const api = require(`../api`).getAPI();
 const articlesRouter = new Router();
 const logger = getLogger({name: `front-api`});
-const uploadDirAbsolute = path.resolve(__dirname, UPLOAD_PATH);
+const uploadDirAbsolute = path.resolve(__dirname, UPLOAD_DIR_PATH);
 
 const storage = multer.diskStorage({
   destination: uploadDirAbsolute,

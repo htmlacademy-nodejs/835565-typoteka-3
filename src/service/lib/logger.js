@@ -1,9 +1,10 @@
 'use strict';
 
 const pino = require(`pino`);
-const {Env} = require(`../../const`);
+const {Env, LOG_FILE_PATH} = require(`../../const`);
+const path = require(`path`);
 
-const LOG_FILE = `./logs/api.log`;
+const LOG_FILE = path.resolve(__dirname, LOG_FILE_PATH);
 const isDevMode = process.env.NODE_ENV === Env.DEVELOPMENT;
 const defaultLogLevel = isDevMode ? `info` : `error`;
 
