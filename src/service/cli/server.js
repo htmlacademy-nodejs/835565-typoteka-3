@@ -3,9 +3,10 @@
 const express = require(`express`);
 const routes = require(`../api`);
 const {getLogger} = require(`../lib/logger`);
+const sequelize = require(`../lib/sequelize`);
 
 const {
-  DEFAULT_PORT,
+  DEFAULT_PORT_SERVER,
   NOT_FOUND_MESSAGE,
   API_PREFIX,
   HttpCode,
@@ -38,20 +39,24 @@ app.use((req, res, next) => {
 
 module.exports = {
   name: `--server`,
-  run(args) {
-    const [customPort] = args;
-    const port = Number.parseInt(customPort, 10) || DEFAULT_PORT;
-
+  async run(args) {
     try {
-      app.listen(port, (error) => {
-        if (error) {
-          return logger.error(`An error occured while creating a server`, error);
-        }
-        return logger.info(`Listening to port ${port}`);
-      });
+      logger.info(`Connecting to DB...`);
+      await sequelize.authenticate();
     } catch (error) {
-      logger.error(`An error occurred: ${error.message}`);
+      logger.error(`Connection to DB failed, an error occurred: ${error.message}`);
       process.exit(ExitCode.ERROR);
     }
+    logger.info(`Connected to DB successfully!`);
+
+    const [customPort] = args;
+    const port = Number.parseInt(customPort, 10) || DEFAULT_PORT_SERVER;
+
+    app.listen(port, (error) => {
+      if (error) {
+        return logger.error(`Error while hosting server`, error);
+      }
+      return logger.info(`Listening to port ${port}`);
+    });
   }
 };

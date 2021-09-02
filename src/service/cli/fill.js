@@ -2,6 +2,7 @@
 
 const fs = require(`fs`).promises;
 const chalk = require(`chalk`);
+const path = require(`path`);
 
 const {readContent, getRandomNum} = require(`../../utils/utils-common`);
 const {
@@ -43,10 +44,10 @@ module.exports = {
     const [count] = args;
     const articlesCount = Number.parseInt(count, 10) || DEFAULT_COUNT;
 
-    const titles = await readContent(ARTICLE_TITLES_PATH);
-    const descriptions = await readContent(ARTICLE_DESCRIPTIONS_PATH);
-    const categories = await readContent(ARTICLE_CATEGORIES_PATH);
-    const commentsSentences = await readContent(COMMENTS_PATH);
+    const titles = await readContent(path.resolve(__dirname, ARTICLE_TITLES_PATH));
+    const descriptions = await readContent(path.resolve(__dirname, ARTICLE_DESCRIPTIONS_PATH));
+    const categories = await readContent(path.resolve(__dirname, ARTICLE_CATEGORIES_PATH));
+    const commentsSentences = await readContent(path.resolve(__dirname, COMMENTS_PATH));
 
     const options = {
       titles,
@@ -99,8 +100,8 @@ module.exports = {
     const contentToGetData = generateQueryToGetDataFromDB(valuesToGetData);
 
     try {
-      await fs.writeFile(DB_FILL_FILE_PATH, contentToFill);
-      await fs.writeFile(DB_QUERIES_FILE_PATH, contentToGetData);
+      await fs.writeFile(path.resolve(__dirname, DB_FILL_FILE_PATH), contentToFill);
+      await fs.writeFile(path.resolve(__dirname, DB_QUERIES_FILE_PATH), contentToGetData);
       console.info(chalk.green(`Operation success. Files created.`));
       process.exit();
     } catch (error) {

@@ -5,6 +5,7 @@ const {generateMockData} = require(`../../utils/utils-data`);
 const {ExitCode} = require(`../../const`);
 const fs = require(`fs`).promises;
 const chalk = require(`chalk`);
+const path = require(`path`);
 
 const {
   DEFAULT_COUNT,
@@ -20,10 +21,10 @@ module.exports = {
   async run(args) {
 
     const options = {
-      titles: await readContent(ARTICLE_TITLES_PATH),
-      descriptions: await readContent(ARTICLE_DESCRIPTIONS_PATH),
-      categories: await readContent(ARTICLE_CATEGORIES_PATH),
-      comments: await readContent(COMMENTS_PATH),
+      titles: await readContent(path.resolve(__dirname, ARTICLE_TITLES_PATH)),
+      descriptions: await readContent(path.resolve(__dirname, ARTICLE_DESCRIPTIONS_PATH)),
+      categories: await readContent(path.resolve(__dirname, ARTICLE_CATEGORIES_PATH)),
+      comments: await readContent(path.resolve(__dirname, COMMENTS_PATH)),
     };
 
     const [count] = args;
