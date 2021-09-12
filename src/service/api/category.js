@@ -8,8 +8,8 @@ const categoriesRouter = new Router();
 module.exports = (app, service) => {
   app.use(`/categories`, categoriesRouter);
 
-  categoriesRouter.get(`/`, (req, res) => {
-    const categories = service.findAll();
+  categoriesRouter.get(`/`, async (req, res) => {
+    const categories = await service.findAll();
     res.status(HttpCode.OK)
       .json(categories);
   });

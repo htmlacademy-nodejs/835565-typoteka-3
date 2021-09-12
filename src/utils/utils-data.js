@@ -39,19 +39,6 @@ const generateMockData = (count, {titles, descriptions, categories, comments}) =
   }));
 };
 
-const getCategories = (articles) => {
-  return articles.reduce((acc, currentArticle) => {
-    currentArticle.сategories.forEach((categoryItem) => {
-      if (!acc.some((item) => item.name === categoryItem)) {
-        acc.push({name: categoryItem, count: 1});
-      } else {
-        acc.find((item) => item.name === categoryItem).count += 1;
-      }
-    });
-    return acc;
-  }, []);
-};
-
 const getHotArticles = (articles) => {
   return articles.slice()
     .sort((left, right) => right.comments.length - left.comments.length)
@@ -221,7 +208,6 @@ WHERE id = ${updatedArticleId}`;
 
 module.exports = {
   generateMockData,
-  getCategories,
   getHotArticles,
   getPreviewArticles,
   parseCommentsForCommentPage,

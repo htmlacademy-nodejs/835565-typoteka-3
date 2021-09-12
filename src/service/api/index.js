@@ -5,6 +5,8 @@ const {Router} = require(`express`);
 const category = require(`./category`);
 const article = require(`./article`);
 const search = require(`./search`);
+const sequelize = require(`../lib/sequelize`);
+const defineModels = require(`../models`);
 
 const {
   CategoryService,
@@ -13,25 +15,20 @@ const {
   SearchService
 } = require(`../data-service`);
 
-const getMockData = require(`../lib/get-mock-data`);
-
 const app = new Router();
+defineModels(sequelize);
 
 const launchApp = async () => {
-  let mockData = null;
-
   try {
-    mockData = await getMockData();
-
-    category(app, new CategoryService(mockData));
-    search(app, new SearchService(mockData));
-    article(app, new ArticleService(mockData), new CommentService());
+    return await Promise.all([
+      category(app, new CategoryService(sequelize)),
+      search(app, new SearchService(sequelize)),
+      article(app, new ArticleService(sequelize), new CommentService(sequelize))
+    ]);
   } catch (error) {
     console.error(error);
     return Promise.reject(error);
   }
-
-  return Promise.resolve(mockData);
 };
 
 launchApp();
