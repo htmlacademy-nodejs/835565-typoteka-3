@@ -13,6 +13,16 @@ const ExitCode = {
   ERROR: 1,
 };
 
+const Env = {
+  DEVELOPMENT: `development`,
+  PRODUCTION: `production`
+};
+
+// DB
+const ANNOUNCE_CHAR_LENGTH = 1000;
+const defaultArticleKeys = [`title`, `date`, `announce`, `fullText`, `сategories`, `picture`];
+const defaultCommentKeys = [`text`, `date`];
+
 // File names and paths
 const FILE_NAME = `mocks.json`;
 const FILE_PATH = `../../../mocks.json`;
@@ -37,9 +47,6 @@ const PREVIEW_ARTICLES_MAX_NUM = 4;
 const LAST_COMMENTS_MAX_NUM = 4;
 const MAX_UPLOAD_FILE_SIZE = 1048576;
 
-const defaultArticleKeys = [`title`, `date`, `announce`, `fullText`, `сategories`, `picture`];
-const defaultCommentKeys = [`text`, `date`];
-
 const HumanizedDateFormat = {
   SHORT: `YYYY-MM-DD`,
   FULL: `DD.MM.YYYY, HH:mm`,
@@ -47,11 +54,6 @@ const HumanizedDateFormat = {
 
 const ErrorMessage = {
   SERVER_ERROR: `Bad connection, try again later.`
-};
-
-const Env = {
-  DEVELOPMENT: `development`,
-  PRODUCTION: `production`
 };
 
 const HttpCode = {
@@ -63,6 +65,23 @@ const HttpCode = {
 };
 
 // Mocks
+const mockUsers = [
+  {
+    email: `ivanov@example.com`,
+    passwordHash: `5f4dcc3b5aa765d61d8327deb882cf95`,
+    firstName: `Иван`,
+    lastName: `Иванов`,
+    avatar: `avatar1.jpg`
+  },
+  {
+    email: `petrov@example.com`,
+    passwordHash: `5f4dcc3b5aa765d61d8327deb882cf93`,
+    firstName: `Пётр`,
+    lastName: `Петров`,
+    avatar: `avatar2.jpg`
+  }
+];
+
 const SentencesNum = {
   MIN: 1,
   MAX: 3,
@@ -97,6 +116,8 @@ module.exports = {
   API_PREFIX,
   NOT_FOUND_MESSAGE,
   ExitCode,
+  Env,
+  ANNOUNCE_CHAR_LENGTH,
 
   // File names and paths
   FILE_NAME,
@@ -124,11 +145,11 @@ module.exports = {
   HumanizedDateFormat,
   ErrorMessage,
   HttpCode,
-  Env,
   defaultArticleKeys,
   defaultCommentKeys,
 
   // Mocks
+  mockUsers,
   SentencesNum,
   CategoriesNum,
   DaysGap,

@@ -19,24 +19,8 @@ const {
   ExitCode,
   DB_FILL_FILE_PATH,
   DB_QUERIES_FILE_PATH,
+  mockUsers,
 } = require(`../../const`);
-
-const mockUsers = [
-  {
-    email: `ivanov@example.com`,
-    passwordHash: `5f4dcc3b5aa765d61d8327deb882cf95`,
-    firstName: `Иван`,
-    lastName: `Иванов`,
-    avatar: `avatar1.jpg`
-  },
-  {
-    email: `petrov@example.com`,
-    passwordHash: `5f4dcc3b5aa765d61d8327deb882cf93`,
-    firstName: `Пётр`,
-    lastName: `Петров`,
-    avatar: `avatar2.jpg`
-  }
-];
 
 module.exports = {
   name: `--fill`,
