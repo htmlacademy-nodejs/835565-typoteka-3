@@ -6,6 +6,7 @@ class CommentService {
     this._Comment = sequelize.models.Comment;
   }
 
+  // !
   getComments(article) {
     this._comments = article.comments;
   }

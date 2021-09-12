@@ -8,6 +8,7 @@ class SearchService {
     this._Article = sequelize.models.Article;
   }
 
+  // ! unify register of search!
   async findAll(searchText) {
     const articles = await this._Article.findAll({
       where: {

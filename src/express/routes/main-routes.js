@@ -5,7 +5,6 @@ const {
   getHotArticles,
   getLastComments,
   getPreviewArticles,
-  getCategories,
 } = require(`../../utils/utils-data`);
 const {humanizeDate} = require(`../../utils/utils-common`);
 const {HumanizedDateFormat} = require(`../../const`);
@@ -13,7 +12,7 @@ const api = require(`../api`).getAPI();
 const {getLogger} = require(`../../service/lib/logger`);
 
 const mainRouter = new Router();
-const logger = getLogger({name: `front-api`});
+const logger = getLogger({name: `main-routes api`});
 
 const utils = {
   humanizeDate,
@@ -23,13 +22,16 @@ const utils = {
 
 mainRouter.get(`/`, async (req, res) => {
   try {
-    const articles = await api.getArticles();
+    const [articles, categories] = await Promise.all([
+      await api.getArticles({comments: true}),
+      await api.getCategories(true)
+    ]);
 
     const options = {
       previewArticles: getPreviewArticles(articles),
       hotArticles: getHotArticles(articles),
       lastComments: getLastComments(articles),
-      currentCategories: getCategories(articles),
+      categories,
       ...utils
     };
 
@@ -62,6 +64,7 @@ mainRouter.get(`/search`, async (req, res) => {
       res.render(`search-empty`, {search});
     } catch (err) {
       logger.error(`Internal server error: ${err.message}`);
+      // добавить вывод error.message в шаблоне /500.pug
       res.render(`errors/500`);
     }
   }

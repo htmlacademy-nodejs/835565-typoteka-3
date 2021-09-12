@@ -3,12 +3,12 @@ block content
     each previewArticle in previewArticles
       li.preview__item
         ul.preview__breadcrumbs
-          each category in previewArticle.сategories
+          each category in previewArticle.categories
             li.preview__breadcrumbs-item
-              a.preview__breadcrumbs-link(href='#') #{category}
+              a.preview__breadcrumbs-link(href='#') #{category.name}
         .preview__background
           img.preview__background-image(src='../../img/skyscraper@1x.jpg' width='460' height='240' srcset='../../img/skyscraper@1x.jpg 1x, img/skyscraper@2x.jpg 2x' alt='Фотография небоскреба')
-        time.preview__time(datetime=previewArticle.date) #{humanizeDate(HumanizedDateFormat.FULL, previewArticle.date)}
+        time.preview__time(datetime=previewArticle.createdAt) #{humanizeDate(HumanizedDateFormat.FULL, previewArticle.createdAt)}
         h3.preview__name
           a.preview__name-link(href='#') #{previewArticle.title}
         p.preview__text #{previewArticle.announce}
