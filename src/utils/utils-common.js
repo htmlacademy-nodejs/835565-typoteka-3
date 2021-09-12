@@ -51,6 +51,20 @@ const sortByLatestDate = (left, right) => {
   return 0;
 };
 
+const getRandomSubarray = (items) => {
+  items = items.slice();
+  let count = getRandomNum(1, items.length - 1);
+  const result = [];
+  while (count--) {
+    result.push(
+        ...items.splice(
+            getRandomNum(0, items.length - 1), 1
+        )
+    );
+  }
+  return result;
+};
+
 module.exports = {
   getRandomNum,
   shuffle,
@@ -59,5 +73,6 @@ module.exports = {
   humanizeDate,
   ensureArray,
   sortByLatestDate,
+  getRandomSubarray,
 };
 
