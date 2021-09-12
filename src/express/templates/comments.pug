@@ -9,8 +9,8 @@ block content
             .publication__header
               img.publication__list-image(src='../img/avatar-small-2.png' width='20' height='20' alt='Аватар пользователя')
               b.publication__list-name Александр Петров
-              time.publication__item-time(datetime=comment.date) #{humanizeDate(HumanizedDateFormat.FULL, comment.date)}
-            a.publication__item-text(href='#') #{comment.articleTitle}
-            p.publication__text-strong #{comment.text}
+              time.publication__item-time(datetime=comment.createdAt) #{humanizeDate(HumanizedDateFormat.FULL, comment.createdAt)}
+            a.publication__item-text(href='#') #{comment.text}
+            p.publication__text-strong #{comment.articleTitle}
             button.publication__button.button.button--close-item(type='button')
               span.visually-hidden Закрыть строку списка

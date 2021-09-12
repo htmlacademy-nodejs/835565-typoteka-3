@@ -8,12 +8,12 @@ const {parseCommentsForCommentPage} = require(`../../utils/utils-data`);
 const api = require(`../api`).getAPI();
 
 const myRouter = new Router();
-const logger = getLogger({name: `front-api`});
+const logger = getLogger({name: `my-routes api`});
 
 myRouter.get(`/`, async (req, res) => {
   try {
     const options = {
-      articles: await api.getArticles()
+      articles: await api.getArticles({comments: false})
         .then((results) => results.sort(sortByLatestDate)),
       humanizeDate,
       HumanizedDateFormat,
@@ -28,7 +28,7 @@ myRouter.get(`/`, async (req, res) => {
 myRouter.get(`/comments`, async (req, res) => {
   try {
     const options = {
-      comments: await api.getArticles()
+      comments: await api.getArticles({comments: true})
         .then((results) => parseCommentsForCommentPage(results)),
       humanizeDate,
       HumanizedDateFormat,
