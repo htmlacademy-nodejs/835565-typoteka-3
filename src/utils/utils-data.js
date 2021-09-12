@@ -101,7 +101,7 @@ const generateMockDataForDB = (count, {titles, descriptions, commentsSentences, 
     createdAt: getRandomDate(),
     announce: shuffle(descriptions).slice(0, getRandomNum(SentencesNum.MIN, SentencesNum.MAX)).join(` `),
     fullText: shuffle(descriptions).slice(0, getRandomNum(SentencesNum.MIN, descriptions.length - 1)).join(` `),
-    сategories: getRandomSubarray(categories),
+    сategories: getRandomSubarray(categories, getRandomNum(CategoriesNum.MIN, CategoriesNum.MAX)),
     comments: generateCommentsForDB(getRandomNum(CommentsNum.MIN, CommentsNum.MAX), index + 1, mockUsersCount, commentsSentences),
     picture: getRandomImgFileName(),
   }));
