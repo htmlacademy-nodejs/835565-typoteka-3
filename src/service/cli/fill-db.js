@@ -1,9 +1,8 @@
 'use strict';
 
 const sequelize = require(`../lib/sequelize`);
-const defineModels = require(`../models`);
-const Aliase = require(`../models/aliase`);
 const path = require(`path`);
+const initDB = require(`../lib/init-db`);
 
 const {getLogger} = require(`../lib/logger`);
 const {readContent} = require(`../../utils/utils-common`);
@@ -36,31 +35,18 @@ module.exports = {
     }
     logger.info(`Connection to database established`);
 
-    const {Category, Article} = defineModels(sequelize);
-
-    await sequelize.sync({force: true});
-
-    const titles = await readContent(path.resolve(__dirname, ARTICLE_TITLES_PATH));
-    const descriptions = await readContent(path.resolve(__dirname, ARTICLE_DESCRIPTIONS_PATH));
     const categories = await readContent(path.resolve(__dirname, ARTICLE_CATEGORIES_PATH));
-    const commentsSentences = await readContent(path.resolve(__dirname, COMMENTS_PATH));
 
-    const categoryModels = await Category.bulkCreate(
-        categories.map((item) => ({name: item}))
-    );
     const options = {
-      titles,
-      descriptions,
-      commentsSentences,
-      categories: categoryModels,
+      titles: await readContent(path.resolve(__dirname, ARTICLE_TITLES_PATH)),
+      descriptions: await readContent(path.resolve(__dirname, ARTICLE_DESCRIPTIONS_PATH)),
+      commentsSentences: await readContent(path.resolve(__dirname, COMMENTS_PATH)),
+      categories,
       mockUsersCount: mockUsers.length,
     };
 
     const articles = generateMockDataForDB(articlesCount, options);
-    const articlePromises = articles.map(async (article) => {
-      const articleModel = await Article.create(article, {include: [Aliase.COMMENTS]});
-      await articleModel.addCategories(article.сategories);
-    });
-    await Promise.all(articlePromises);
+
+    initDB(sequelize, {articles, categories});
   }
 };
