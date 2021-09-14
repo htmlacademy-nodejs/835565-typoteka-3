@@ -2,15 +2,23 @@
 
 const express = require(`express`);
 const request = require(`supertest`);
+const Sequelize = require(`sequelize`);
 
 const search = require(`./search`);
 const SearchService = require(`../data-service/search-service`);
 const {HttpCode} = require(`../../const`);
-const {mockData} = require(`./search.e2e.test-mocks`);
+const {mockData, mockCategories} = require(`./search.e2e.test-mocks`);
+const initDB = require(`../lib/init-db`);
 
 const app = express();
 app.use(express.json());
-search(app, new SearchService(mockData));
+
+const mockDB = new Sequelize(`sqlite::memory:`, {logging: false});
+
+beforeAll(async () => {
+  await initDB(mockDB, {categories: mockCategories, articles: mockData});
+  search(app, new SearchService(mockDB));
+});
 
 describe(`Search API.`, () => {
 
@@ -48,6 +56,5 @@ describe(`Search API.`, () => {
         .expect(HttpCode.BAD_REQUEST)
     );
   });
-
 });
 
