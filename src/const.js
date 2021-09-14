@@ -20,8 +20,8 @@ const Env = {
 
 // DB
 const ANNOUNCE_CHAR_LENGTH = 1000;
-const defaultArticleKeys = [`title`, `date`, `announce`, `fullText`, `сategories`, `picture`];
-const defaultCommentKeys = [`text`, `date`];
+const defaultArticleKeys = [`title`, `createdAt`, `announce`, `fullText`, `categories`, `picture`];
+const defaultCommentKeys = [`text`, `createdAt`];
 
 // File names and paths
 const FILE_NAME = `mocks.json`;
@@ -53,7 +53,8 @@ const HumanizedDateFormat = {
 };
 
 const ErrorMessage = {
-  SERVER_ERROR: `Bad connection, try again later.`
+  SERVER_ERROR: `Bad connection, try again later.`,
+  UNKNOWN_ERROR: `Something went wrong... Try again.`
 };
 
 const HttpCode = {

@@ -4,7 +4,7 @@ const {Router} = require(`express`);
 const multer = require(`multer`);
 const path = require(`path`);
 const {nanoid} = require(`nanoid`);
-const {humanizeDate, ensureArray} = require(`../../utils/utils-common`);
+const {humanizeDate} = require(`../../utils/utils-common`);
 const {getLogger} = require(`../../service/lib/logger`);
 const {
   HumanizedDateFormat,
@@ -17,7 +17,7 @@ const {
 
 const api = require(`../api`).getAPI();
 const articlesRouter = new Router();
-const logger = getLogger({name: `front-api`});
+const logger = getLogger({name: `article-routes api`});
 const uploadDirAbsolute = path.resolve(__dirname, UPLOAD_DIR_PATH);
 
 const storage = multer.diskStorage({
@@ -41,9 +41,10 @@ const utils = {
 };
 
 
-articlesRouter.get(`/add`, (req, res) => {
+articlesRouter.get(`/add`, async (req, res) => {
   try {
-    res.render(`post-edit`, {...utils});
+    const categories = await api.getCategories();
+    res.render(`post-edit`, {categories, ...utils});
   } catch (error) {
     logger.error(`Internal server error: ${error.message}`);
     res.render(`errors/500`);
@@ -51,16 +52,17 @@ articlesRouter.get(`/add`, (req, res) => {
 });
 
 articlesRouter.post(`/add`, async (req, res) => {
+  const categories = await api.getCategories();
   upload(req, res, async (err) => {
     if (err) {
       const errorMessage = err.message;
       if (err instanceof multer.MulterError) {
         logger.error(`Multer error on file upload: ${errorMessage}`);
-        res.render(`post-edit`, {errorMessage, ...utils});
+        res.render(`post-edit`, {errorMessage, categories, ...utils});
         return;
       } else {
         logger.error(`Unknown error on file upload: ${errorMessage}`);
-        res.render(`post-edit`, {errorMessage, ...utils});
+        res.render(`post-edit`, {errorMessage, categories, ...utils});
         return;
       }
     }
@@ -71,8 +73,8 @@ articlesRouter.post(`/add`, async (req, res) => {
       picture: file.filename,
       announce: body.announcement,
       fullText: body[`full-text`],
-      date: body[`date`],
-      сategories: ensureArray(body.сategories),
+      createdAt: body[`date`],
+      categories: body.categories
     };
 
     const options = {
@@ -84,9 +86,9 @@ articlesRouter.post(`/add`, async (req, res) => {
       await api.createArticle(newArticle);
       res.redirect(`/my`);
     } catch (error) {
-      const errorMessage = ErrorMessage.SERVER_ERROR;
+      const errorMessage = ErrorMessage.UNKNOWN_ERROR;
       logger.error(`An error occurred while creating new post: ${error.message}`);
-      res.render(`post-edit`, {errorMessage, ...options});
+      res.render(`post-edit`, {errorMessage, categories, ...options});
     }
   });
 });
@@ -100,18 +102,29 @@ articlesRouter.get(`/edit/:id`, async (req, res) => {
     ]);
     const options = {
       ...article,
-      ...categories,
       ...utils,
     };
-    res.render(`post-edit`, {...options});
+    res.render(`post-edit`, {categories, ...options});
   } catch (error) {
     logger.error(`Internal server error: ${error.message}`);
-    res.render(`errors/500`);
+    res.render(`errors/404`);
   }
 });
 
 articlesRouter.get(`/category/:id`, (req, res) => res.render(`posts-by-category`));
 
-articlesRouter.get(`/:id`, (req, res) => res.render(`post`));
+articlesRouter.get(`/:id`, async (req, res) => {
+  try {
+    const {id} = req.params;
+    const [article, categories] = await Promise.all([
+      await api.getArticle(id, {comments: true}),
+      await api.getCategories(true)
+    ]);
+    res.render(`post`, {article, categories, ...utils});
+  } catch (error) {
+    logger.error(`Internal server error: ${error.message}`);
+    res.render(`errors/404`);
+  }
+});
 
 module.exports = articlesRouter;

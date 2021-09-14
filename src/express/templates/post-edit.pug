@@ -17,9 +17,9 @@ block content
                       name='date'
                       required=''
                       placeholder=humanizeDate(HumanizedDateFormat.SHORT, new Date())
-                      value=(date
-                        ? humanizeDate(HumanizedDateFormat.SHORT, date)
-                        : humanizeDate(HumanizedDateFormat.SHORT, new Date()))
+                      value=(!createdAt
+                        ? new Date()
+                        : createdAt)
                     )
               button.new-publication__button.button.button--colored(type='submit') Опубликовать
             a.popup__button.button.button--popup-close(aria-label='Закрыть окно')
@@ -40,9 +40,9 @@ block content
                       input.visually-hidden(type='file' name=NEW_POST_FILE_INPUT_NAME required='')
                       | Обзор
                 .new-publication__category-wrapper
-                  if сategories
-                    each category in сategories
-                      a.new-publication__form-link.button.button--transparent(href='#') #{category}
+                  if categories
+                    each category in categories
+                      +newArticleCheckbox(category)
                     a.new-publication__form-link.button.button--transparent(href='#') Добавить категорию
                   else
                     a.new-publication__form-link.button.button--transparent(href='#') Добавить категорию
