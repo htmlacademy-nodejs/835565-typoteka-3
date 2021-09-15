@@ -70,6 +70,14 @@ mainRouter.get(`/search`, async (req, res) => {
   }
 });
 
-mainRouter.get(`/categories`, (req, res) => res.render(`categories`));
+mainRouter.get(`/categories`, async (req, res) => {
+  try {
+    const categories = await api.getCategories();
+    res.render(`categories`, {categories});
+  } catch (error) {
+    logger.error(`Internal server error: ${error.message}`);
+    res.render(`errors/500`);
+  }
+});
 
 module.exports = mainRouter;

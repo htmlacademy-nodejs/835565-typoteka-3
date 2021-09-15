@@ -19,7 +19,7 @@ class API {
     return response.data;
   }
 
-  getArticles({comments}) {
+  getArticles({comments} = {}) {
     return this._load(`/articles`, {params: {comments}});
   }
 
