@@ -9,7 +9,6 @@ const {
   CategoriesNum,
   mockImgsNum,
   HOT_ARTICLES_MAX_NUM,
-  LAST_COMMENTS_MAX_NUM,
   PREVIEW_ARTICLES_MAX_NUM,
 } = require(`../const`);
 const {shuffle, getRandomDate, getRandomNum, sortByLatestDate, getRandomSubarray} = require(`./utils-common`);
@@ -49,38 +48,6 @@ const getPreviewArticles = (articles) => {
   return articles.slice()
     .sort(sortByLatestDate)
     .slice(0, PREVIEW_ARTICLES_MAX_NUM);
-};
-
-const parseCommentsForCommentPage = (articles) => {
-  const comments = getCommentsByLatestDate(articles);
-  return comments.reduce((acc, currentComment) => {
-    articles.forEach((article) => {
-      article.comments.forEach((comment) => {
-        if (comment.id === currentComment.id) {
-          acc.push(
-              Object.assign(
-                  {},
-                  currentComment,
-                  {"articleTitle": article.title}
-              )
-          );
-        }
-      });
-    });
-    return acc;
-  }, []);
-};
-
-const getCommentsByLatestDate = (articles) => {
-  const comments = articles.reduce((acc, currentArticle) => {
-    currentArticle.comments.forEach((comment) => acc.push(comment));
-    return acc;
-  }, []);
-  return comments.sort(sortByLatestDate);
-};
-
-const getLastComments = (articles) => {
-  return getCommentsByLatestDate(articles).slice(0, LAST_COMMENTS_MAX_NUM);
 };
 
 const generateCommentsForDB = (count, articleId, usersCount, comments) => (
@@ -210,8 +177,6 @@ module.exports = {
   generateMockData,
   getHotArticles,
   getPreviewArticles,
-  parseCommentsForCommentPage,
-  getLastComments,
   generateMockDataForDB,
   generateQueryToFillDB,
   generateQueryToGetDataFromDB,

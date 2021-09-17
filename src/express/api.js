@@ -35,8 +35,8 @@ class API {
     return this._load(`/categories`, {params: {count}});
   }
 
-  async getComments() {
-    return this._load(`/comments`);
+  getComments(limit) {
+    return this._load(`/comments`, {params: {limit}});
   }
 
   async createArticle(data) {

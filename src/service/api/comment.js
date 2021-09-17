@@ -9,7 +9,8 @@ module.exports = (app, commentService) => {
   app.use(`/comments`, commentsRouter);
 
   commentsRouter.get(`/`, async (req, res) => {
-    const comments = await commentService.findAll();
+    const {limit} = req.query;
+    const comments = await commentService.findAll(limit);
     if (!comments) {
       return res.status(HttpCode.NOT_FOUND)
         .send(`Comments not found!`);

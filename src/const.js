@@ -22,6 +22,11 @@ const Env = {
 const ANNOUNCE_CHAR_LENGTH = 1000;
 const defaultArticleKeys = [`title`, `createdAt`, `announce`, `fullText`, `categories`, `picture`];
 const defaultCommentKeys = [`text`, `createdAt`];
+const QueryOptions = {
+  order: {
+    BY_LATEST_DATE: [`createdAt`, `DESC`]
+  }
+};
 
 // File names and paths
 const FILE_NAME = `mocks.json`;
@@ -118,7 +123,12 @@ module.exports = {
   NOT_FOUND_MESSAGE,
   ExitCode,
   Env,
+
+  // DB
   ANNOUNCE_CHAR_LENGTH,
+  defaultArticleKeys,
+  defaultCommentKeys,
+  QueryOptions,
 
   // File names and paths
   FILE_NAME,
@@ -146,8 +156,6 @@ module.exports = {
   HumanizedDateFormat,
   ErrorMessage,
   HttpCode,
-  defaultArticleKeys,
-  defaultCommentKeys,
 
   // Mocks
   mockUsers,

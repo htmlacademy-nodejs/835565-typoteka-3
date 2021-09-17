@@ -3,11 +3,10 @@
 const {Router} = require(`express`);
 const {
   getHotArticles,
-  getLastComments,
   getPreviewArticles,
 } = require(`../../utils/utils-data`);
 const {humanizeDate} = require(`../../utils/utils-common`);
-const {HumanizedDateFormat} = require(`../../const`);
+const {HumanizedDateFormat, LAST_COMMENTS_MAX_NUM} = require(`../../const`);
 const api = require(`../api`).getAPI();
 const {getLogger} = require(`../../service/lib/logger`);
 
@@ -22,15 +21,16 @@ const utils = {
 
 mainRouter.get(`/`, async (req, res) => {
   try {
-    const [articles, categories] = await Promise.all([
+    const [articles, categories, comments] = await Promise.all([
       await api.getArticles({comments: true}),
-      await api.getCategories(true)
+      await api.getCategories(true),
+      await api.getComments(LAST_COMMENTS_MAX_NUM)
     ]);
 
     const options = {
       previewArticles: getPreviewArticles(articles),
       hotArticles: getHotArticles(articles),
-      lastComments: getLastComments(articles),
+      lastComments: comments,
       categories,
       ...utils
     };

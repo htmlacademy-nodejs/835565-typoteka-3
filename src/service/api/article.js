@@ -34,10 +34,9 @@ module.exports = (app, articlesService, commentService) => {
       .json(article);
   });
 
-  articlesRouter.get(`/:articleId/comments`, articleExists(articlesService), (req, res) => {
-    const {article} = res.locals;
-    commentService.getComments(article);
-    const comments = commentService.findAll();
+  articlesRouter.get(`/:articleId/comments`, articleExists(articlesService), async (req, res) => {
+    const {articleId} = req.params;
+    const comments = await commentService.findAllByArticleId(articleId);
     return res.status(HttpCode.OK)
       .json(comments);
   });

@@ -1,5 +1,6 @@
 'use strict';
 
+const {QueryOptions} = require(`../../const`);
 const Aliase = require(`../models/aliase`);
 
 class CommentService {
@@ -22,13 +23,14 @@ class CommentService {
     return !!deletedRows;
   }
 
-  async findAll(id) {
-    if (id) {
-      return await this._Comment.findAll({
-        where: {id},
-        raw: true
-      });
-    }
+  async findAllByArticleId(id) {
+    return await this._Comment.findAll({
+      where: {id},
+      raw: true
+    });
+  }
+
+  async findAll(limit) {
     return await this._Comment.findAll({
       include: {
         model: this._Article,
@@ -36,8 +38,9 @@ class CommentService {
         attributes: [`title`]
       },
       order: [
-        [`createdAt`, `DESC`]
-      ]
+        QueryOptions.order.BY_LATEST_DATE
+      ],
+      limit
     });
   }
 }
