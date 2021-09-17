@@ -31,7 +31,7 @@ class API {
     return this._load(`/search`, {params: {query}});
   }
 
-  async getCategories(count) {
+  getCategories(count) {
     return this._load(`/categories`, {params: {count}});
   }
 
@@ -39,7 +39,7 @@ class API {
     return this._load(`/comments`, {params: {limit}});
   }
 
-  async createArticle(data) {
+  createArticle(data) {
     return this._load(`/articles`, {
       method: `POST`,
       data
