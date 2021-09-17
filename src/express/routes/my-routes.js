@@ -4,7 +4,6 @@ const {Router} = require(`express`);
 const {HumanizedDateFormat} = require(`../../const`);
 const {getLogger} = require(`../../service/lib/logger`);
 const {humanizeDate, sortByLatestDate} = require(`../../utils/utils-common`);
-const {parseCommentsForCommentPage} = require(`../../utils/utils-data`);
 const api = require(`../api`).getAPI();
 
 const myRouter = new Router();
@@ -27,13 +26,12 @@ myRouter.get(`/`, async (req, res) => {
 
 myRouter.get(`/comments`, async (req, res) => {
   try {
+    const comments = await api.getComments();
     const options = {
-      comments: await api.getArticles({comments: true})
-        .then((results) => parseCommentsForCommentPage(results)),
       humanizeDate,
       HumanizedDateFormat,
     };
-    res.render(`comments`, {...options});
+    res.render(`comments`, {comments, ...options});
   } catch (error) {
     logger.error(`Internal server error: ${error.message}`);
     res.render(`errors/500`);

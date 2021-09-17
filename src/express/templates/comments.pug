@@ -11,6 +11,6 @@ block content
               b.publication__list-name Александр Петров
               time.publication__item-time(datetime=comment.createdAt) #{humanizeDate(HumanizedDateFormat.FULL, comment.createdAt)}
             a.publication__item-text(href='#') #{comment.text}
-            p.publication__text-strong #{comment.articleTitle}
+            p.publication__text-strong #{comment.article.title}
             button.publication__button.button.button--close-item(type='button')
               span.visually-hidden Закрыть строку списка

@@ -35,6 +35,10 @@ class API {
     return this._load(`/categories`, {params: {count}});
   }
 
+  async getComments() {
+    return this._load(`/comments`);
+  }
+
   async createArticle(data) {
     return this._load(`/articles`, {
       method: `POST`,

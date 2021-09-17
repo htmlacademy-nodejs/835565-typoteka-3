@@ -13,7 +13,7 @@ module.exports = (sequelize) => {
   const ArticleCategory = defineArticleCategory(sequelize);
 
   Article.hasMany(Comment, {as: Aliase.COMMENTS, foreignKey: `articleId`});
-  Comment.belongsTo(Article, {foreignKey: `articleId`});
+  Comment.belongsTo(Article, {as: Aliase.ARTICLE, foreignKey: `articleId`});
 
   Article.belongsToMany(Category, {through: ArticleCategory, as: Aliase.CATEGORIES});
   Category.belongsToMany(Article, {through: ArticleCategory, as: Aliase.ARTICLES});
