@@ -8,7 +8,7 @@ const searchRouter = new Router();
 module.exports = (app, service) => {
   app.use(`/search`, searchRouter);
 
-  searchRouter.get(`/`, (req, res) => {
+  searchRouter.get(`/`, async (req, res) => {
     const {query = ``} = req.query;
     if (!query) {
       res.status(HttpCode.BAD_REQUEST)
@@ -16,7 +16,7 @@ module.exports = (app, service) => {
       return;
     }
 
-    const searchResults = service.findAll(query);
+    const searchResults = await service.findAll(query);
     const searchStatus = searchResults.length > 0 ? HttpCode.OK : HttpCode.NOT_FOUND;
 
     res.status(searchStatus)

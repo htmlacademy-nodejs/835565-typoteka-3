@@ -1,40 +1,53 @@
 'use strict';
 
-const {nanoid} = require(`nanoid`);
-const {MAX_ID_LENGTH} = require(`../../const`);
+const Aliase = require(`../models/aliase`);
 
 class ArticleService {
-  constructor(articles) {
-    this._articles = articles;
+  constructor(sequelize) {
+    this._Comment = sequelize.models.Comment;
+    this._Category = sequelize.models.Category;
+    this._Article = sequelize.models.Article;
   }
 
-  create(article) {
-    const newArticle = Object
-      .assign({id: nanoid(MAX_ID_LENGTH), comments: []}, article);
-    this._articles.push(newArticle);
-    return newArticle;
+  async create(data) {
+    const article = await this._Article.create(data);
+    await article.addCategories(data.categories);
+    return article.get();
   }
 
-  update(id, update) {
-    const prevArticle = this._articles.find((item) => item.id === id);
-    return Object.assign(prevArticle, update);
+  async update(id, update) {
+    const [affectedRows] = await this._Article.update(
+        update,
+        {where: {id}}
+    );
+    return !!affectedRows;
   }
 
-  delete(id) {
-    const deletedArticle = this._articles.find((item) => item.id === id);
-    if (!deletedArticle) {
-      return null;
+  async drop(id) {
+    const deletedRows = await this._Article.destroy({
+      where: {id}
+    });
+    return !!deletedRows;
+  }
+
+  findOne(id, needComments = false) {
+    const include = [Aliase.CATEGORIES];
+    if (needComments) {
+      include.push({
+        model: this._Comment,
+        as: Aliase.COMMENTS,
+      });
     }
-    this._articles = this._articles.filter((item) => item.id !== id);
-    return deletedArticle;
+    return this._Article.findByPk(id, {include});
   }
 
-  findOne(id) {
-    return this._articles.find((item) => item.id === id);
-  }
-
-  findAll() {
-    return this._articles;
+  async findAll(needComments) {
+    const include = [Aliase.CATEGORIES];
+    if (needComments) {
+      include.push(Aliase.COMMENTS);
+    }
+    const articles = await this._Article.findAll({include});
+    return articles.map((item) => item.get());
   }
 }
 

@@ -11,6 +11,12 @@ html(lang='ru')
     link(rel='preload' href='../../fonts/SFProDisplay-Regular.woff2' as='font' crossorigin='anonymous')
     link(rel='stylesheet' href='../../css/style.min.css')
   body
+
+    mixin newArticleCheckbox (category)
+      .new-publication__checkbox
+        input(id=`checkbox-${category.id}` type='checkbox' name=`categories[]` value=category.id)
+        label(for=`checkbox-${category.id}`) #{category.name}
+
     .wrapper
       include partials/header.pug
       block content

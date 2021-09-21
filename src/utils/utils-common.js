@@ -42,13 +42,26 @@ const humanizeDate = (format, date) => {
 const ensureArray = (value) => Array.isArray(value) ? value : [value];
 
 const sortByLatestDate = (left, right) => {
-  if (left.date > right.date) {
+  if (left.createdAt > right.createdAt) {
     return -1;
   }
-  if (left.date < right.date) {
+  if (left.createdAt < right.createdAt) {
     return 1;
   }
   return 0;
+};
+
+const getRandomSubarray = (items, count) => {
+  items = items.slice();
+  const result = [];
+  while (count--) {
+    result.push(
+        ...items.splice(
+            getRandomNum(0, items.length - 1), 1
+        )
+    );
+  }
+  return result;
 };
 
 module.exports = {
@@ -59,5 +72,6 @@ module.exports = {
   humanizeDate,
   ensureArray,
   sortByLatestDate,
+  getRandomSubarray,
 };
 

@@ -11,8 +11,9 @@ const articlesRouter = new Router();
 module.exports = (app, articlesService, commentService) => {
   app.use(`/articles`, articlesRouter);
 
-  articlesRouter.get(`/`, (req, res) => {
-    const articles = articlesService.findAll();
+  articlesRouter.get(`/`, async (req, res) => {
+    const {comments} = req.query;
+    const articles = await articlesService.findAll(comments);
     if (!articles) {
       return res.status(HttpCode.NOT_FOUND)
         .send(`Articles not found!`);
@@ -21,9 +22,10 @@ module.exports = (app, articlesService, commentService) => {
       .json(articles);
   });
 
-  articlesRouter.get(`/:articleId`, (req, res) => {
+  articlesRouter.get(`/:articleId`, async (req, res) => {
     const {articleId} = req.params;
-    const article = articlesService.findOne(articleId);
+    const {comments} = req.query;
+    const article = await articlesService.findOne(articleId, comments);
     if (!article) {
       return res.status(HttpCode.NOT_FOUND)
         .send(`Unable to find article with id:${articleId}`);
@@ -32,10 +34,9 @@ module.exports = (app, articlesService, commentService) => {
       .json(article);
   });
 
-  articlesRouter.get(`/:articleId/comments`, articleExists(articlesService), (req, res) => {
-    const {article} = res.locals;
-    commentService.getComments(article);
-    const comments = commentService.findAll();
+  articlesRouter.get(`/:articleId/comments`, articleExists(articlesService), async (req, res) => {
+    const {articleId} = req.params;
+    const comments = await commentService.findAllByArticleId(articleId);
     return res.status(HttpCode.OK)
       .json(comments);
   });

@@ -2,38 +2,42 @@
 
 const express = require(`express`);
 const request = require(`supertest`);
+const Sequelize = require(`sequelize`);
 
 const article = require(`./article`);
 const ArticleService = require(`../data-service/article-service`);
 const CommentService = require(`../data-service/comment-service`);
 const {getRandomNum} = require(`../../utils/utils-common`);
 const {HttpCode} = require(`../../const`);
-const {mockData} = require(`./article.e2e.test-mocks`);
+const {mockData, mockCategories} = require(`./article.e2e.test-mocks`);
+const initDB = require(`../lib/init-db`);
 
-const createAPI = () => {
+const createAPI = async () => {
+  const mockDB = new Sequelize(`sqlite::memory:`, {logging: false});
+  await initDB(mockDB, {categories: mockCategories, articles: mockData});
+
   const app = express();
-  const cloneData = JSON.parse(JSON.stringify(mockData));
   app.use(express.json());
-  article(app, new ArticleService(cloneData), new CommentService());
+  article(app, new ArticleService(mockDB), new CommentService(mockDB));
   return app;
 };
 
 const newArticle = {
   title: `Новая статья`,
-  date: ``,
-  announce: `Аоывашоыашрвыа`,
-  fullText: `Ырвыащгпацлрилпгк. Шываы выаиышвгп ыщврагвыщгр щывравыщр`,
-  сategories: [`Самообразование`, `Программирование`, `Математика`],
-  picture: ``
+  createdAt: `2021-08-21T21:19:10+03:00`,
+  announce: `Анонс новой статьи.`,
+  fullText: `Это содержание новой статьи.`,
+  categories: [1, 2, 4],
+  picture: `1.jpg`
 };
 
 describe(`Articles API.`, () => {
 
-  describe(`API returns a list of all articles.`, () => {
-    const app = createAPI();
+  describe(`API returns a list of all articles:`, () => {
     let response;
 
     beforeAll(async () => {
+      const app = await createAPI();
       response = await request(app)
         .get(`/articles`);
     });
@@ -44,20 +48,22 @@ describe(`Articles API.`, () => {
       expect(response.body.length).toBe(mockData.length)
     );
 
-    test(`Received items should match mock articles by ID`, () => {
+    test(`Received items should match mock articles by title`, () => {
       const randomArticleIndex = getRandomNum(0, mockData.length - 1);
-      expect(response.body[randomArticleIndex].id).toBe(mockData[randomArticleIndex].id);
+      expect(response.body[randomArticleIndex].title).toBe(mockData[randomArticleIndex].title);
     });
   });
 
-  describe(`API returns an article with given id.`, () => {
-    const app = createAPI();
+  describe(`API returns an article with given id:`, () => {
+    let app;
     let response;
-    const requestedMockArticle = mockData[(getRandomNum(0, mockData.length - 1))];
+    const requestedMockArticleId = getRandomNum(1, mockData.length);
+    const requestedMockArticle = mockData[requestedMockArticleId - 1];
 
     beforeAll(async () => {
+      app = await createAPI();
       response = await request(app)
-        .get(`/articles/${requestedMockArticle.id}`);
+        .get(`/articles/${requestedMockArticleId}`);
     });
 
     test(`Received status 200`, () => expect(response.statusCode).toBe(HttpCode.OK));
@@ -67,31 +73,34 @@ describe(`Articles API.`, () => {
     );
 
     test(`Received status 404 if unexisting article is requested`, async () => {
+      app = await createAPI();
       response = await request(app)
         .get(`/acticles/unext`);
       expect(response.statusCode).toBe(HttpCode.NOT_FOUND);
     });
   });
 
-  describe(`API creates new article if data is valid.`, () => {
-    const app = createAPI();
+  describe(`API creates new article if data is valid:`, () => {
+    let app;
     let response;
 
+    const validArticle = {
+      title: `Новая валидная статья`,
+      createdAt: `2021-08-21T21:19:10+03:00`,
+      announce: `Анонс новой статьи.`,
+      fullText: `Это содержание новой статьи.`,
+      categories: [1, 2, 4],
+      picture: `1.jpg`
+    };
+
     beforeAll(async () => {
+      app = await createAPI();
       response = await request(app)
         .post(`/articles`)
-        .send(newArticle);
+        .send(validArticle);
     });
 
     test(`Received status 201`, () => expect(response.statusCode).toBe(HttpCode.CREATED));
-
-    test(`Returns created article`, () =>
-      expect(response.body).toMatchObject(newArticle)
-    );
-
-    test(`Received article should contain ID`, () =>
-      expect(response.body).toHaveProperty(`id`)
-    );
 
     test(`Articles count should increace after adding new article`, async () => {
       response = await request(app)
@@ -100,8 +109,12 @@ describe(`Articles API.`, () => {
     });
   });
 
-  describe(`API does not create article if data is invalid.`, () => {
-    const app = createAPI();
+  describe(`API does not create article if data is invalid:`, () => {
+    let app;
+
+    beforeAll(async () => {
+      app = await createAPI();
+    });
 
     test(`Unvalidated article post should receive status 400`, async () => {
       for (const key of Object.keys(newArticle)) {
@@ -116,44 +129,45 @@ describe(`Articles API.`, () => {
   });
 
   describe(`API changes an article.`, () => {
-    const app = createAPI();
+    let app;
     let response;
-    const updatedMockArticle = mockData[getRandomNum(0, mockData.length - 1)];
 
     beforeAll(async () => {
+      app = await createAPI();
       response = await request(app)
-        .put(`/articles/${updatedMockArticle.id}`)
+        .put(`/articles/1`)
         .send(newArticle);
     });
 
     test(`Received status 200`, () => expect(response.statusCode).toBe(HttpCode.OK));
 
-    test(`Returns changed article`, () => expect(response.body).toMatchObject(newArticle));
-
     test(`Article should be updated`, async () => {
       response = await request(app)
-        .get(`/articles/${updatedMockArticle.id}`);
+        .get(`/articles/1`);
       expect(response.body.title).toBe(newArticle.title);
     });
-
-    test(`Trying to change unexisting article should receive status 404`, () => {
-      return request(app)
-        .put(`/articles/unexst`)
-        .send(newArticle)
-        .expect(HttpCode.NOT_FOUND);
-    });
-
-    test(`Trying to send invalid article should receive status 400`, () => {
-      const invalidArticle = {
-        title: `Это невалидная статья`,
-        date: ``,
-        announce: `Отсутсвует поле fullText`,
-        сategories: [`Самообразование`, `Программирование`, `Математика`],
-      };
-      return request(app)
-        .put(`/articles/${updatedMockArticle.id}`)
-        .send(invalidArticle)
-        .expect(HttpCode.BAD_REQUEST);
-    });
   });
+
+  test(`Trying to change unexisting article should receive status 404`, async () => {
+    const app = await createAPI();
+
+    return request(app)
+      .put(`/articles/unexst`)
+      .send(newArticle)
+      .expect(HttpCode.NOT_FOUND);
+  });
+
+  test(`Trying to send invalid article should receive status 400`, async () => {
+    const app = await createAPI();
+    const invalidArticle = {
+      title: `Это невалидная статья`,
+      announce: `Отсутсвуют некоторые поля`,
+      сategories: [1, 2],
+    };
+    return request(app)
+      .put(`/articles/1`)
+      .send(invalidArticle)
+      .expect(HttpCode.BAD_REQUEST);
+  });
+
 });

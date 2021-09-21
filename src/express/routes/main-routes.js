@@ -3,17 +3,15 @@
 const {Router} = require(`express`);
 const {
   getHotArticles,
-  getLastComments,
   getPreviewArticles,
-  getCategories,
 } = require(`../../utils/utils-data`);
 const {humanizeDate} = require(`../../utils/utils-common`);
-const {HumanizedDateFormat} = require(`../../const`);
+const {HumanizedDateFormat, LAST_COMMENTS_MAX_NUM} = require(`../../const`);
 const api = require(`../api`).getAPI();
 const {getLogger} = require(`../../service/lib/logger`);
 
 const mainRouter = new Router();
-const logger = getLogger({name: `front-api`});
+const logger = getLogger({name: `main-routes api`});
 
 const utils = {
   humanizeDate,
@@ -23,13 +21,17 @@ const utils = {
 
 mainRouter.get(`/`, async (req, res) => {
   try {
-    const articles = await api.getArticles();
+    const [articles, categories, comments] = await Promise.all([
+      await api.getArticles({comments: true}),
+      await api.getCategories(true),
+      await api.getComments(LAST_COMMENTS_MAX_NUM)
+    ]);
 
     const options = {
       previewArticles: getPreviewArticles(articles),
       hotArticles: getHotArticles(articles),
-      lastComments: getLastComments(articles),
-      currentCategories: getCategories(articles),
+      lastComments: comments,
+      categories,
       ...utils
     };
 
@@ -62,11 +64,20 @@ mainRouter.get(`/search`, async (req, res) => {
       res.render(`search-empty`, {search});
     } catch (err) {
       logger.error(`Internal server error: ${err.message}`);
+      // добавить вывод error.message в шаблоне /500.pug
       res.render(`errors/500`);
     }
   }
 });
 
-mainRouter.get(`/categories`, (req, res) => res.render(`categories`));
+mainRouter.get(`/categories`, async (req, res) => {
+  try {
+    const categories = await api.getCategories();
+    res.render(`categories`, {categories});
+  } catch (error) {
+    logger.error(`Internal server error: ${error.message}`);
+    res.render(`errors/500`);
+  }
+});
 
 module.exports = mainRouter;
