@@ -29,7 +29,7 @@ const launchApp = async () => {
     ]);
   } catch (error) {
     console.error(error);
-    return Promise.reject(error);
+    throw new Error(`Error while setting up server-side API: ${error.message}`);
   }
 };
 

@@ -59,12 +59,11 @@ articlesRouter.post(`/add`, async (req, res) => {
       if (err instanceof multer.MulterError) {
         logger.error(`Multer error on file upload: ${errorMessage}`);
         res.render(`post-edit`, {errorMessage, categories, ...utils});
-        return;
       } else {
         logger.error(`Unknown error on file upload: ${errorMessage}`);
         res.render(`post-edit`, {errorMessage, categories, ...utils});
-        return;
       }
+      return;
     }
 
     const {body, file} = req;
