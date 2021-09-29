@@ -22,11 +22,9 @@ const Env = {
 const ANNOUNCE_CHAR_LENGTH = 1000;
 const defaultArticleKeys = [`title`, `createdAt`, `announce`, `fullText`, `categories`, `picture`];
 const defaultCommentKeys = [`text`, `createdAt`];
-const QueryOptions = {
-  order: {
-    BY_LATEST_DATE: [`createdAt`, `DESC`]
-  }
-};
+const ORDER_BY_LATEST_DATE = [`createdAt`, `DESC`];
+const HOT_ARTICLES_LIMIT = 4;
+const ARTICLES_PER_PAGE = 8;
 
 // File names and paths
 const FILE_NAME = `mocks.json`;
@@ -47,8 +45,6 @@ const UPLOAD_DIR_NAME = `upload`;
 // Front
 const DEFAULT_PORT_FRONT = 8080;
 const MAX_ID_LENGTH = 10;
-const HOT_ARTICLES_MAX_NUM = 4;
-const PREVIEW_ARTICLES_MAX_NUM = 4;
 const LAST_COMMENTS_MAX_NUM = 4;
 const MAX_UPLOAD_FILE_SIZE = 1048576;
 
@@ -128,7 +124,9 @@ module.exports = {
   ANNOUNCE_CHAR_LENGTH,
   defaultArticleKeys,
   defaultCommentKeys,
-  QueryOptions,
+  ORDER_BY_LATEST_DATE,
+  HOT_ARTICLES_LIMIT,
+  ARTICLES_PER_PAGE,
 
   // File names and paths
   FILE_NAME,
@@ -149,8 +147,6 @@ module.exports = {
   // Front
   DEFAULT_PORT_FRONT,
   MAX_ID_LENGTH,
-  HOT_ARTICLES_MAX_NUM,
-  PREVIEW_ARTICLES_MAX_NUM,
   LAST_COMMENTS_MAX_NUM,
   MAX_UPLOAD_FILE_SIZE,
   HumanizedDateFormat,

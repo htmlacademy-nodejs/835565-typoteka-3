@@ -1,6 +1,6 @@
 'use strict';
 
-const {QueryOptions} = require(`../../const`);
+const {ORDER_BY_LATEST_DATE} = require(`../../const`);
 const Aliase = require(`../models/aliase`);
 
 class CommentService {
@@ -37,9 +37,7 @@ class CommentService {
         as: Aliase.ARTICLE,
         attributes: [`title`]
       },
-      order: [
-        QueryOptions.order.BY_LATEST_DATE
-      ],
+      order: [ORDER_BY_LATEST_DATE],
       limit
     });
   }

@@ -12,14 +12,15 @@ module.exports = (app, articlesService, commentService) => {
   app.use(`/articles`, articlesRouter);
 
   articlesRouter.get(`/`, async (req, res) => {
-    const {comments} = req.query;
-    const articles = await articlesService.findAll(comments);
-    if (!articles) {
-      return res.status(HttpCode.NOT_FOUND)
-        .send(`Articles not found!`);
+    const {limit, offset, needComments} = req.query;
+
+    let articles = {};
+
+    if (needComments) {
+      articles.recent = await articlesService.findPage({limit, offset});
+      articles.hot = await articlesService.findLimit({limit});
     }
-    return res.status(HttpCode.OK)
-      .json(articles);
+    return res.status(HttpCode.OK).json(articles);
   });
 
   articlesRouter.get(`/:articleId`, async (req, res) => {
