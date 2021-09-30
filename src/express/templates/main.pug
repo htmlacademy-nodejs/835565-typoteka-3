@@ -30,5 +30,4 @@ block content
 
           include partials/preview-list.pug
 
-        .preview__toggle-wrapper
-          include partials/preview-pagination.pug
+        +pagination(page, totalPages, PAGINATION_WIDTH, `?`)

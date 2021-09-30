@@ -17,6 +17,7 @@ const logger = getLogger({name: `main-routes api`});
 const utils = {
   humanizeDate,
   HumanizedDateFormat,
+  PAGINATION_WIDTH,
 };
 
 
@@ -40,7 +41,7 @@ mainRouter.get(`/`, async (req, res) => {
       previewArticles,
       comments,
       categories,
-      page,
+      page: +page,
       totalPages,
       ...utils
     };

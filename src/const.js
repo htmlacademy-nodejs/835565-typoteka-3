@@ -47,6 +47,7 @@ const DEFAULT_PORT_FRONT = 8080;
 const MAX_ID_LENGTH = 10;
 const LAST_COMMENTS_MAX_NUM = 4;
 const MAX_UPLOAD_FILE_SIZE = 1048576;
+const PAGINATION_WIDTH = 2;
 
 const HumanizedDateFormat = {
   SHORT: `YYYY-MM-DD`,
@@ -149,6 +150,7 @@ module.exports = {
   MAX_ID_LENGTH,
   LAST_COMMENTS_MAX_NUM,
   MAX_UPLOAD_FILE_SIZE,
+  PAGINATION_WIDTH,
   HumanizedDateFormat,
   ErrorMessage,
   HttpCode,

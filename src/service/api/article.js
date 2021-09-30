@@ -17,7 +17,7 @@ module.exports = (app, articlesService, commentService) => {
     let articles = {};
 
     if (user) {
-      articles.personal = await articlesService.findAll();
+      articles.current = await articlesService.findAll();
       return res.status(HttpCode.OK).json(articles);
     }
 
