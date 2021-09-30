@@ -43,16 +43,16 @@ class ArticleService {
     return this._Article.findByPk(id, {include});
   }
 
-  async findAll({limit, needComments}) {
+  async findAll(needComments) {
     const options = {
-      limit,
-      include: [Aliase.CATEGORIES],
+      include: [],
       order: [ORDER_BY_LATEST_DATE]
     };
 
     if (needComments) {
       options.include.push(Aliase.COMMENTS);
     }
+
     const articles = await this._Article.findAll(options);
     return articles.map((item) => item.get());
   }

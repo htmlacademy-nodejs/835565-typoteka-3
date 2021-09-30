@@ -12,11 +12,15 @@ module.exports = (app, articlesService, commentService) => {
   app.use(`/articles`, articlesRouter);
 
   articlesRouter.get(`/`, async (req, res) => {
-    const {limit, offset, needComments} = req.query;
+    const {user, limit, offset, needComments} = req.query;
 
     let articles = {};
 
-    if (needComments) {
+    if (user) {
+      articles.personal = await articlesService.findAll();
+      return res.status(HttpCode.OK).json(articles);
+    }
+
       articles.recent = await articlesService.findPage({limit, offset});
       articles.hot = await articlesService.findLimit({limit});
     }
