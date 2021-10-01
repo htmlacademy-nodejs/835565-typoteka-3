@@ -90,18 +90,13 @@ class ArticleService {
 
   async findPage({limit, offset}) {
     const options = {
-      // limit,
+      limit,
       offset,
-      attributes: {
-        include: [
-          [this._sequelize.fn(`COUNT`, this._sequelize.col(`comments.id`)), `commentsCount`]
-        ]
-      },
       include: [
         {
           model: this._Comment,
           as: Aliase.COMMENTS,
-          attributes: [],
+          attributes: [`id`],
         },
         {
           model: this._Category,
@@ -109,19 +104,13 @@ class ArticleService {
           attributes: [`id`, `name`]
         }
       ],
-      group: [
-        `Article.id`,
-        `categories.id`,
-        `categories->ArticleCategory.ArticleId`,
-        `categories->ArticleCategory.CategoryId`
-      ],
       order: [ORDER_BY_LATEST_DATE],
       distinct: true
     };
 
-    let {count, rows: articles} = await this._Article.findAndCountAll(options);
+    const {count, rows} = await this._Article.findAndCountAll(options);
 
-    return {count, articles};
+    return {count, articles: rows};
   }
 }
 

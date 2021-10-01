@@ -17,13 +17,17 @@ module.exports = (app, articlesService, commentService) => {
     let articles = {};
 
     if (user) {
-      articles.current = await articlesService.findAll();
+      articles.current = await articlesService.findAll({needComments});
       return res.status(HttpCode.OK).json(articles);
     }
 
+    if (offset) {
       articles.recent = await articlesService.findPage({limit, offset});
+      return res.status(HttpCode.OK).json(articles);
+    } else {
       articles.hot = await articlesService.findLimit({limit});
     }
+
     return res.status(HttpCode.OK).json(articles);
   });
 
