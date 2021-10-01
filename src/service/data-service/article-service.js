@@ -45,12 +45,12 @@ class ArticleService {
 
   async findAll(needComments) {
     const options = {
-      include: [],
+      attributes: [`id`, `createdAt`, `announce`],
       order: [ORDER_BY_LATEST_DATE]
     };
 
     if (needComments) {
-      options.include.push(Aliase.COMMENTS);
+      options.include = [Aliase.COMMENTS];
     }
 
     const articles = await this._Article.findAll(options);
@@ -59,11 +59,11 @@ class ArticleService {
 
   async findLimit({limit}) {
     const options = {
-      attributes: {
-        include: [
-          [this._sequelize.fn(`COUNT`, this._sequelize.col(`comments.id`)), `commentsCount`]
-        ]
-      },
+      attributes: [
+        `id`,
+        `announce`,
+        [this._sequelize.fn(`COUNT`, this._sequelize.col(`comments.id`)), `commentsCount`]
+      ],
       include: [
         {
           model: this._Comment,
@@ -92,6 +92,7 @@ class ArticleService {
     const options = {
       limit,
       offset,
+      attributes: [`title`, `announce`, `picture`, `createdAt`],
       include: [
         {
           model: this._Comment,
