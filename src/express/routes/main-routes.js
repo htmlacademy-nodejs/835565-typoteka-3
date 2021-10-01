@@ -36,7 +36,7 @@ mainRouter.get(`/`, async (req, res) => {
       await api.getArticles({limit: HOT_ARTICLES_LIMIT}),
       await api.getArticles({limit: ARTICLES_PER_PAGE, offset}),
       await api.getCategories(true),
-      await api.getComments(LAST_COMMENTS_MAX_NUM)
+      await api.getComments({limit: LAST_COMMENTS_MAX_NUM})
     ]);
 
     const totalPages = Math.ceil(count / ARTICLES_PER_PAGE);

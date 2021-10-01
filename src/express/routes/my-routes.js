@@ -26,12 +26,8 @@ myRouter.get(`/`, async (req, res) => {
 
 myRouter.get(`/comments`, async (req, res) => {
   try {
-    const comments = await api.getComments();
-    const options = {
-      humanizeDate,
-      HumanizedDateFormat,
-    };
-    res.render(`comments`, {comments, ...options});
+    const comments = await api.getComments({needArticles: true});
+    res.render(`comments`, {comments, ...utils});
   } catch (error) {
     logger.error(`Internal server error: ${error.message}`);
     res.render(`errors/500`);

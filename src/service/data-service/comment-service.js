@@ -23,23 +23,31 @@ class CommentService {
     return !!deletedRows;
   }
 
-  async findAllByArticleId(id) {
-    return await this._Comment.findAll({
-      where: {id},
-      raw: true
-    });
-  }
+  async findAll({id, needArticles}) {
+    if (!needArticles) {
+      return await this._Comment.findAll({
+        where: {id},
+        raw: true
+      });
+    }
 
-  async findAll(limit) {
     return await this._Comment.findAll({
       include: {
         model: this._Article,
         as: Aliase.ARTICLE,
         attributes: [`title`]
       },
-      order: [ORDER_BY_LATEST_DATE],
-      limit
+      order: [ORDER_BY_LATEST_DATE]
     });
+  }
+
+  async findLimit({limit}) {
+    const options = {
+      limit,
+      order: [ORDER_BY_LATEST_DATE]
+    };
+
+    return await this._Comment.findAll(options);
   }
 }
 
