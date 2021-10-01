@@ -35,7 +35,7 @@ class CommentService {
       include: {
         model: this._Article,
         as: Aliase.ARTICLE,
-        attributes: [`title`]
+        attributes: [`title`, `id`]
       },
       order: [ORDER_BY_LATEST_DATE]
     });
