@@ -1,0 +1,7 @@
+block content
+  section.main-page__list.preview
+    h2.visually-hidden Список превью статей
+
+    include preview-list.pug
+
+  +pagination(page, totalPages, PAGINATION_WIDTH, `?`)

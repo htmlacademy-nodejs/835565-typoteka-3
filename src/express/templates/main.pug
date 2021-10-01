@@ -1,33 +1,24 @@
 extends layout.pug
 block content
-    .wrapper
-      main.main-page
-        h1.visually-hidden Главная страница личного блога Типотека
-        p
-          | Это приветственный текст, который владелец блога может выбрать, чтобы описать себя 👏
-        section.main-page__theme-list
-          h2.visually-hidden Список тем
+  -
+    let sectionFlexClassnames = [`main-page__section-flex`];
 
-          include partials/themes-list.pug
+    if (hotArticles.length === 0 && comments.length === 0) {
+      sectionFlexClassnames.push(`main-page__section-flex--short`);
+    }
 
-        .main-page__section-flex
-          section.main-page__hot.hot
-            h2.hot__name
-              | Самое обсуждаемое
-              span.hot__icon.hot__icon--fire
+  main.main-page
+    if (categories.length > 0)
+      h1.visually-hidden Главная страница личного блога Типотека
+      p Это приветственный текст, который владелец блога может выбрать, чтобы описать себя 👏
 
-            include partials/hot-list.pug
+      include partials/themes-section.pug
 
-          section.main-page__last.last
-            h2.last__name
-              | Последние комментарии
-              span.last__icon.last__icon--cloud
+      div(class=sectionFlexClassnames)
+        include partials/hot-section.pug
+        include partials/last-comments-section.pug
 
-            include partials/last-comments-list.pug
+      include partials/preview-section.pug
 
-        section.main-page__list.preview
-          h2.visually-hidden Список превью статей
-
-          include partials/preview-list.pug
-
-        +pagination(page, totalPages, PAGINATION_WIDTH, `?`)
+    else
+      include main-empty.pug
