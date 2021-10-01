@@ -9,7 +9,7 @@ const {
   CategoriesNum,
   mockImgsNum,
 } = require(`../const`);
-const {shuffle, getRandomDate, getRandomNum, sortByLatestDate, getRandomSubarray} = require(`./utils-common`);
+const {shuffle, getRandomDate, getRandomNum, getRandomSubarray} = require(`./utils-common`);
 
 const getRandomImgFileName = () => {
   return `${getRandomNum(mockImgsNum.MIN, mockImgsNum.MAX)}.jpg`;
