@@ -52,6 +52,10 @@ const getRandomSubarray = (items, count) => {
   return result;
 };
 
+const prepareErrors = (errors) => {
+  return errors.response.data.split(`\n`);
+};
+
 module.exports = {
   getRandomNum,
   shuffle,
@@ -59,5 +63,6 @@ module.exports = {
   readContent,
   humanizeDate,
   getRandomSubarray,
+  prepareErrors,
 };
 

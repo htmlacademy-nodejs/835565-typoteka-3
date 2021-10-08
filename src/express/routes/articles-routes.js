@@ -4,7 +4,7 @@ const {Router} = require(`express`);
 const multer = require(`multer`);
 const path = require(`path`);
 const {nanoid} = require(`nanoid`);
-const {humanizeDate} = require(`../../utils/utils-common`);
+const {humanizeDate, prepareErrors} = require(`../../utils/utils-common`);
 const {getLogger} = require(`../../service/lib/logger`);
 const {
   HumanizedDateFormat,
@@ -12,7 +12,6 @@ const {
   UPLOAD_DIR_PATH,
   MAX_UPLOAD_FILE_SIZE,
   NEW_POST_FILE_INPUT_NAME,
-  ErrorMessage
 } = require(`../../const`);
 
 const api = require(`../api`).getAPI();
@@ -55,13 +54,13 @@ articlesRouter.post(`/add`, async (req, res) => {
   const categories = await api.getCategories();
   upload(req, res, async (err) => {
     if (err) {
-      const errorMessage = err.message;
+      const validationMessages = [err.message];
       if (err instanceof multer.MulterError) {
-        logger.error(`Multer error on file upload: ${errorMessage}`);
-        res.render(`post-edit`, {errorMessage, categories, ...utils});
+        logger.error(`Multer error on file upload: ${err.message}`);
+        res.render(`post-edit`, {validationMessages, categories, ...utils});
       } else {
-        logger.error(`Unknown error on file upload: ${errorMessage}`);
-        res.render(`post-edit`, {errorMessage, categories, ...utils});
+        logger.error(`Unknown error on file upload: ${err.message}`);
+        res.render(`post-edit`, {validationMessages, categories, ...utils});
       }
       return;
     }
@@ -69,25 +68,24 @@ articlesRouter.post(`/add`, async (req, res) => {
     const {body, file} = req;
     const newArticle = {
       title: body.title,
-      picture: file.filename,
+      picture: file?.filename || ``,
       announce: body.announcement,
       fullText: body[`full-text`],
-      createdAt: body[`date`],
+      createdAt: humanizeDate(``, body[`date`]),
       categories: body.categories
     };
 
-    const options = {
-      ...newArticle,
-      ...utils,
-    };
-
     try {
-      await api.createArticle(newArticle);
-      res.redirect(`/my`);
+      try {
+        await api.createArticle(newArticle);
+        res.redirect(`/my`);
+      } catch (errors) {
+        const validationMessages = prepareErrors(errors);
+        res.render(`post-edit`, {validationMessages, categories, article: newArticle, ...utils});
+      }
     } catch (error) {
-      const errorMessage = ErrorMessage.UNKNOWN_ERROR;
       logger.error(`An error occurred while creating new post: ${error.message}`);
-      res.render(`post-edit`, {errorMessage, categories, ...options});
+      res.render(`errors/500`);
     }
   });
 });

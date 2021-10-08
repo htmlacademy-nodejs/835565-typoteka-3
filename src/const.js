@@ -54,11 +54,6 @@ const HumanizedDateFormat = {
   FULL: `DD.MM.YYYY, HH:mm`,
 };
 
-const ErrorMessage = {
-  SERVER_ERROR: `Bad connection, try again later.`,
-  UNKNOWN_ERROR: `Something went wrong... Try again.`
-};
-
 const HttpCode = {
   OK: 200,
   CREATED: 201,
@@ -152,7 +147,6 @@ module.exports = {
   MAX_UPLOAD_FILE_SIZE,
   PAGINATION_WIDTH,
   HumanizedDateFormat,
-  ErrorMessage,
   HttpCode,
 
   // Mocks
