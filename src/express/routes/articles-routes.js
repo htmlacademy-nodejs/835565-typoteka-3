@@ -43,7 +43,7 @@ const utils = {
 articlesRouter.get(`/add`, async (req, res) => {
   try {
     const categories = await api.getCategories();
-    res.render(`post-edit`, {categories, ...utils});
+    res.render(`post-new`, {categories, ...utils});
   } catch (error) {
     logger.error(`Internal server error: ${error.message}`);
     res.render(`errors/500`);
@@ -91,17 +91,13 @@ articlesRouter.post(`/add`, async (req, res) => {
 });
 
 articlesRouter.get(`/edit/:id`, async (req, res) => {
+  const {id} = req.params;
   try {
-    const {id} = req.params;
     const [article, categories] = await Promise.all([
       api.getArticle(id),
       api.getCategories(),
     ]);
-    const options = {
-      ...article,
-      ...utils,
-    };
-    res.render(`post-edit`, {categories, ...options});
+    res.render(`post-edit`, {categories, article, ...utils});
   } catch (error) {
     logger.error(`Internal server error: ${error.message}`);
     res.render(`errors/404`);
@@ -111,8 +107,8 @@ articlesRouter.get(`/edit/:id`, async (req, res) => {
 articlesRouter.get(`/category/:id`, (req, res) => res.render(`posts-by-category`));
 
 articlesRouter.get(`/:id`, async (req, res) => {
+  const {id} = req.params;
   try {
-    const {id} = req.params;
     const [article, categories] = await Promise.all([
       await api.getArticle(id, {comments: true}),
       await api.getCategories(true)

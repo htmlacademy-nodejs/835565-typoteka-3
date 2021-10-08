@@ -24,9 +24,11 @@ html(lang='ru')
       }
   body
 
-    mixin newArticleCheckbox (category)
+    mixin categoriesCheckbox (category, article)
+      -
+        const checkedAttr = (article ? (article.categories.some((it) => it.id === category.id)) : false);
       .new-publication__checkbox
-        input(id=`checkbox-${category.id}` type='checkbox' name=`categories[]` value=category.id)
+        input(id=`checkbox-${category.id}` type='checkbox' name=`categories[]` value=category.id checked=checkedAttr)
         label(for=`checkbox-${category.id}`) #{category.name}
 
     mixin insertErrorMessages(messages)
