@@ -45,7 +45,7 @@ class ArticleService {
 
   async findAll(needComments) {
     const options = {
-      attributes: [`id`, `createdAt`, `announce`],
+      attributes: [`id`, `createdAt`, `title`],
       order: [ORDER_BY_LATEST_DATE]
     };
 
