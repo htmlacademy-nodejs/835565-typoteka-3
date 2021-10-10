@@ -24,9 +24,9 @@ module.exports = (app, articlesService, commentService) => {
     if (offset) {
       articles.recent = await articlesService.findPage({limit, offset});
       return res.status(HttpCode.OK).json(articles);
-    } else {
-      articles.hot = await articlesService.findLimit({limit});
     }
+
+    articles.hot = await articlesService.findLimit({limit});
 
     return res.status(HttpCode.OK).json(articles);
   });
