@@ -19,8 +19,8 @@ class API {
     return response.data;
   }
 
-  getArticles({comments} = {}) {
-    return this._load(`/articles`, {params: {comments}});
+  getArticles({user, limit, offset, needComments} = {}) {
+    return this._load(`/articles`, {params: {user, limit, offset, needComments}});
   }
 
   getArticle(id, comments) {
@@ -35,8 +35,8 @@ class API {
     return this._load(`/categories`, {params: {count}});
   }
 
-  getComments(limit) {
-    return this._load(`/comments`, {params: {limit}});
+  getComments({limit, needArticles}) {
+    return this._load(`/comments`, {params: {limit, needArticles}});
   }
 
   createArticle(data) {

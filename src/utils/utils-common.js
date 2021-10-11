@@ -39,18 +39,6 @@ const humanizeDate = (format, date) => {
   return dayjs(date).format(format);
 };
 
-const ensureArray = (value) => Array.isArray(value) ? value : [value];
-
-const sortByLatestDate = (left, right) => {
-  if (left.createdAt > right.createdAt) {
-    return -1;
-  }
-  if (left.createdAt < right.createdAt) {
-    return 1;
-  }
-  return 0;
-};
-
 const getRandomSubarray = (items, count) => {
   items = items.slice();
   const result = [];
@@ -70,8 +58,6 @@ module.exports = {
   getRandomDate,
   readContent,
   humanizeDate,
-  ensureArray,
-  sortByLatestDate,
   getRandomSubarray,
 };
 

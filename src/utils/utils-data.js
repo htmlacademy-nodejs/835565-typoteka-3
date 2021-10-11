@@ -8,10 +8,8 @@ const {
   SentencesNum,
   CategoriesNum,
   mockImgsNum,
-  HOT_ARTICLES_MAX_NUM,
-  PREVIEW_ARTICLES_MAX_NUM,
 } = require(`../const`);
-const {shuffle, getRandomDate, getRandomNum, sortByLatestDate, getRandomSubarray} = require(`./utils-common`);
+const {shuffle, getRandomDate, getRandomNum, getRandomSubarray} = require(`./utils-common`);
 
 const getRandomImgFileName = () => {
   return `${getRandomNum(mockImgsNum.MIN, mockImgsNum.MAX)}.jpg`;
@@ -36,18 +34,6 @@ const generateMockData = (count, {titles, descriptions, categories, comments}) =
     comments: generateComments(getRandomNum(CommentsNum.MIN, CommentsNum.MAX), comments),
     picture: getRandomImgFileName(),
   }));
-};
-
-const getHotArticles = (articles) => {
-  return articles.slice()
-    .sort((left, right) => right.comments.length - left.comments.length)
-    .slice(0, HOT_ARTICLES_MAX_NUM);
-};
-
-const getPreviewArticles = (articles) => {
-  return articles.slice()
-    .sort(sortByLatestDate)
-    .slice(0, PREVIEW_ARTICLES_MAX_NUM);
 };
 
 const generateCommentsForDB = (count, articleId, usersCount, comments) => (
@@ -175,8 +161,6 @@ WHERE id = ${updatedArticleId}`;
 
 module.exports = {
   generateMockData,
-  getHotArticles,
-  getPreviewArticles,
   generateMockDataForDB,
   generateQueryToFillDB,
   generateQueryToGetDataFromDB,
