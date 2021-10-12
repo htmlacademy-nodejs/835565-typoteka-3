@@ -14,12 +14,27 @@ html(lang='ru')
       li.pagination__item--active{
         pointer-events: none;
       }
+      .validation-error{
+        border-radius: 10px;
+        color: white;
+        text-align: center;
+        background-color: tomato;
+        margin: 15px 0;
+        padding: 10px;
+      }
   body
 
-    mixin newArticleCheckbox (category)
+    mixin categoriesCheckbox (category, article)
+      -
+        const checkedAttr = (article ? (article.categories.some((it) => it.id === category.id)) : false);
       .new-publication__checkbox
-        input(id=`checkbox-${category.id}` type='checkbox' name=`categories[]` value=category.id)
+        input(id=`checkbox-${category.id}` type='checkbox' name=`categories[]` value=category.id checked=checkedAttr)
         label(for=`checkbox-${category.id}`) #{category.name}
+
+    mixin insertErrorMessages(messages)
+      if messages
+        each message of messages
+          .validation-error= message
 
     mixin pagination(page, totalPages, width, prefix)
       -
