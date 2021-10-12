@@ -1,7 +1,7 @@
 'use strict';
 
 const axios = require(`axios`);
-const {TIMEOUT, DEFAULT_PORT_SERVER} = require(`../const`);
+const {TIMEOUT, DEFAULT_PORT_SERVER, HttpMethod} = require(`../const`);
 
 const port = process.env.API_PORT || DEFAULT_PORT_SERVER;
 const defaultUrl = `http://localhost:${port}/api/`;
@@ -41,7 +41,21 @@ class API {
 
   createArticle(data) {
     return this._load(`/articles`, {
-      method: `POST`,
+      method: HttpMethod.POST,
+      data
+    });
+  }
+
+  editArticle(articleId, data) {
+    return this._load(`/articles/${articleId}`, {
+      method: HttpMethod.PUT,
+      data
+    });
+  }
+
+  createComment(articleId, data) {
+    return this._load(`/articles/${articleId}/comments`, {
+      method: HttpMethod.POST,
       data
     });
   }

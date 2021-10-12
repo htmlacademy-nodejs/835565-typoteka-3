@@ -18,6 +18,13 @@ const Env = {
   PRODUCTION: `production`
 };
 
+const HttpMethod = {
+  GET: `GET`,
+  POST: `POST`,
+  PUT: `PUT`,
+  DELETE: `DELETE`
+};
+
 // DB
 const ANNOUNCE_CHAR_LENGTH = 1000;
 const defaultArticleKeys = [`title`, `createdAt`, `announce`, `fullText`, `categories`, `picture`];
@@ -115,6 +122,7 @@ module.exports = {
   NOT_FOUND_MESSAGE,
   ExitCode,
   Env,
+  HttpMethod,
 
   // DB
   ANNOUNCE_CHAR_LENGTH,

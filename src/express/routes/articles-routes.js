@@ -45,13 +45,15 @@ articlesRouter.get(`/add`, async (req, res) => {
     const categories = await api.getCategories();
     res.render(`post-new`, {categories, ...utils});
   } catch (error) {
-    logger.error(`Internal server error: ${error.message}`);
+    logger.error(`Error on 'articles/add' route: ${error.message}`);
     res.render(`errors/500`);
   }
 });
 
 articlesRouter.post(`/add`, async (req, res) => {
-  const categories = await api.getCategories();
+  const categories = await api.getCategories()
+    .catch(() => res.render(`errors/500`));
+
   upload(req, res, async (err) => {
     if (err) {
       const validationMessages = [err.message];
@@ -99,9 +101,53 @@ articlesRouter.get(`/edit/:id`, async (req, res) => {
     ]);
     res.render(`post-edit`, {categories, article, ...utils});
   } catch (error) {
-    logger.error(`Internal server error: ${error.message}`);
+    logger.error(`Error on 'articles/edit/:id' route: ${error.message}`);
     res.render(`errors/404`);
   }
+});
+
+articlesRouter.post(`/edit/:id`, async (req, res) => {
+  const {id} = req.params;
+
+  const categories = await api.getCategories()
+    .catch(() => res.render(`errors/500`));
+
+  upload(req, res, async (err) => {
+    if (err) {
+      const validationMessages = [err.message];
+      if (err instanceof multer.MulterError) {
+        logger.error(`Multer error on file upload: ${err.message}`);
+        res.render(`post-edit`, {validationMessages, categories, ...utils});
+      } else {
+        logger.error(`Unknown error on file upload: ${err.message}`);
+        res.render(`post-edit`, {validationMessages, categories, ...utils});
+      }
+      return;
+    }
+
+    const {body, file} = req;
+    const articleData = {
+      title: body.title,
+      picture: file?.filename || ``,
+      announce: body.announcement,
+      fullText: body[`full-text`],
+      createdAt: humanizeDate(``, body[`date`]),
+      categories: body.categories
+    };
+
+    try {
+      try {
+        await api.editArticle(id, articleData);
+        res.redirect(`/my`);
+      } catch (errors) {
+        const validationMessages = prepareErrors(errors);
+        res.render(`post-edit`, {validationMessages, categories, article: articleData, ...utils});
+      }
+    } catch (error) {
+      logger.error(`An error occurred while editing article #${id}: ${error.message}`);
+      res.render(`errors/500`);
+    }
+  });
 });
 
 articlesRouter.get(`/category/:id`, (req, res) => res.render(`posts-by-category`));
@@ -115,8 +161,30 @@ articlesRouter.get(`/:id`, async (req, res) => {
     ]);
     res.render(`post`, {article, categories, ...utils});
   } catch (error) {
-    logger.error(`Internal server error: ${error.message}`);
+    logger.error(`Error on 'articles/:id' route: ${error.message}`);
     res.render(`errors/404`);
+  }
+});
+
+articlesRouter.post(`/:id/comments`, async (req, res) => {
+  const {id} = req.params;
+  const {comment} = req.body;
+
+  try {
+    try {
+      await api.createComment(id, {text: comment});
+      res.redirect(`/articles/${id}`);
+    } catch (errors) {
+      const [article, categories] = await Promise.all([
+        await api.getArticle(id, {comments: true}),
+        await api.getCategories(true)
+      ]);
+      const validationMessages = prepareErrors(errors);
+      res.render(`post`, {validationMessages, article, categories, ...utils});
+    }
+  } catch (error) {
+    logger.error(`An error occurred while creating new comment at article #${id}: ${error.message}`);
+    res.render(`errors/500`);
   }
 });
 
