@@ -42,7 +42,7 @@ const utils = {
 
 articlesRouter.get(`/add`, async (req, res) => {
   try {
-    const categories = await api.getCategories();
+    const categories = await api.getCategories({needCount: false});
     res.render(`post-new`, {categories, ...utils});
   } catch (error) {
     logger.error(`Error on 'articles/add' route: ${error.message}`);
@@ -51,7 +51,7 @@ articlesRouter.get(`/add`, async (req, res) => {
 });
 
 articlesRouter.post(`/add`, async (req, res) => {
-  const categories = await api.getCategories()
+  const categories = await api.getCategories({needCount: false})
     .catch(() => res.render(`errors/500`));
 
   upload(req, res, async (err) => {
@@ -94,14 +94,15 @@ articlesRouter.post(`/add`, async (req, res) => {
 
 articlesRouter.get(`/edit/:id`, async (req, res) => {
   const {id} = req.params;
+
   try {
     const [article, categories] = await Promise.all([
-      api.getArticle(id),
-      api.getCategories(),
+      api.getArticle({id, viewMode: false}),
+      api.getCategories({needCount: false}),
     ]);
     res.render(`post-edit`, {categories, article, ...utils});
   } catch (error) {
-    logger.error(`Error on 'articles/edit/:id' route: ${error.message}`);
+    logger.error(`Error on 'articles/edit/${id}' route: ${error.message}`);
     res.render(`errors/404`);
   }
 });
@@ -109,7 +110,7 @@ articlesRouter.get(`/edit/:id`, async (req, res) => {
 articlesRouter.post(`/edit/:id`, async (req, res) => {
   const {id} = req.params;
 
-  const categories = await api.getCategories()
+  const categories = await api.getCategories({needCount: false})
     .catch(() => res.render(`errors/500`));
 
   upload(req, res, async (err) => {

@@ -35,7 +35,7 @@ mainRouter.get(`/`, async (req, res) => {
     ] = await Promise.all([
       await api.getArticles({limit: HOT_ARTICLES_LIMIT}),
       await api.getArticles({limit: ARTICLES_PER_PAGE, offset}),
-      await api.getCategories(true),
+      await api.getCategories({needCount: true}),
       await api.getComments({limit: LAST_COMMENTS_MAX_NUM})
     ]);
 
@@ -87,7 +87,7 @@ mainRouter.get(`/search`, async (req, res) => {
 
 mainRouter.get(`/categories`, async (req, res) => {
   try {
-    const categories = await api.getCategories();
+    const categories = await api.getCategories({needCount: false});
     res.render(`categories`, {categories});
   } catch (error) {
     logger.error(`Internal server error: ${error.message}`);

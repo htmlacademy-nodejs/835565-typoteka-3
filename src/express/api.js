@@ -31,8 +31,8 @@ class API {
     return this._load(`/search`, {params: {query}});
   }
 
-  getCategories(count) {
-    return this._load(`/categories`, {params: {count}});
+  getCategories({needCount}) {
+    return this._load(`/categories`, {params: {needCount}});
   }
 
   getComments({limit, needArticles}) {
