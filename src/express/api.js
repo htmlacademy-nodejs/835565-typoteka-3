@@ -23,8 +23,8 @@ class API {
     return this._load(`/articles`, {params: {user, limit, offset, needComments}});
   }
 
-  getArticle(id, comments) {
-    return this._load(`/articles/${id}`, {params: {comments}});
+  getArticle({id, viewMode}) {
+    return this._load(`/articles/${id}`, {params: {viewMode}});
   }
 
   search(query) {

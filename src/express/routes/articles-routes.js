@@ -154,14 +154,13 @@ articlesRouter.get(`/category/:id`, (req, res) => res.render(`posts-by-category`
 
 articlesRouter.get(`/:id`, async (req, res) => {
   const {id} = req.params;
+
   try {
-    const [article, categories] = await Promise.all([
-      await api.getArticle(id, {comments: true}),
-      await api.getCategories(true)
-    ]);
-    res.render(`post`, {article, categories, ...utils});
+    const article = await api.getArticle({id, viewMode: true});
+
+    res.render(`post`, {article, ...utils});
   } catch (error) {
-    logger.error(`Error on 'articles/:id' route: ${error.message}`);
+    logger.error(`Error on 'articles/${id}' route: ${error.message}`);
     res.render(`errors/404`);
   }
 });

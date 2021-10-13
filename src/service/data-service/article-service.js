@@ -32,15 +32,43 @@ class ArticleService {
     return !!deletedRows;
   }
 
-  async findOne(id, needComments = false) {
-    const include = [Aliase.CATEGORIES];
-    if (needComments) {
-      include.push({
-        model: this._Comment,
-        as: Aliase.COMMENTS,
+  async findOne({articleId, viewMode}) {
+    if (!viewMode) {
+      return this._Article.findByPk(articleId, {
+        include: [Aliase.CATEGORIES]
       });
     }
-    return this._Article.findByPk(id, {include});
+
+    const options = {
+      include: [
+        {
+          model: this._Comment,
+          as: Aliase.COMMENTS,
+        },
+        {
+          model: this._Category,
+          as: Aliase.CATEGORIES,
+          attributes: {
+            include: [
+              [this._sequelize.fn(`COUNT`, `*`), `count`]
+            ]
+          }
+        }
+      ],
+      order: [
+        [{model: this._Comment, as: Aliase.COMMENTS}, `createdAt`, `DESC`]
+      ],
+      group: [
+        `Article.id`,
+        `comments.id`,
+        `categories.id`,
+        `categories->ArticleCategory.ArticleId`,
+        `categories->ArticleCategory.CategoryId`
+      ],
+      where: {id: articleId}
+    };
+
+    return this._Article.findOne(options);
   }
 
   async findAll(needComments) {

@@ -39,12 +39,15 @@ module.exports = (app, articlesService, commentService) => {
   // -----------------------------
   articlesRouter.get(`/:articleId`, routeParamsValidator, async (req, res) => {
     const {articleId} = req.params;
-    const {comments} = req.query;
-    const article = await articlesService.findOne(articleId, comments);
+    const {viewMode} = req.query;
+
+    const article = await articlesService.findOne({articleId, viewMode});
+
     if (!article) {
       return res.status(HttpCode.NOT_FOUND)
         .send(`Unable to find article with id:${articleId}`);
     }
+
     return res.status(HttpCode.OK)
       .json(article);
   });
