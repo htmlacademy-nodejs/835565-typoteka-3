@@ -60,13 +60,16 @@ module.exports = (app, articlesService, commentService) => {
 
   articlesRouter.put(`/:articleId`, [articleValidator, ...requestValidationMiddlewareSet], async (req, res) => {
     const {articleId} = req.params;
-    const updatedArticle = await articlesService.update(articleId, req.body);
+
+    const updatedArticle = await articlesService.update({id: articleId, update: req.body});
+
     if (!updatedArticle) {
       return res.status(HttpCode.NOT_FOUND)
         .send(`Unable to find article with id:${articleId}`);
     }
+
     return res.status(HttpCode.OK)
-      .json(updatedArticle);
+      .send(`Updated`);
   });
 
   articlesRouter.delete(`/:articleId`, [...requestValidationMiddlewareSet], (req, res) => {

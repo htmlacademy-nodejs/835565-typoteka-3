@@ -46,8 +46,8 @@ class API {
     });
   }
 
-  editArticle(articleId, data) {
-    return this._load(`/articles/${articleId}`, {
+  editArticle({id, data}) {
+    return this._load(`/articles/${id}`, {
       method: HttpMethod.PUT,
       data
     });

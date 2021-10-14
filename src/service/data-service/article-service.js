@@ -17,11 +17,17 @@ class ArticleService {
     return article.get();
   }
 
-  async update(id, update) {
-    const [affectedRows] = await this._Article.update(
-        update,
-        {where: {id}}
-    );
+  async update({id, update}) {
+    const affectedRows = await this._Article.update(update, {
+      where: {id}
+    });
+
+    const updatedArticle = await this._Article.findOne({
+      where: {id}
+    });
+
+    await updatedArticle.setCategories(update.categories);
+
     return !!affectedRows;
   }
 

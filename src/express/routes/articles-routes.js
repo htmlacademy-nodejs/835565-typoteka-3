@@ -100,7 +100,7 @@ articlesRouter.get(`/edit/:id`, async (req, res) => {
       api.getArticle({id, viewMode: false}),
       api.getCategories({needCount: false}),
     ]);
-    res.render(`post-edit`, {categories, article, ...utils});
+    res.render(`post-edit`, {categories, article, id, ...utils});
   } catch (error) {
     logger.error(`Error on 'articles/edit/${id}' route: ${error.message}`);
     res.render(`errors/404`);
@@ -138,11 +138,11 @@ articlesRouter.post(`/edit/:id`, async (req, res) => {
 
     try {
       try {
-        await api.editArticle(id, articleData);
+        await api.editArticle({id, data: articleData});
         res.redirect(`/my`);
       } catch (errors) {
         const validationMessages = prepareErrors(errors);
-        res.render(`post-edit`, {validationMessages, categories, article: articleData, ...utils});
+        res.render(`post-edit`, {validationMessages, categories, article: articleData, id, ...utils});
       }
     } catch (error) {
       logger.error(`An error occurred while editing article #${id}: ${error.message}`);
