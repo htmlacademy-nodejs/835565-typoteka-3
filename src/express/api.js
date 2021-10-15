@@ -53,8 +53,8 @@ class API {
     });
   }
 
-  createComment(articleId, data) {
-    return this._load(`/articles/${articleId}/comments`, {
+  createComment({id, data}) {
+    return this._load(`/articles/${id}/comments`, {
       method: HttpMethod.POST,
       data
     });

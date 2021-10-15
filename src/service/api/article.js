@@ -89,14 +89,18 @@ module.exports = (app, articlesService, commentService) => {
   // ---------------------------------
   articlesRouter.get(`/:articleId/comments`, [...requestValidationMiddlewareSet], async (req, res) => {
     const {articleId} = req.params;
-    const comments = await commentService.findAllByArticleId(articleId);
+
+    const comments = await commentService.findAll({id: articleId});
+
     return res.status(HttpCode.OK)
       .json(comments);
   });
 
   articlesRouter.post(`/:articleId/comments`, [commentValidator, ...requestValidationMiddlewareSet], async (req, res) => {
     const {articleId} = req.params;
+
     const newComment = await commentService.create(articleId, req.body);
+
     return res.status(HttpCode.CREATED)
       .json(newComment);
   });

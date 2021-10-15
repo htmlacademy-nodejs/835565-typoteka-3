@@ -17,22 +17,19 @@ block content
                     sup #{category.count}
                   button.themes__remove-btn(type='button') Удалить категорию
           .post__picture
-            img(src='../img/sea-fullsize@1x.jpg' alt='пейзаж море, скалы, пляж')
+            if article.picture
+              img(src='../img/sea-fullsize@1x.jpg' alt='пейзаж море, скалы, пляж')
           .post__text
             h3 #{article.announce}
             //- p #{article.announce}
             p #{article.fullText}
       .post__wrapper.post__wrapper--comments
         section.post__comments.comments
+          +insertErrorMessages(validationMessages)
           h2.comments__title.title.title--middle Комментарии
 
           include partials/post-comments-list.pug
 
           .comments__footer.comments__footer--user
-            form(action='#' method='POST')
-              .comments__avatar.avatar
-                img(src='../img/avatar-2.png' alt='аватар пользователя')
-              label
-                textarea(rows='1' name='message' placeholder='Присоединиться к обсуждению')
-              button.comments__button.button.button--colored(type='submit') Опубликовать
+            include partials/post-comments-form.pug
 

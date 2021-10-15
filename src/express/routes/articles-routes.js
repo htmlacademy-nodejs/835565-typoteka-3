@@ -158,8 +158,7 @@ articlesRouter.get(`/:id`, async (req, res) => {
 
   try {
     const article = await api.getArticle({id, viewMode: true});
-
-    res.render(`post`, {article, ...utils});
+    res.render(`post`, {article, id, ...utils});
   } catch (error) {
     logger.error(`Error on 'articles/${id}' route: ${error.message}`);
     res.render(`errors/404`);
@@ -168,19 +167,20 @@ articlesRouter.get(`/:id`, async (req, res) => {
 
 articlesRouter.post(`/:id/comments`, async (req, res) => {
   const {id} = req.params;
-  const {comment} = req.body;
+  const {message} = req.body;
+
+  const commentData = {
+    text: message
+  };
 
   try {
     try {
-      await api.createComment(id, {text: comment});
+      await api.createComment({id, data: commentData});
       res.redirect(`/articles/${id}`);
     } catch (errors) {
-      const [article, categories] = await Promise.all([
-        await api.getArticle(id, {comments: true}),
-        await api.getCategories(true)
-      ]);
+      const article = await api.getArticle({id, viewMode: true});
       const validationMessages = prepareErrors(errors);
-      res.render(`post`, {validationMessages, article, categories, ...utils});
+      res.render(`post`, {validationMessages, article, id, ...utils});
     }
   } catch (error) {
     logger.error(`An error occurred while creating new comment at article #${id}: ${error.message}`);
