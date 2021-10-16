@@ -12,6 +12,7 @@ const {
   UPLOAD_DIR_PATH,
   MAX_UPLOAD_FILE_SIZE,
   NEW_POST_FILE_INPUT_NAME,
+  HttpCode,
 } = require(`../../const`);
 
 const api = require(`../api`).getAPI();
@@ -175,6 +176,22 @@ articlesRouter.get(`/:id`, async (req, res) => {
     res.render(`errors/404`);
   }
 });
+
+
+/**
+ * Deleting single article
+ */
+articlesRouter.delete(`/:id`, async (req, res) => {
+  const {id} = req.params;
+
+  try {
+    const article = await api.deleteArticle(id);
+    res.status(HttpCode.OK).send(article);
+  } catch (error) {
+    res.status(error.response.status).send(error.response.statusText);
+  }
+});
+
 
 /**
  * Adding/deleting comments

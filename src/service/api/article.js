@@ -77,15 +77,20 @@ module.exports = (app, articlesService, commentService) => {
       .send(`Updated`);
   });
 
-  articlesRouter.delete(`/:articleId`, [...requestValidationMiddlewareSet], (req, res) => {
+  articlesRouter.delete(`/:articleId`, [...requestValidationMiddlewareSet], async (req, res) => {
     const {articleId} = req.params;
-    const deletedArticle = articlesService.delete(articleId);
-    if (!deletedArticle) {
+
+    const article = await articlesService.findOne({articleId});
+
+    if (!article) {
       return res.status(HttpCode.NOT_FOUND)
-        .send(`Unable to delete unexisting article!`);
+      .send(`Unable to delete unexisting article!`);
     }
+
+    await articlesService.drop(articleId);
+
     return res.status(HttpCode.OK)
-      .json(deletedArticle);
+      .send(`Deleted`);
   });
 
 
