@@ -40,6 +40,11 @@ const utils = {
 };
 
 
+/**
+ * EXPRESS ROUTES
+ *
+ * Adding single article
+ */
 articlesRouter.get(`/add`, async (req, res) => {
   try {
     const categories = await api.getCategories({needCount: false});
@@ -92,6 +97,10 @@ articlesRouter.post(`/add`, async (req, res) => {
   });
 });
 
+
+/**
+ * Editing single article
+ */
 articlesRouter.get(`/edit/:id`, async (req, res) => {
   const {id} = req.params;
 
@@ -151,8 +160,10 @@ articlesRouter.post(`/edit/:id`, async (req, res) => {
   });
 });
 
-articlesRouter.get(`/category/:id`, (req, res) => res.render(`posts-by-category`));
 
+/**
+ * Viewing single article
+ */
 articlesRouter.get(`/:id`, async (req, res) => {
   const {id} = req.params;
 
@@ -165,6 +176,10 @@ articlesRouter.get(`/:id`, async (req, res) => {
   }
 });
 
+/**
+ * Adding/deleting comments
+ * of a single article
+ */
 articlesRouter.post(`/:id/comments`, async (req, res) => {
   const {id} = req.params;
   const {message} = req.body;
@@ -187,5 +202,7 @@ articlesRouter.post(`/:id/comments`, async (req, res) => {
     res.render(`errors/500`);
   }
 });
+
+articlesRouter.get(`/category/:id`, (req, res) => res.render(`posts-by-category`));
 
 module.exports = articlesRouter;

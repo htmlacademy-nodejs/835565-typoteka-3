@@ -13,7 +13,10 @@ module.exports = (app, articlesService, commentService) => {
   app.use(`/articles`, articlesRouter);
   const requestValidationMiddlewareSet = [routeParamsValidator, articleExists(articlesService)];
 
-
+  /**
+   * Main route to get articles
+   * according to query option
+   */
   articlesRouter.get(`/`, async (req, res) => {
     const {user, limit, offset, needComments} = req.query;
     let articles = {};
@@ -34,9 +37,10 @@ module.exports = (app, articlesService, commentService) => {
   });
 
 
-  // Current single article routes
-  // to handle CRUD operations
-  // -----------------------------
+  /**
+   * Current single ARTICLE routes
+   * to handle CRUD operations
+   */
   articlesRouter.get(`/:articleId`, routeParamsValidator, async (req, res) => {
     const {articleId} = req.params;
     const {viewMode} = req.query;
@@ -54,6 +58,7 @@ module.exports = (app, articlesService, commentService) => {
 
   articlesRouter.post(`/`, articleValidator, (req, res) => {
     const newArticle = articlesService.create(req.body);
+
     return res.status(HttpCode.CREATED)
       .json(newArticle);
   });
@@ -84,9 +89,10 @@ module.exports = (app, articlesService, commentService) => {
   });
 
 
-  // Current article's comments routes
-  // to handle CRUD operations
-  // ---------------------------------
+  /**
+   * Current article's COMMENTS routes
+   * to handle CRUD operations
+   */
   articlesRouter.get(`/:articleId/comments`, [...requestValidationMiddlewareSet], async (req, res) => {
     const {articleId} = req.params;
 
