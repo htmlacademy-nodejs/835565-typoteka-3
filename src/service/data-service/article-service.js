@@ -1,6 +1,6 @@
 'use strict';
 
-const {ORDER_BY_LATEST_DATE} = require(`../../const`);
+const {ORDER_BY_LATEST_DATE, COMMENTS_COUNT_KEY_NAME} = require(`../../const`);
 const Aliase = require(`../models/aliase`);
 
 class ArticleService {
@@ -96,7 +96,7 @@ class ArticleService {
       attributes: [
         `id`,
         `announce`,
-        [this._sequelize.fn(`COUNT`, this._sequelize.col(`comments.id`)), `commentsCount`]
+        [this._sequelize.fn(`COUNT`, this._sequelize.col(`comments.id`)), COMMENTS_COUNT_KEY_NAME]
       ],
       include: [
         {
@@ -117,7 +117,7 @@ class ArticleService {
 
     articles = articles
       .map((item) => item.get())
-      .filter((item) => item.commentsCount > 0);
+      .filter((item) => item[COMMENTS_COUNT_KEY_NAME] > 0);
 
     return articles.slice(0, limit);
   }
@@ -132,7 +132,7 @@ class ArticleService {
         `announce`,
         `picture`,
         `createdAt`,
-        [this._sequelize.fn(`COUNT`, this._sequelize.col(`comments.id`)), `commentsCount`]
+        [this._sequelize.fn(`COUNT`, this._sequelize.col(`comments.id`)), COMMENTS_COUNT_KEY_NAME]
       ],
       include: [
         {

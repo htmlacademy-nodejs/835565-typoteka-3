@@ -7,7 +7,8 @@ const {
   LAST_COMMENTS_MAX_NUM,
   HOT_ARTICLES_LIMIT,
   ARTICLES_PER_PAGE,
-  PAGINATION_WIDTH
+  PAGINATION_WIDTH,
+  COMMENTS_COUNT_KEY_NAME
 } = require(`../../const`);
 const api = require(`../api`).getAPI();
 const {getLogger} = require(`../../service/lib/logger`);
@@ -19,6 +20,7 @@ const utils = {
   humanizeDate,
   HumanizedDateFormat,
   PAGINATION_WIDTH,
+  COMMENTS_COUNT_KEY_NAME
 };
 
 

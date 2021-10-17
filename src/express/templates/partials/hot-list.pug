@@ -4,4 +4,4 @@ block content
       li.hot__list-item
         a.hot__list-link(href=`/articles/${hotArticle.id}`)
           | #{hotArticle.announce}
-          sup.hot__link-sup #{hotArticle.commentsCount}
+          sup.hot__link-sup #{hotArticle[COMMENTS_COUNT_KEY_NAME]}

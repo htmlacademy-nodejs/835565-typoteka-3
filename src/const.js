@@ -32,6 +32,7 @@ const defaultCommentKeys = [`text`, `createdAt`];
 const ORDER_BY_LATEST_DATE = [`createdAt`, `DESC`];
 const HOT_ARTICLES_LIMIT = 4;
 const ARTICLES_PER_PAGE = 8;
+const COMMENTS_COUNT_KEY_NAME = `commentsCount`;
 
 // File names and paths
 const FILE_NAME = `mocks.json`;
@@ -131,6 +132,7 @@ module.exports = {
   ORDER_BY_LATEST_DATE,
   HOT_ARTICLES_LIMIT,
   ARTICLES_PER_PAGE,
+  COMMENTS_COUNT_KEY_NAME,
 
   // File names and paths
   FILE_NAME,
