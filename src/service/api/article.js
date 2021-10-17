@@ -22,7 +22,7 @@ module.exports = (app, articlesService, commentService) => {
     let articles = {};
 
     if (user) {
-      articles.current = await articlesService.findAll({needComments});
+      articles.user = await articlesService.findAll({needComments});
       return res.status(HttpCode.OK).json(articles);
     }
 
@@ -31,7 +31,12 @@ module.exports = (app, articlesService, commentService) => {
       return res.status(HttpCode.OK).json(articles);
     }
 
-    articles.hot = await articlesService.findLimit({limit});
+    if (limit) {
+      articles.hot = await articlesService.findLimit({limit});
+      return res.status(HttpCode.OK).json(articles);
+    }
+
+    articles.total = await articlesService.findAll({needComments});
 
     return res.status(HttpCode.OK).json(articles);
   });
@@ -56,8 +61,8 @@ module.exports = (app, articlesService, commentService) => {
       .json(article);
   });
 
-  articlesRouter.post(`/`, articleValidator, (req, res) => {
-    const newArticle = articlesService.create(req.body);
+  articlesRouter.post(`/`, articleValidator, async (req, res) => {
+    const newArticle = await articlesService.create(req.body);
 
     return res.status(HttpCode.CREATED)
       .json(newArticle);
@@ -66,12 +71,7 @@ module.exports = (app, articlesService, commentService) => {
   articlesRouter.put(`/:articleId`, [articleValidator, ...requestValidationMiddlewareSet], async (req, res) => {
     const {articleId} = req.params;
 
-    const updatedArticle = await articlesService.update({id: articleId, update: req.body});
-
-    if (!updatedArticle) {
-      return res.status(HttpCode.NOT_FOUND)
-        .send(`Unable to find article with id:${articleId}`);
-    }
+    await articlesService.update({id: articleId, update: req.body});
 
     return res.status(HttpCode.OK)
       .send(`Updated`);
