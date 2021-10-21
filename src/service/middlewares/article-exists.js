@@ -2,15 +2,14 @@
 
 const {HttpCode} = require(`../../const`);
 
-module.exports = (service) => async (req, res, next) => {
+module.exports = (articlesService) => async (req, res, next) => {
   const {articleId} = req.params;
-  const article = await service.findOne(articleId);
+  const article = await articlesService.findOne({articleId});
 
   if (!article) {
     return res.status(HttpCode.NOT_FOUND)
       .send(`Article with id ${articleId} not found!`);
   }
 
-  res.locals.article = article;
   return next();
 };

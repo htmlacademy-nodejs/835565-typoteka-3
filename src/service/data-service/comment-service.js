@@ -10,14 +10,16 @@ class CommentService {
   }
 
   async create(id, comment) {
-    return this._Comment.create({
-      id,
+    return await this._Comment.create({
+      articleId: id,
       ...comment
+    }, {
+      include: [Aliase.ARTICLE]
     });
   }
 
   async drop(id) {
-    const deletedRows = this._Comment.destroy({
+    const deletedRows = await this._Comment.destroy({
       where: {id}
     });
     return !!deletedRows;

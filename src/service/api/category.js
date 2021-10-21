@@ -5,12 +5,12 @@ const {HttpCode} = require(`../../const`);
 
 const categoriesRouter = new Router();
 
-module.exports = (app, service) => {
+module.exports = (app, categoryService) => {
   app.use(`/categories`, categoriesRouter);
 
   categoriesRouter.get(`/`, async (req, res) => {
-    const {count} = req.query;
-    const categories = await service.findAll(count);
+    const {needCount} = req.query;
+    const categories = await categoryService.findAll({needCount});
     res.status(HttpCode.OK)
       .json(categories);
   });

@@ -18,6 +18,13 @@ const Env = {
   PRODUCTION: `production`
 };
 
+const HttpMethod = {
+  GET: `GET`,
+  POST: `POST`,
+  PUT: `PUT`,
+  DELETE: `DELETE`
+};
+
 // DB
 const ANNOUNCE_CHAR_LENGTH = 1000;
 const defaultArticleKeys = [`title`, `createdAt`, `announce`, `fullText`, `categories`, `picture`];
@@ -25,6 +32,7 @@ const defaultCommentKeys = [`text`, `createdAt`];
 const ORDER_BY_LATEST_DATE = [`createdAt`, `DESC`];
 const HOT_ARTICLES_LIMIT = 4;
 const ARTICLES_PER_PAGE = 8;
+const COMMENTS_COUNT_KEY_NAME = `commentsCount`;
 
 // File names and paths
 const FILE_NAME = `mocks.json`;
@@ -52,11 +60,6 @@ const PAGINATION_WIDTH = 2;
 const HumanizedDateFormat = {
   SHORT: `YYYY-MM-DD`,
   FULL: `DD.MM.YYYY, HH:mm`,
-};
-
-const ErrorMessage = {
-  SERVER_ERROR: `Bad connection, try again later.`,
-  UNKNOWN_ERROR: `Something went wrong... Try again.`
 };
 
 const HttpCode = {
@@ -120,6 +123,7 @@ module.exports = {
   NOT_FOUND_MESSAGE,
   ExitCode,
   Env,
+  HttpMethod,
 
   // DB
   ANNOUNCE_CHAR_LENGTH,
@@ -128,6 +132,7 @@ module.exports = {
   ORDER_BY_LATEST_DATE,
   HOT_ARTICLES_LIMIT,
   ARTICLES_PER_PAGE,
+  COMMENTS_COUNT_KEY_NAME,
 
   // File names and paths
   FILE_NAME,
@@ -152,7 +157,6 @@ module.exports = {
   MAX_UPLOAD_FILE_SIZE,
   PAGINATION_WIDTH,
   HumanizedDateFormat,
-  ErrorMessage,
   HttpCode,
 
   // Mocks

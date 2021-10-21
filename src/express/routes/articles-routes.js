@@ -4,7 +4,7 @@ const {Router} = require(`express`);
 const multer = require(`multer`);
 const path = require(`path`);
 const {nanoid} = require(`nanoid`);
-const {humanizeDate} = require(`../../utils/utils-common`);
+const {humanizeDate, prepareErrors} = require(`../../utils/utils-common`);
 const {getLogger} = require(`../../service/lib/logger`);
 const {
   HumanizedDateFormat,
@@ -12,7 +12,7 @@ const {
   UPLOAD_DIR_PATH,
   MAX_UPLOAD_FILE_SIZE,
   NEW_POST_FILE_INPUT_NAME,
-  ErrorMessage
+  HttpCode,
 } = require(`../../const`);
 
 const api = require(`../api`).getAPI();
@@ -41,27 +41,34 @@ const utils = {
 };
 
 
+/**
+ * EXPRESS ROUTES
+ *
+ * Adding single article
+ */
 articlesRouter.get(`/add`, async (req, res) => {
   try {
-    const categories = await api.getCategories();
-    res.render(`post-edit`, {categories, ...utils});
+    const categories = await api.getCategories({needCount: false});
+    res.render(`post-new`, {categories, ...utils});
   } catch (error) {
-    logger.error(`Internal server error: ${error.message}`);
+    logger.error(`Error on 'articles/add' route: ${error.message}`);
     res.render(`errors/500`);
   }
 });
 
 articlesRouter.post(`/add`, async (req, res) => {
-  const categories = await api.getCategories();
+  const categories = await api.getCategories({needCount: false})
+    .catch(() => res.render(`errors/500`));
+
   upload(req, res, async (err) => {
     if (err) {
-      const errorMessage = err.message;
+      const validationMessages = [err.message];
       if (err instanceof multer.MulterError) {
-        logger.error(`Multer error on file upload: ${errorMessage}`);
-        res.render(`post-edit`, {errorMessage, categories, ...utils});
+        logger.error(`Multer error on file upload: ${err.message}`);
+        res.render(`post-edit`, {validationMessages, categories, ...utils});
       } else {
-        logger.error(`Unknown error on file upload: ${errorMessage}`);
-        res.render(`post-edit`, {errorMessage, categories, ...utils});
+        logger.error(`Unknown error on file upload: ${err.message}`);
+        res.render(`post-edit`, {validationMessages, categories, ...utils});
       }
       return;
     }
@@ -69,61 +76,150 @@ articlesRouter.post(`/add`, async (req, res) => {
     const {body, file} = req;
     const newArticle = {
       title: body.title,
-      picture: file.filename,
+      picture: file?.filename || ``,
       announce: body.announcement,
       fullText: body[`full-text`],
-      createdAt: body[`date`],
+      createdAt: humanizeDate(``, body[`date`]),
       categories: body.categories
     };
 
-    const options = {
-      ...newArticle,
-      ...utils,
-    };
-
     try {
-      await api.createArticle(newArticle);
-      res.redirect(`/my`);
+      try {
+        await api.createArticle(newArticle);
+        res.redirect(`/my`);
+      } catch (errors) {
+        const validationMessages = prepareErrors(errors);
+        res.render(`post-edit`, {validationMessages, categories, article: newArticle, ...utils});
+      }
     } catch (error) {
-      const errorMessage = ErrorMessage.UNKNOWN_ERROR;
       logger.error(`An error occurred while creating new post: ${error.message}`);
-      res.render(`post-edit`, {errorMessage, categories, ...options});
+      res.render(`errors/500`);
     }
   });
 });
 
+
+/**
+ * Editing single article
+ */
 articlesRouter.get(`/edit/:id`, async (req, res) => {
+  const {id} = req.params;
+
   try {
-    const {id} = req.params;
     const [article, categories] = await Promise.all([
-      api.getArticle(id),
-      api.getCategories(),
+      api.getArticle({id, viewMode: false}),
+      api.getCategories({needCount: false}),
     ]);
-    const options = {
-      ...article,
-      ...utils,
-    };
-    res.render(`post-edit`, {categories, ...options});
+    res.render(`post-edit`, {categories, article, id, ...utils});
   } catch (error) {
-    logger.error(`Internal server error: ${error.message}`);
+    logger.error(`Error on 'articles/edit/${id}' route: ${error.message}`);
     res.render(`errors/404`);
+  }
+});
+
+articlesRouter.post(`/edit/:id`, async (req, res) => {
+  const {id} = req.params;
+
+  const categories = await api.getCategories({needCount: false})
+    .catch(() => res.render(`errors/500`));
+
+  upload(req, res, async (err) => {
+    if (err) {
+      const validationMessages = [err.message];
+      if (err instanceof multer.MulterError) {
+        logger.error(`Multer error on file upload: ${err.message}`);
+        res.render(`post-edit`, {validationMessages, categories, ...utils});
+      } else {
+        logger.error(`Unknown error on file upload: ${err.message}`);
+        res.render(`post-edit`, {validationMessages, categories, ...utils});
+      }
+      return;
+    }
+
+    const {body, file} = req;
+    const articleData = {
+      title: body.title,
+      picture: file?.filename || ``,
+      announce: body.announcement,
+      fullText: body[`full-text`],
+      createdAt: humanizeDate(``, body[`date`]),
+      categories: body.categories
+    };
+
+    try {
+      try {
+        await api.editArticle({id, data: articleData});
+        res.redirect(`/my`);
+      } catch (errors) {
+        const validationMessages = prepareErrors(errors);
+        res.render(`post-edit`, {validationMessages, categories, article: articleData, id, ...utils});
+      }
+    } catch (error) {
+      logger.error(`An error occurred while editing article #${id}: ${error.message}`);
+      res.render(`errors/500`);
+    }
+  });
+});
+
+
+/**
+ * Viewing single article
+ */
+articlesRouter.get(`/:id`, async (req, res) => {
+  const {id} = req.params;
+
+  try {
+    const article = await api.getArticle({id, viewMode: true});
+    res.render(`post`, {article, id, ...utils});
+  } catch (error) {
+    logger.error(`Error on 'articles/${id}' route: ${error.message}`);
+    res.render(`errors/404`);
+  }
+});
+
+
+/**
+ * Deleting single article
+ */
+articlesRouter.delete(`/:id`, async (req, res) => {
+  const {id} = req.params;
+
+  try {
+    const article = await api.deleteArticle(id);
+    res.status(HttpCode.OK).send(article);
+  } catch (error) {
+    res.status(error.response.status).send(error.response.statusText);
+  }
+});
+
+
+/**
+ * Adding/deleting comments
+ * of a single article
+ */
+articlesRouter.post(`/:id/comments`, async (req, res) => {
+  const {id} = req.params;
+  const {message} = req.body;
+
+  const commentData = {
+    text: message
+  };
+
+  try {
+    try {
+      await api.createComment({id, data: commentData});
+      res.redirect(`/articles/${id}`);
+    } catch (errors) {
+      const article = await api.getArticle({id, viewMode: true});
+      const validationMessages = prepareErrors(errors);
+      res.render(`post`, {validationMessages, article, id, ...utils});
+    }
+  } catch (error) {
+    logger.error(`An error occurred while creating new comment at article #${id}: ${error.message}`);
+    res.render(`errors/500`);
   }
 });
 
 articlesRouter.get(`/category/:id`, (req, res) => res.render(`posts-by-category`));
-
-articlesRouter.get(`/:id`, async (req, res) => {
-  try {
-    const {id} = req.params;
-    const [article, categories] = await Promise.all([
-      await api.getArticle(id, {comments: true}),
-      await api.getCategories(true)
-    ]);
-    res.render(`post`, {article, categories, ...utils});
-  } catch (error) {
-    logger.error(`Internal server error: ${error.message}`);
-    res.render(`errors/404`);
-  }
-});
 
 module.exports = articlesRouter;

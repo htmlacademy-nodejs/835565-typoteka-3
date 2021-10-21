@@ -1,7 +1,7 @@
 'use strict';
 
 const axios = require(`axios`);
-const {TIMEOUT, DEFAULT_PORT_SERVER} = require(`../const`);
+const {TIMEOUT, DEFAULT_PORT_SERVER, HttpMethod} = require(`../const`);
 
 const port = process.env.API_PORT || DEFAULT_PORT_SERVER;
 const defaultUrl = `http://localhost:${port}/api/`;
@@ -23,16 +23,16 @@ class API {
     return this._load(`/articles`, {params: {user, limit, offset, needComments}});
   }
 
-  getArticle(id, comments) {
-    return this._load(`/articles/${id}`, {params: {comments}});
+  getArticle({id, viewMode}) {
+    return this._load(`/articles/${id}`, {params: {viewMode}});
   }
 
   search(query) {
     return this._load(`/search`, {params: {query}});
   }
 
-  getCategories(count) {
-    return this._load(`/categories`, {params: {count}});
+  getCategories({needCount}) {
+    return this._load(`/categories`, {params: {needCount}});
   }
 
   getComments({limit, needArticles}) {
@@ -41,7 +41,27 @@ class API {
 
   createArticle(data) {
     return this._load(`/articles`, {
-      method: `POST`,
+      method: HttpMethod.POST,
+      data
+    });
+  }
+
+  editArticle({id, data}) {
+    return this._load(`/articles/${id}`, {
+      method: HttpMethod.PUT,
+      data
+    });
+  }
+
+  deleteArticle(id) {
+    return this._load(`/articles/${id}`, {
+      method: HttpMethod.DELETE
+    });
+  }
+
+  createComment({id, data}) {
+    return this._load(`/articles/${id}/comments`, {
+      method: HttpMethod.POST,
       data
     });
   }

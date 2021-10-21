@@ -5,19 +5,24 @@ const {HttpCode} = require(`../../const`);
 const articleValidator = require(`../middlewares/article-validator`);
 const articleExists = require(`../middlewares/article-exists`);
 const commentValidator = require(`../middlewares/comment-validator`);
+const routeParamsValidator = require(`../middlewares/route-params-validator`);
 
 const articlesRouter = new Router();
 
 module.exports = (app, articlesService, commentService) => {
   app.use(`/articles`, articlesRouter);
+  const requestValidationMiddlewareSet = [routeParamsValidator, articleExists(articlesService)];
 
+  /**
+   * Main route to get articles
+   * according to query option
+   */
   articlesRouter.get(`/`, async (req, res) => {
     const {user, limit, offset, needComments} = req.query;
-
     let articles = {};
 
     if (user) {
-      articles.current = await articlesService.findAll({needComments});
+      articles.user = await articlesService.findAll({needComments});
       return res.status(HttpCode.OK).json(articles);
     }
 
@@ -26,78 +31,103 @@ module.exports = (app, articlesService, commentService) => {
       return res.status(HttpCode.OK).json(articles);
     }
 
-    articles.hot = await articlesService.findLimit({limit});
+    if (limit) {
+      articles.hot = await articlesService.findLimit({limit});
+      return res.status(HttpCode.OK).json(articles);
+    }
+
+    articles.total = await articlesService.findAll({needComments});
 
     return res.status(HttpCode.OK).json(articles);
   });
 
-  articlesRouter.get(`/:articleId`, async (req, res) => {
+
+  /**
+   * Current single ARTICLE routes
+   * to handle CRUD operations
+   */
+  articlesRouter.get(`/:articleId`, routeParamsValidator, async (req, res) => {
     const {articleId} = req.params;
-    const {comments} = req.query;
-    const article = await articlesService.findOne(articleId, comments);
+    const {viewMode} = req.query;
+
+    const article = await articlesService.findOne({articleId, viewMode});
+
     if (!article) {
       return res.status(HttpCode.NOT_FOUND)
         .send(`Unable to find article with id:${articleId}`);
     }
+
     return res.status(HttpCode.OK)
       .json(article);
   });
 
-  articlesRouter.get(`/:articleId/comments`, articleExists(articlesService), async (req, res) => {
-    const {articleId} = req.params;
-    const comments = await commentService.findAllByArticleId(articleId);
-    return res.status(HttpCode.OK)
-      .json(comments);
-  });
+  articlesRouter.post(`/`, articleValidator, async (req, res) => {
+    const newArticle = await articlesService.create(req.body);
 
-  articlesRouter.post(`/`, articleValidator, (req, res) => {
-    const newArticle = articlesService.create(req.body);
     return res.status(HttpCode.CREATED)
       .json(newArticle);
   });
 
-  articlesRouter.post(
-      `/:articleId/comments`,
-      [articleExists(articlesService), commentValidator],
-      (req, res) => {
-        const {article} = res.locals;
-        commentService.getComments(article);
-        const newComment = commentService.create(req.body);
-        return res.status(HttpCode.CREATED)
-          .json(newComment);
-      });
-
-  articlesRouter.put(`/:articleId`, [articleExists(articlesService), articleValidator], (req, res) => {
+  articlesRouter.put(`/:articleId`, [articleValidator, ...requestValidationMiddlewareSet], async (req, res) => {
     const {articleId} = req.params;
-    const updatedArticle = articlesService.update(articleId, req.body);
-    if (!updatedArticle) {
-      return res.status(HttpCode.NOT_FOUND)
-        .send(`Unable to find article with id:${articleId}`);
-    }
+
+    await articlesService.update({id: articleId, update: req.body});
+
     return res.status(HttpCode.OK)
-      .json(updatedArticle);
+      .send(`Updated`);
   });
 
-  articlesRouter.delete(`/:articleId`, (req, res) => {
+  articlesRouter.delete(`/:articleId`, [...requestValidationMiddlewareSet], async (req, res) => {
     const {articleId} = req.params;
-    const deletedArticle = articlesService.delete(articleId);
-    if (!deletedArticle) {
+
+    const article = await articlesService.findOne({articleId});
+
+    if (!article) {
       return res.status(HttpCode.NOT_FOUND)
-        .send(`Unable to delete unexisting article!`);
+      .send(`Unable to delete unexisting article!`);
     }
+
+    await articlesService.drop(articleId);
+
     return res.status(HttpCode.OK)
-      .json(deletedArticle);
+      .send(`Deleted`);
   });
 
-  articlesRouter.delete(`/:articleId/comments/:commentId`, articleExists(articlesService), (req, res) => {
-    const {article} = res.locals;
-    commentService.getComments(article);
-    const {commentId} = req.params;
-    const deletedComment = commentService.delete(commentId);
-    if (!deletedComment) {
+
+  /**
+   * Current article's COMMENTS routes
+   * to handle CRUD operations
+   */
+  articlesRouter.get(`/:articleId/comments`, [...requestValidationMiddlewareSet], async (req, res) => {
+    const {articleId} = req.params;
+
+    const comments = await commentService.findAll({id: articleId});
+
+    return res.status(HttpCode.OK)
+      .json(comments);
+  });
+
+  articlesRouter.post(`/:articleId/comments`, [commentValidator, ...requestValidationMiddlewareSet], async (req, res) => {
+    const {articleId} = req.params;
+
+    const newComment = await commentService.create(articleId, req.body);
+
+    return res.status(HttpCode.CREATED)
+      .json(newComment);
+  });
+
+  articlesRouter.delete(`/:articleId/comments/:commentId`, [...requestValidationMiddlewareSet], async (req, res) => {
+    const {articleId, commentId} = req.params;
+
+    const currentComment = await commentService.findOne(articleId, commentId);
+
+    if (!currentComment) {
       return res.status(HttpCode.NOT_FOUND)
         .send(`Cannot delete unexisting comment`);
     }
+
+    const deletedComment = await commentService.drop(articleId, commentId);
+
     return res.status(HttpCode.OK)
       .json(deletedComment);
   });

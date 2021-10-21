@@ -1,6 +1,6 @@
 'use strict';
 
-const {ORDER_BY_LATEST_DATE} = require(`../../const`);
+const {ORDER_BY_LATEST_DATE, COMMENTS_COUNT_KEY_NAME} = require(`../../const`);
 const Aliase = require(`../models/aliase`);
 
 class ArticleService {
@@ -17,11 +17,17 @@ class ArticleService {
     return article.get();
   }
 
-  async update(id, update) {
-    const [affectedRows] = await this._Article.update(
-        update,
-        {where: {id}}
-    );
+  async update({id, update}) {
+    const affectedRows = await this._Article.update(update, {
+      where: {id}
+    });
+
+    const updatedArticle = await this._Article.findOne({
+      where: {id}
+    });
+
+    await updatedArticle.setCategories(update.categories);
+
     return !!affectedRows;
   }
 
@@ -32,20 +38,48 @@ class ArticleService {
     return !!deletedRows;
   }
 
-  async findOne(id, needComments = false) {
-    const include = [Aliase.CATEGORIES];
-    if (needComments) {
-      include.push({
-        model: this._Comment,
-        as: Aliase.COMMENTS,
+  async findOne({articleId, viewMode}) {
+    if (!viewMode) {
+      return this._Article.findByPk(articleId, {
+        include: [Aliase.CATEGORIES]
       });
     }
-    return this._Article.findByPk(id, {include});
+
+    const options = {
+      include: [
+        {
+          model: this._Comment,
+          as: Aliase.COMMENTS,
+        },
+        {
+          model: this._Category,
+          as: Aliase.CATEGORIES,
+          attributes: {
+            include: [
+              [this._sequelize.fn(`COUNT`, `*`), `count`]
+            ]
+          }
+        }
+      ],
+      order: [
+        [{model: this._Comment, as: Aliase.COMMENTS}, `createdAt`, `DESC`]
+      ],
+      group: [
+        `Article.id`,
+        `comments.id`,
+        `categories.id`,
+        `categories->ArticleCategory.ArticleId`,
+        `categories->ArticleCategory.CategoryId`
+      ],
+      where: {id: articleId}
+    };
+
+    return this._Article.findOne(options);
   }
 
   async findAll(needComments) {
     const options = {
-      attributes: [`id`, `createdAt`, `announce`],
+      attributes: [`id`, `createdAt`, `title`],
       order: [ORDER_BY_LATEST_DATE]
     };
 
@@ -62,7 +96,7 @@ class ArticleService {
       attributes: [
         `id`,
         `announce`,
-        [this._sequelize.fn(`COUNT`, this._sequelize.col(`comments.id`)), `commentsCount`]
+        [this._sequelize.fn(`COUNT`, this._sequelize.col(`comments.id`)), COMMENTS_COUNT_KEY_NAME]
       ],
       include: [
         {
@@ -83,7 +117,7 @@ class ArticleService {
 
     articles = articles
       .map((item) => item.get())
-      .filter((item) => item.commentsCount > 0);
+      .filter((item) => item[COMMENTS_COUNT_KEY_NAME] > 0);
 
     return articles.slice(0, limit);
   }
@@ -98,7 +132,7 @@ class ArticleService {
         `announce`,
         `picture`,
         `createdAt`,
-        [this._sequelize.fn(`COUNT`, this._sequelize.col(`comments.id`)), `commentsCount`]
+        [this._sequelize.fn(`COUNT`, this._sequelize.col(`comments.id`)), COMMENTS_COUNT_KEY_NAME]
       ],
       include: [
         {

@@ -9,6 +9,7 @@ const articlesRoutes = require(`./routes/articles-routes`);
 const {TEMPLATES_DIR_NAME, PUBLIC_DIR_NAME, DEFAULT_PORT_FRONT} = require(`../const`);
 
 const app = express();
+app.use(express.urlencoded({extended: true}));
 
 app.use(`/`, mainRoutes);
 app.use(`/articles`, articlesRoutes);
