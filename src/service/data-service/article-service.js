@@ -128,6 +128,7 @@ class ArticleService {
       limit,
       offset,
       attributes: [
+        `id`,
         `title`,
         `announce`,
         `picture`,
@@ -156,10 +157,10 @@ class ArticleService {
       distinct: true
     };
 
-    let [count, articles] = [
-      await this._Article.count(),
-      await this._Article.findAll(options)
-    ];
+    let [count, articles] = await Promise.all([
+      this._Article.count(),
+      this._Article.findAll(options)
+    ]);
 
     articles = articles.map((item) => item.get());
 

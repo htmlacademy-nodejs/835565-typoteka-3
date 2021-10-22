@@ -3,9 +3,8 @@
 const express = require(`express`);
 const request = require(`supertest`);
 const Sequelize = require(`sequelize`);
-/* eslint-disable no-unused-vars */
+/* eslint-disable-next-line no-unused-vars */
 const jestDate = require(`jest-date`);
-/* eslint-enable no-unused-vars */
 
 const article = require(`./article`);
 const ArticleService = require(`../data-service/article-service`);
