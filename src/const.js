@@ -33,6 +33,8 @@ const ORDER_BY_LATEST_DATE = [`createdAt`, `DESC`];
 const HOT_ARTICLES_LIMIT = 4;
 const ARTICLES_PER_PAGE = 8;
 const COMMENTS_COUNT_KEY_NAME = `commentsCount`;
+const SALT_ROUNDS = 10;
+const USER_NAME_REGEXP = /[^0-9$&+,:;=?@#|'<>.^*()%!]+$/;
 
 // File names and paths
 const FILE_NAME = `mocks.json`;
@@ -71,23 +73,6 @@ const HttpCode = {
 };
 
 // Mocks
-const mockUsers = [
-  {
-    email: `ivanov@example.com`,
-    passwordHash: `5f4dcc3b5aa765d61d8327deb882cf95`,
-    firstName: `Иван`,
-    lastName: `Иванов`,
-    avatar: `avatar1.jpg`
-  },
-  {
-    email: `petrov@example.com`,
-    passwordHash: `5f4dcc3b5aa765d61d8327deb882cf93`,
-    firstName: `Пётр`,
-    lastName: `Петров`,
-    avatar: `avatar2.jpg`
-  }
-];
-
 const SentencesNum = {
   MIN: 1,
   MAX: 3,
@@ -133,6 +118,8 @@ module.exports = {
   HOT_ARTICLES_LIMIT,
   ARTICLES_PER_PAGE,
   COMMENTS_COUNT_KEY_NAME,
+  SALT_ROUNDS,
+  USER_NAME_REGEXP,
 
   // File names and paths
   FILE_NAME,
@@ -160,7 +147,6 @@ module.exports = {
   HttpCode,
 
   // Mocks
-  mockUsers,
   SentencesNum,
   CategoriesNum,
   DaysGap,

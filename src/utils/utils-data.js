@@ -36,10 +36,9 @@ const generateMockData = (count, {titles, descriptions, categories, comments}) =
   }));
 };
 
-const generateCommentsForDB = (count, articleId, usersCount, comments) => (
+const generateCommentsForDB = (count, users, comments) => (
   Array(count).fill({}).map(() => ({
-    userId: getRandomNum(1, usersCount),
-    articleId,
+    user: users[getRandomNum(0, users.length - 1)].email,
     text: shuffle(comments)
       .slice(0, getRandomNum(CommentsSentencesNum.MIN, CommentsSentencesNum.MAX))
       .join(` `),
@@ -47,15 +46,19 @@ const generateCommentsForDB = (count, articleId, usersCount, comments) => (
   }))
 );
 
-const generateMockDataForDB = (count, {titles, descriptions, commentsSentences, categories, mockUsersCount}) => {
-  return Array(count).fill({}).map((_, index) => ({
-    userId: getRandomNum(1, mockUsersCount),
+const generateMockDataForDB = (count, {titles, descriptions, commentsSentences, categories, mockUsers}) => {
+  return Array(count).fill({}).map(() => ({
+    user: mockUsers[getRandomNum(0, mockUsers.length - 1)].email,
     title: titles[getRandomNum(0, titles.length - 1)],
     createdAt: getRandomDate(),
     announce: shuffle(descriptions).slice(0, getRandomNum(SentencesNum.MIN, SentencesNum.MAX)).join(` `),
     fullText: shuffle(descriptions).slice(0, getRandomNum(SentencesNum.MIN, descriptions.length - 1)).join(` `),
     сategories: getRandomSubarray(categories, getRandomNum(CategoriesNum.MIN, CategoriesNum.MAX)),
-    comments: generateCommentsForDB(getRandomNum(CommentsNum.MIN, CommentsNum.MAX), index + 1, mockUsersCount, commentsSentences),
+    comments: generateCommentsForDB(
+        getRandomNum(CommentsNum.MIN, CommentsNum.MAX),
+        mockUsers,
+        commentsSentences
+    ),
     picture: getRandomImgFileName(),
   }));
 };
