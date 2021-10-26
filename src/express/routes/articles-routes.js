@@ -1,43 +1,23 @@
 'use strict';
 
 const {Router} = require(`express`);
-const multer = require(`multer`);
-const path = require(`path`);
-const {nanoid} = require(`nanoid`);
-const {humanizeDate, prepareErrors} = require(`../../utils/utils-common`);
+
+const upload = require(`../middlewares/upload`);
 const {getLogger} = require(`../../service/lib/logger`);
+const {humanizeDate, prepareErrors} = require(`../../utils/utils-common`);
 const {
   HumanizedDateFormat,
-  MAX_ID_LENGTH,
-  UPLOAD_DIR_PATH,
-  MAX_UPLOAD_FILE_SIZE,
-  NEW_POST_FILE_INPUT_NAME,
   HttpCode,
+  TemplateName
 } = require(`../../const`);
 
 const api = require(`../api`).getAPI();
 const articlesRouter = new Router();
 const logger = getLogger({name: `article-routes api`});
-const uploadDirAbsolute = path.resolve(__dirname, UPLOAD_DIR_PATH);
-
-const storage = multer.diskStorage({
-  destination: uploadDirAbsolute,
-  filename: (req, file, cb) => {
-    const uniqueName = nanoid(MAX_ID_LENGTH);
-    const extension = file.originalname.split(`.`).pop();
-    cb(null, `${uniqueName}.${extension}`);
-  }
-});
-
-const upload = multer({
-  storage,
-  limits: {fileSize: MAX_UPLOAD_FILE_SIZE}
-}).single(NEW_POST_FILE_INPUT_NAME);
 
 const utils = {
   humanizeDate,
   HumanizedDateFormat,
-  NEW_POST_FILE_INPUT_NAME,
 };
 
 
@@ -56,46 +36,29 @@ articlesRouter.get(`/add`, async (req, res) => {
   }
 });
 
-articlesRouter.post(`/add`, async (req, res) => {
+articlesRouter.post(`/add`, upload(logger, TemplateName.POST_EDIT), async (req, res) => {
   const categories = await api.getCategories({needCount: false})
     .catch(() => res.render(`errors/500`));
 
-  upload(req, res, async (err) => {
-    if (err) {
-      const validationMessages = [err.message];
-      if (err instanceof multer.MulterError) {
-        logger.error(`Multer error on file upload: ${err.message}`);
-        res.render(`post-edit`, {validationMessages, categories, ...utils});
-      } else {
-        logger.error(`Unknown error on file upload: ${err.message}`);
-        res.render(`post-edit`, {validationMessages, categories, ...utils});
-      }
-      return;
-    }
+  const {body, file} = req;
 
-    const {body, file} = req;
-    const newArticle = {
-      title: body.title,
-      picture: file?.filename || ``,
-      announce: body.announcement,
-      fullText: body[`full-text`],
-      createdAt: humanizeDate(``, body[`date`]),
-      categories: body.categories
-    };
+  const newArticle = {
+    title: body.title,
+    picture: file?.filename || ``,
+    announce: body.announcement,
+    fullText: body[`full-text`],
+    createdAt: humanizeDate(``, body[`date`]),
+    categories: body.categories
+  };
 
-    try {
-      try {
-        await api.createArticle(newArticle);
-        res.redirect(`/my`);
-      } catch (errors) {
-        const validationMessages = prepareErrors(errors);
-        res.render(`post-edit`, {validationMessages, categories, article: newArticle, ...utils});
-      }
-    } catch (error) {
-      logger.error(`An error occurred while creating new post: ${error.message}`);
-      res.render(`errors/500`);
-    }
-  });
+  // ! обработать ошибку 500
+  try {
+    await api.createArticle(newArticle);
+    res.redirect(`/my`);
+  } catch (errors) {
+    const validationMessages = prepareErrors(errors);
+    res.render(`post-edit`, {validationMessages, categories, article: newArticle, ...utils});
+  }
 });
 
 
@@ -117,48 +80,30 @@ articlesRouter.get(`/edit/:id`, async (req, res) => {
   }
 });
 
-articlesRouter.post(`/edit/:id`, async (req, res) => {
+articlesRouter.post(`/edit/:id`, upload(logger, TemplateName.POST_EDIT), async (req, res) => {
   const {id} = req.params;
 
   const categories = await api.getCategories({needCount: false})
     .catch(() => res.render(`errors/500`));
 
-  upload(req, res, async (err) => {
-    if (err) {
-      const validationMessages = [err.message];
-      if (err instanceof multer.MulterError) {
-        logger.error(`Multer error on file upload: ${err.message}`);
-        res.render(`post-edit`, {validationMessages, categories, ...utils});
-      } else {
-        logger.error(`Unknown error on file upload: ${err.message}`);
-        res.render(`post-edit`, {validationMessages, categories, ...utils});
-      }
-      return;
-    }
+  const {body, file} = req;
+  const articleData = {
+    title: body.title,
+    picture: file?.filename || ``,
+    announce: body.announcement,
+    fullText: body[`full-text`],
+    createdAt: humanizeDate(``, body[`date`]),
+    categories: body.categories
+  };
 
-    const {body, file} = req;
-    const articleData = {
-      title: body.title,
-      picture: file?.filename || ``,
-      announce: body.announcement,
-      fullText: body[`full-text`],
-      createdAt: humanizeDate(``, body[`date`]),
-      categories: body.categories
-    };
-
-    try {
-      try {
-        await api.editArticle({id, data: articleData});
-        res.redirect(`/my`);
-      } catch (errors) {
-        const validationMessages = prepareErrors(errors);
-        res.render(`post-edit`, {validationMessages, categories, article: articleData, id, ...utils});
-      }
-    } catch (error) {
-      logger.error(`An error occurred while editing article #${id}: ${error.message}`);
-      res.render(`errors/500`);
-    }
-  });
+  // ! обработать ошибку 500
+  try {
+    await api.editArticle({id, data: articleData});
+    res.redirect(`/my`);
+  } catch (errors) {
+    const validationMessages = prepareErrors(errors);
+    res.render(`post-edit`, {validationMessages, categories, article: articleData, id, ...utils});
+  }
 });
 
 
