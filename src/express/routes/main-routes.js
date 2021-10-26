@@ -67,9 +67,7 @@ mainRouter.get(`/`, async (req, res) => {
 mainRouter.get(`/register`, (req, res) => res.render(`registration`));
 
 mainRouter.post(`/register`, upload(logger, TemplateName.REGISTRATION), async (req, res) => {
-
   const {body, file} = req;
-  console.log(req.route.path);
 
   const userData = {
     email: body.email,
