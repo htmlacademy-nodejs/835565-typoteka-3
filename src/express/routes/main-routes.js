@@ -1,17 +1,21 @@
 'use strict';
 
 const {Router} = require(`express`);
-const {humanizeDate} = require(`../../utils/utils-common`);
+
+const {humanizeDate, prepareErrors} = require(`../../utils/utils-common`);
 const {
   HumanizedDateFormat,
   LAST_COMMENTS_MAX_NUM,
   HOT_ARTICLES_LIMIT,
   ARTICLES_PER_PAGE,
   PAGINATION_WIDTH,
-  COMMENTS_COUNT_KEY_NAME
+  COMMENTS_COUNT_KEY_NAME,
+  TemplateName
 } = require(`../../const`);
+
 const api = require(`../api`).getAPI();
 const {getLogger} = require(`../../service/lib/logger`);
+const upload = require(`../middlewares/upload`);
 
 const mainRouter = new Router();
 const logger = getLogger({name: `main-routes api`});
@@ -61,6 +65,30 @@ mainRouter.get(`/`, async (req, res) => {
 });
 
 mainRouter.get(`/register`, (req, res) => res.render(`registration`));
+
+mainRouter.post(`/register`, upload(logger, TemplateName.REGISTRATION), async (req, res) => {
+
+  const {body, file} = req;
+  console.log(req.route.path);
+
+  const userData = {
+    email: body.email,
+    firstName: body.firstName,
+    lastName: body.lastName,
+    password: body.password,
+    passwordRepeated: body[`repeat-password`],
+    avatar: file?.filename || ``
+  };
+
+  // ! обработать ошибку 500
+  try {
+    await api.createUser(userData);
+    res.redirect(`/login`);
+  } catch (errors) {
+    const validationMessages = prepareErrors(errors);
+    res.render(`registration`, {validationMessages, ...userData});
+  }
+});
 
 mainRouter.get(`/login`, (req, res) => res.render(`login`));
 

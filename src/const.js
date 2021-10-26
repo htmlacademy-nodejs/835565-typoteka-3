@@ -27,8 +27,7 @@ const HttpMethod = {
 
 // DB
 const ANNOUNCE_CHAR_LENGTH = 1000;
-const defaultArticleKeys = [`title`, `createdAt`, `announce`, `fullText`, `categories`, `picture`];
-const defaultCommentKeys = [`text`, `createdAt`];
+const FILE_TYPES = [`image/png`, `image/jpg`, `image/jpeg`];
 const ORDER_BY_LATEST_DATE = [`createdAt`, `DESC`];
 const HOT_ARTICLES_LIMIT = 4;
 const ARTICLES_PER_PAGE = 8;
@@ -48,7 +47,7 @@ const COMMENTS_PATH = `../../data/comments.txt`;
 const LOG_FILE_PATH = `../../../logs/api.log`;
 const UPLOAD_DIR_PATH = `../upload/img/`;
 const TEMPLATES_DIR_NAME = `templates`;
-const NEW_POST_FILE_INPUT_NAME = `upload`;
+const UPLOADED_FILE_INPUT_NAME = `upload`;
 const PUBLIC_DIR_NAME = `public`;
 const UPLOAD_DIR_NAME = `upload`;
 
@@ -70,6 +69,11 @@ const HttpCode = {
   BAD_REQUEST: 400,
   NOT_FOUND: 404,
   SERVER_ERROR: 500,
+};
+
+const TemplateName = {
+  REGISTRATION: `registration`,
+  POST_EDIT: `post-edit,`
 };
 
 // Mocks
@@ -112,8 +116,7 @@ module.exports = {
 
   // DB
   ANNOUNCE_CHAR_LENGTH,
-  defaultArticleKeys,
-  defaultCommentKeys,
+  FILE_TYPES,
   ORDER_BY_LATEST_DATE,
   HOT_ARTICLES_LIMIT,
   ARTICLES_PER_PAGE,
@@ -132,7 +135,7 @@ module.exports = {
   UPLOAD_DIR_PATH,
   PUBLIC_DIR_NAME,
   UPLOAD_DIR_NAME,
-  NEW_POST_FILE_INPUT_NAME,
+  UPLOADED_FILE_INPUT_NAME,
   DB_FILL_FILE_PATH,
   DB_QUERIES_FILE_PATH,
   LOG_FILE_PATH,
@@ -145,6 +148,7 @@ module.exports = {
   PAGINATION_WIDTH,
   HumanizedDateFormat,
   HttpCode,
+  TemplateName,
 
   // Mocks
   SentencesNum,

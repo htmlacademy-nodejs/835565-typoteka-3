@@ -19,6 +19,13 @@ class API {
     return response.data;
   }
 
+  createUser(data) {
+    return this._load(`/user`, {
+      method: HttpMethod.POST,
+      data
+    });
+  }
+
   getArticles({user, limit, offset, needComments} = {}) {
     return this._load(`/articles`, {params: {user, limit, offset, needComments}});
   }
