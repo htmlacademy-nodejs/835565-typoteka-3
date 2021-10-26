@@ -17,6 +17,8 @@ const ErrorArticleMessage = {
   PICTURE_FORMAT: `Формат изображения не поддерживается (только jpg или png).`,
 
   DATE_EMPTY: `Не указана дата публикации.`,
+
+  USER_ID: `Некорректный идентификатор пользователя`
 };
 
 const schema = Joi.object({
@@ -60,7 +62,13 @@ const schema = Joi.object({
   createdAt: Joi.string()
     .isoDate()
     .required()
-    .messages({'string.empty': ErrorArticleMessage.DATE_EMPTY})
+    .messages({'string.empty': ErrorArticleMessage.DATE_EMPTY}),
+
+  userId: Joi.number()
+    .integer()
+    .positive()
+    .required()
+    .messages({'number.base': ErrorArticleMessage.USER_ID})
 });
 
 module.exports = (req, res, next) => {
