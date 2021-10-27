@@ -188,6 +188,7 @@ describe(`Articles API.`, () => {
     });
 
     test(`Posting new article with missing fields should receive status 400`, async () => {
+      // ! переделать на цикл (учитывая, что picture не обязательное поле)
       await request(app)
       .post(`/articles`)
       .send(invalidArticle)
