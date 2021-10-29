@@ -15,4 +15,4 @@ block content
         a.preview__comment(href='#')
           | Комментарии
           span.preview__cloud
-          b.preview__comment-count #{previewArticle[COMMENTS_COUNT_KEY_NAME]}
+          b.preview__comment-count #{previewArticle.comments.length}

@@ -153,47 +153,25 @@ class ArticleService {
 
   async findPage({limit, offset}) {
     const options = {
-      subQuery: false,
       limit,
       offset,
-      attributes: [
-        `id`,
-        `title`,
-        `announce`,
-        `picture`,
-        `createdAt`,
-        [this._sequelize.fn(`COUNT`, this._sequelize.col(`comments.id`)), COMMENTS_COUNT_KEY_NAME]
-      ],
       include: [
+        Aliase.CATEGORIES,
         {
           model: this._Comment,
           as: Aliase.COMMENTS,
-          attributes: [],
+          attributes: [`id`]
         },
-        {
-          model: this._Category,
-          as: Aliase.CATEGORIES,
-          attributes: [`id`, `name`]
-        }
       ],
       order: [ORDER_BY_LATEST_DATE],
-      group: [
-        `Article.id`,
-        `categories.id`,
-        `categories->ArticleCategory.ArticleId`,
-        `categories->ArticleCategory.CategoryId`
-      ],
       distinct: true
     };
 
-    let [count, articles] = await Promise.all([
-      this._Article.count(),
-      this._Article.findAll(options)
-    ]);
+    let {count, rows} = await this._Article.findAndCountAll(options);
 
-    articles = articles.map((item) => item.get());
+    rows = rows.map((item) => item.get());
 
-    return {count, articles};
+    return {count, articles: rows};
   }
 }
 
