@@ -19,7 +19,11 @@ module.exports = (sequelize) => Article.init({
     type: DataTypes.TEXT,
     allowNull: false
   },
-  picture: DataTypes.STRING
+  picture: {
+    defaultValue: null,
+    type: DataTypes.STRING,
+    allowNull: true
+  }
 }, {
   sequelize,
   modelName: `Article`,

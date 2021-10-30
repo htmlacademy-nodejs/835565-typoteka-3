@@ -11,9 +11,9 @@ const {TEMPLATES_DIR_NAME, PUBLIC_DIR_NAME, DEFAULT_PORT_FRONT} = require(`../co
 const app = express();
 app.use(express.urlencoded({extended: true}));
 
-app.use(`/`, mainRoutes);
 app.use(`/articles`, articlesRoutes);
 app.use(`/my`, myRoutes);
+app.use(`/`, mainRoutes);
 
 app.use(express.static(path.resolve(__dirname, PUBLIC_DIR_NAME)));
 app.set(`views`, path.resolve(__dirname, TEMPLATES_DIR_NAME));

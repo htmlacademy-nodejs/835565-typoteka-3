@@ -27,12 +27,13 @@ const HttpMethod = {
 
 // DB
 const ANNOUNCE_CHAR_LENGTH = 1000;
-const defaultArticleKeys = [`title`, `createdAt`, `announce`, `fullText`, `categories`, `picture`];
-const defaultCommentKeys = [`text`, `createdAt`];
+const FILE_TYPES = [`image/png`, `image/jpg`, `image/jpeg`];
 const ORDER_BY_LATEST_DATE = [`createdAt`, `DESC`];
 const HOT_ARTICLES_LIMIT = 4;
 const ARTICLES_PER_PAGE = 8;
 const COMMENTS_COUNT_KEY_NAME = `commentsCount`;
+const SALT_ROUNDS = 10;
+const USER_NAME_REGEXP = /[^0-9$&+,:;=?@#|'<>.^*()%!]+$/;
 
 // File names and paths
 const FILE_NAME = `mocks.json`;
@@ -46,7 +47,7 @@ const COMMENTS_PATH = `../../data/comments.txt`;
 const LOG_FILE_PATH = `../../../logs/api.log`;
 const UPLOAD_DIR_PATH = `../upload/img/`;
 const TEMPLATES_DIR_NAME = `templates`;
-const NEW_POST_FILE_INPUT_NAME = `upload`;
+const UPLOADED_FILE_INPUT_NAME = `upload`;
 const PUBLIC_DIR_NAME = `public`;
 const UPLOAD_DIR_NAME = `upload`;
 
@@ -70,24 +71,12 @@ const HttpCode = {
   SERVER_ERROR: 500,
 };
 
-// Mocks
-const mockUsers = [
-  {
-    email: `ivanov@example.com`,
-    passwordHash: `5f4dcc3b5aa765d61d8327deb882cf95`,
-    firstName: `Иван`,
-    lastName: `Иванов`,
-    avatar: `avatar1.jpg`
-  },
-  {
-    email: `petrov@example.com`,
-    passwordHash: `5f4dcc3b5aa765d61d8327deb882cf93`,
-    firstName: `Пётр`,
-    lastName: `Петров`,
-    avatar: `avatar2.jpg`
-  }
-];
+const TemplateName = {
+  REGISTRATION: `registration`,
+  POST_EDIT: `post-edit,`
+};
 
+// Mocks
 const SentencesNum = {
   MIN: 1,
   MAX: 3,
@@ -127,12 +116,13 @@ module.exports = {
 
   // DB
   ANNOUNCE_CHAR_LENGTH,
-  defaultArticleKeys,
-  defaultCommentKeys,
+  FILE_TYPES,
   ORDER_BY_LATEST_DATE,
   HOT_ARTICLES_LIMIT,
   ARTICLES_PER_PAGE,
   COMMENTS_COUNT_KEY_NAME,
+  SALT_ROUNDS,
+  USER_NAME_REGEXP,
 
   // File names and paths
   FILE_NAME,
@@ -145,7 +135,7 @@ module.exports = {
   UPLOAD_DIR_PATH,
   PUBLIC_DIR_NAME,
   UPLOAD_DIR_NAME,
-  NEW_POST_FILE_INPUT_NAME,
+  UPLOADED_FILE_INPUT_NAME,
   DB_FILL_FILE_PATH,
   DB_QUERIES_FILE_PATH,
   LOG_FILE_PATH,
@@ -158,9 +148,9 @@ module.exports = {
   PAGINATION_WIDTH,
   HumanizedDateFormat,
   HttpCode,
+  TemplateName,
 
   // Mocks
-  mockUsers,
   SentencesNum,
   CategoriesNum,
   DaysGap,
