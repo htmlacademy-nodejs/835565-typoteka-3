@@ -1,15 +1,45 @@
 'use strict';
 
 const express = require(`express`);
+const session = require(`express-session`);
 const path = require(`path`);
 
 const mainRoutes = require(`./routes/main-routes`);
 const myRoutes = require(`./routes/my-routes`);
 const articlesRoutes = require(`./routes/articles-routes`);
-const {TEMPLATES_DIR_NAME, PUBLIC_DIR_NAME, DEFAULT_PORT_FRONT} = require(`../const`);
+const sequelize = require(`../service/lib/sequelize`);
+const SequelizeStore = require(`connect-session-sequelize`)(session.Store);
+
+const {TEMPLATES_DIR_NAME, PUBLIC_DIR_NAME, DEFAULT_PORT_FRONT, Env} = require(`../const`);
+
+const {SESSION_SECRET} = process.env;
+
+if (process.env.NODE_ENV === Env.DEVELOPMENT) {
+  if (!SESSION_SECRET) {
+    throw new Error(`SESSION_SECRET environment variable is not defined`);
+  }
+}
 
 const app = express();
+
+const mySessionStore = new SequelizeStore({
+  db: sequelize,
+  expiration: 10 * 60 * 1000, // 10 minutes
+  checkExpirationInterval: 60 * 1000 // 1 minute
+});
+
+sequelize.sync({force: false});
+
 app.use(express.urlencoded({extended: true}));
+
+app.use(session({
+  name: `session_id`,
+  secret: SESSION_SECRET,
+  store: mySessionStore,
+  resave: false,
+  proxy: true,
+  saveUninitialized: false,
+}));
 
 app.use(`/articles`, articlesRoutes);
 app.use(`/my`, myRoutes);

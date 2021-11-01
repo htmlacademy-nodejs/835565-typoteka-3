@@ -16,8 +16,7 @@ const utils = {
 
 myRouter.get(`/`, async (req, res) => {
   try {
-    const {user: articles} = await api.getArticles({user: true});
-    res.render(`my`, {articles, ...utils});
+    res.render(`my`, {articles, user, ...utils});
   } catch (error) {
     logger.error(`Internal server error: ${error.message}`);
     res.render(`errors/500`);

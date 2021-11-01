@@ -19,6 +19,13 @@ class API {
     return response.data;
   }
 
+  auth({email, password}) {
+    return this._load(`/user/auth`, {
+      method: HttpMethod.POST,
+      data: {email, password}
+    });
+  }
+
   createUser(data) {
     return this._load(`/user`, {
       method: HttpMethod.POST,

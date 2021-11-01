@@ -7,6 +7,11 @@ const {HttpCode} = require(`../../const`);
 
 const userRouter = new Router();
 
+const ErrorAuthMessage = {
+  EMAIL: `Электронный адрес не существует`,
+  PASSWORD: `Неверный пароль`
+};
+
 module.exports = (app, userService) => {
   app.use(`/user`, userRouter);
 
@@ -21,6 +26,26 @@ module.exports = (app, userService) => {
 
     res.status(HttpCode.CREATED)
       .json(result);
+  });
+
+  userRouter.post(`/auth`, async (req, res) => {
+    const {email, password} = req.body;
+
+    const user = await userService.findByEmail(email);
+
+    if (!user) {
+      res.status(HttpCode.UNAUTHORIZED).send(ErrorAuthMessage.EMAIL);
+      return;
+    }
+
+    const passwordIsCorrect = await passwordUtility.compare(password, user.passwordHash);
+
+    if (passwordIsCorrect) {
+      delete user.passwordHash;
+      res.status(HttpCode.OK).json(user);
+    } else {
+      res.status(HttpCode.UNAUTHORIZED).send(ErrorAuthMessage.PASSWORD);
+    }
   });
 };
 

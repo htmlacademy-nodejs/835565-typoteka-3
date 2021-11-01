@@ -88,7 +88,43 @@ mainRouter.post(`/register`, upload(logger, TemplateName.REGISTRATION), async (r
   }
 });
 
-mainRouter.get(`/login`, (req, res) => res.render(`login`));
+
+/**
+ * LOGIN / LOGOUT routes
+ */
+mainRouter.get(`/login`, (req, res) => {
+  const {user} = req.session;
+
+  res.render(`login`, {user});
+});
+
+mainRouter.post(`/login`, async (req, res) => {
+  const {email, password} = req.body;
+  console.log(email, password);
+
+  try {
+    const user = await api.auth({email, password});
+    req.session.user = user;
+
+    req.session.save(() => {
+      res.redirect(`/`);
+    });
+  } catch (errors) {
+    const validationMessages = prepareErrors(errors);
+    console.log(validationMessages);
+    const {user} = req.session;
+
+    res.render(`login`, {user, validationMessages});
+  }
+});
+
+mainRouter.get(`/logout`, (req, res) => {
+  delete req.session.user;
+  req.session.save(() => {
+    res.redirect(`/`);
+  });
+});
+
 
 mainRouter.get(`/search`, async (req, res) => {
   const {search} = req.query;
