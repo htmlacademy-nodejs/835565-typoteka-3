@@ -31,6 +31,11 @@ const validUserData = {
   // avatar in not required
 };
 
+const validAuthData = {
+  email: mockUsers[0].email,
+  password: `ivanov`
+};
+
 
 /* eslint-disable max-nested-callbacks */
 describe(`Users API.`, () => {
@@ -114,6 +119,56 @@ describe(`Users API.`, () => {
         .post(`/user`)
         .send(invalidUser)
         .expect(HttpCode.BAD_REQUEST);
+    });
+  });
+
+  describe(`API authenticate user if data is valid:`, () => {
+    let response;
+
+    beforeAll(async () => {
+      const app = await createAPI();
+      response = await request(app)
+      .post(`/user/auth`)
+      .send(validAuthData);
+    });
+
+    test(`Received status 200`, () => expect(response.statusCode).toBe(HttpCode.OK));
+
+    test(`User name is correct`, () => {
+      const {firstName, lastName} = response.body;
+      expect(firstName).toBe(mockUsers[0].firstName);
+      expect(lastName).toBe(mockUsers[0].lastName);
+    });
+  });
+
+  describe(`API refuses to authenticate user if data is invalid:`, () => {
+    let app;
+
+    beforeAll(async () => {
+      app = await createAPI();
+    });
+
+    test(`Received status 401 if email is incorrect`, async () => {
+      const invalidAuthData = {
+        email: `not-exist@example.com`,
+        password: `nonexistent`
+      };
+
+      await request(app)
+        .post(`/user/auth`)
+        .send(invalidAuthData)
+        .expect(HttpCode.UNAUTHORIZED);
+    });
+
+    test(`Received status 401 if password doesn't match`, async () => {
+      const invalidAuthData = {
+        email: mockUsers[1].email,
+        password: `nonexistent`
+      };
+      await request(app)
+        .post(`/user/auth`)
+        .send(invalidAuthData)
+        .expect(HttpCode.UNAUTHORIZED);
     });
   });
 });
