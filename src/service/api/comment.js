@@ -9,14 +9,14 @@ module.exports = (app, commentService) => {
   app.use(`/comments`, commentsRouter);
 
   commentsRouter.get(`/`, async (req, res) => {
-    const {limit, needArticles} = req.query;
+    const {limit} = req.query;
 
     let comments;
 
-    if (needArticles) {
-      comments = await commentService.findAll({needArticles});
+    if (limit) {
+      comments = await commentService.findLimit({limit});
     } else {
-      comments = await commentService.findLimit({limit, needArticles});
+      comments = await commentService.findAll();
     }
 
     if (!comments) {

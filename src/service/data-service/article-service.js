@@ -10,14 +10,6 @@ class ArticleService {
     this._Category = sequelize.models.Category;
     this._Article = sequelize.models.Article;
     this._User = sequelize.models.User;
-
-    this._includeUserModelAttr = {
-      model: this._User,
-      as: Aliase.USER,
-      attributes: {
-        exclude: [`passwordHash`]
-      }
-    };
   }
 
   async create(data) {
@@ -47,76 +39,52 @@ class ArticleService {
     return !!deletedRows;
   }
 
-  async findOne({articleId, userId, viewMode}) {
-    if (!viewMode) {
-      return this._Article.findByPk(articleId, {
-        include: [
-          Aliase.CATEGORIES,
-          {
-            model: this._User,
-            as: Aliase.USER,
-            attributes: {
-              exclude: [`passwordHash`]
-            }
-          }
-        ]
-      });
-    }
-
+  async findOne({articleId, viewMode}) {
     const options = {
       include: [
+        Aliase.CATEGORIES,
         {
-          model: this._Category,
-          as: Aliase.CATEGORIES,
-          ...(viewMode && {
-            attributes: {
-              include: [[this._sequelize.fn(`COUNT`, `*`), `count`]]
-            }
-          })
-        },
-        this._includeUserModelAttr,
-        {
-          model: this._Comment,
-          as: Aliase.COMMENTS,
-          include: [this._includeUserModelAttr]
+          model: this._User,
+          as: Aliase.USER,
+          attributes: {exclude: [`passwordHash`]}
         }
       ],
-      where: [{
-        id: articleId,
-        ...(viewMode && {userId})
-      }],
-      order: [
-        [{model: this._Comment, as: Aliase.COMMENTS}, `createdAt`, `DESC`]
-      ],
-      group: [
-        `Article.id`,
-        `comments.id`,
-        `categories.id`,
-        `categories->ArticleCategory.ArticleId`,
-        `categories->ArticleCategory.CategoryId`
-      ]
+      where: {id: articleId}
     };
 
-    return this._Article.findOne(options);
-  }
-
-  async findAll({userId, needComments}) {
-    const options = {
-      ...(userId && {attributes: [`id`, `createdAt`, `title`]}),
-      ...(userId && {where: {userId}}),
-      include: [this._includeUserModelAttr],
-      order: [ORDER_BY_LATEST_DATE]
-    };
-
-    if (needComments) {
+    if (viewMode) {
       options.include.push({
         model: this._Comment,
         as: Aliase.COMMENTS,
-        include: [this._includeUserModelAttr]
+        include: [
+          {
+            model: this._User,
+            as: Aliase.USER,
+            attributes: {exclude: [`passwordHash`]}
+          }
+        ]
       });
+
+      options.order = [
+        [{model: this._Comment, as: Aliase.COMMENTS}, `createdAt`, `DESC`]
+      ];
     }
 
-    const articles = await this._Article.findAll(options);
+    return await this._Article.findOne(options);
+  }
+
+  async findAll() {
+    const articles = await this._Article.findAll({
+      include: [
+        {
+          model: this._User,
+          as: Aliase.USER,
+          attributes: {exclude: [`passwordHash`]}
+        }
+      ],
+      order: [ORDER_BY_LATEST_DATE]
+    });
+
     return articles.map((item) => item.get());
   }
 

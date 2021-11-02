@@ -33,12 +33,12 @@ class API {
     });
   }
 
-  getArticles({user, limit, offset, needComments} = {}) {
-    return this._load(`/articles`, {params: {user, limit, offset, needComments}});
+  getArticles({userId, limit, offset, needComments} = {}) {
+    return this._load(`/articles`, {params: {userId, limit, offset, needComments}});
   }
 
-  getArticle({id, viewMode}) {
-    return this._load(`/articles/${id}`, {params: {viewMode}});
+  getArticle({id, userId, viewMode}) {
+    return this._load(`/articles/${id}`, {params: {userId, viewMode}});
   }
 
   search(query) {
@@ -49,8 +49,8 @@ class API {
     return this._load(`/categories`, {params: {needCount}});
   }
 
-  getComments({limit, needArticles}) {
-    return this._load(`/comments`, {params: {limit, needArticles}});
+  getComments({limit} = {}) {
+    return this._load(`/comments`, {params: {limit}});
   }
 
   createArticle(data) {

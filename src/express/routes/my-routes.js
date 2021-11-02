@@ -21,6 +21,7 @@ myRouter.get(`/`, async (req, res) => {
   const {user} = req.session;
 
   try {
+    const {total: articles} = await api.getArticles();
     res.render(`my`, {articles, user, ...utils});
   } catch (error) {
     logger.error(`Internal server error: ${error.message}`);
@@ -32,6 +33,7 @@ myRouter.get(`/comments`, async (req, res) => {
   const {user} = req.session;
 
   try {
+    const comments = await api.getComments();
     res.render(`comments`, {comments, user, ...utils});
   } catch (error) {
     logger.error(`Internal server error: ${error.message}`);

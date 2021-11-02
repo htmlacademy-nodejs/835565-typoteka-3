@@ -18,13 +18,8 @@ module.exports = (app, articlesService, commentService) => {
    * according to query option
    */
   articlesRouter.get(`/`, async (req, res) => {
-    const {user, limit, offset, needComments} = req.query;
+    const {limit, offset} = req.query;
     let articles = {};
-
-    if (user) {
-      articles.user = await articlesService.findAll({needComments});
-      return res.status(HttpCode.OK).json(articles);
-    }
 
     if (offset) {
       articles.recent = await articlesService.findPage({limit, offset});
@@ -36,7 +31,7 @@ module.exports = (app, articlesService, commentService) => {
       return res.status(HttpCode.OK).json(articles);
     }
 
-    articles.total = await articlesService.findAll({needComments});
+    articles.total = await articlesService.findAll();
 
     return res.status(HttpCode.OK).json(articles);
   });
