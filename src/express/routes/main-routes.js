@@ -16,6 +16,7 @@ const {
 const api = require(`../api`).getAPI();
 const {getLogger} = require(`../../service/lib/logger`);
 const upload = require(`../middlewares/upload`);
+const checkAuth = require(`../middlewares/auth`);
 
 const mainRouter = new Router();
 const logger = getLogger({name: `main-routes api`});
@@ -28,8 +29,14 @@ const utils = {
 };
 
 
+/**
+ * MAIN PAGE route
+ * (public route)
+ */
 mainRouter.get(`/`, async (req, res) => {
+  const {user} = req.session;
   let {page = 1} = req.query;
+
   const offset = (page - 1) * ARTICLES_PER_PAGE;
 
   try {
@@ -54,6 +61,7 @@ mainRouter.get(`/`, async (req, res) => {
       categories,
       page: +page,
       totalPages,
+      user,
       ...utils
     };
 
@@ -64,7 +72,21 @@ mainRouter.get(`/`, async (req, res) => {
   }
 });
 
-mainRouter.get(`/register`, (req, res) => res.render(`registration`));
+
+/**
+ * REGISTRATION routes
+ * (public routes)
+ */
+mainRouter.get(`/register`, (req, res) => {
+  const {user} = req.session;
+
+  if (user) {
+    res.redirect(`/`);
+    return;
+  }
+
+  res.render(`registration`, {user});
+});
 
 mainRouter.post(`/register`, upload(logger, TemplateName.REGISTRATION), async (req, res) => {
   const {body, file} = req;
@@ -91,6 +113,7 @@ mainRouter.post(`/register`, upload(logger, TemplateName.REGISTRATION), async (r
 
 /**
  * LOGIN / LOGOUT routes
+ * (public routes)
  */
 mainRouter.get(`/login`, (req, res) => {
   const {user} = req.session;
@@ -100,7 +123,6 @@ mainRouter.get(`/login`, (req, res) => {
 
 mainRouter.post(`/login`, async (req, res) => {
   const {email, password} = req.body;
-  console.log(email, password);
 
   try {
     const user = await api.auth({email, password});
@@ -111,7 +133,6 @@ mainRouter.post(`/login`, async (req, res) => {
     });
   } catch (errors) {
     const validationMessages = prepareErrors(errors);
-    console.log(validationMessages);
     const {user} = req.session;
 
     res.render(`login`, {user, validationMessages});
@@ -126,22 +147,29 @@ mainRouter.get(`/logout`, (req, res) => {
 });
 
 
+/**
+ * SEARCH route
+ * (public route)
+ */
 mainRouter.get(`/search`, async (req, res) => {
+  const {user} = req.session;
   const {search} = req.query;
+
   try {
     if (search) {
       const options = {
+        user,
         search,
         results: await api.search(search),
         ...utils,
       };
       res.render(`search`, {...options});
     } else {
-      res.render(`search`);
+      res.render(`search`, {user});
     }
   } catch (error) {
     try {
-      res.render(`search-empty`, {search});
+      res.render(`search-empty`, {search, user});
     } catch (err) {
       logger.error(`Internal server error: ${err.message}`);
       res.render(`errors/500`);
@@ -149,10 +177,17 @@ mainRouter.get(`/search`, async (req, res) => {
   }
 });
 
-mainRouter.get(`/categories`, async (req, res) => {
+
+/**
+ * CATEGORIES PAGE route
+ * (admin route)
+ */
+mainRouter.get(`/categories`, checkAuth, async (req, res) => {
+  const {user} = req.session;
+
   try {
     const categories = await api.getCategories({needCount: false});
-    res.render(`categories`, {categories});
+    res.render(`categories`, {categories, user});
   } catch (error) {
     logger.error(`Internal server error: ${error.message}`);
     res.render(`errors/500`);
