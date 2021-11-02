@@ -49,7 +49,8 @@ articlesRouter.post(`/add`, upload(logger, TemplateName.POST_EDIT), async (req, 
     announce: body.announcement,
     fullText: body[`full-text`],
     createdAt: humanizeDate(``, body[`date`]),
-    categories: body.categories
+    categories: body.categories,
+    userId: user.id
   };
 
   // ! обработать ошибку 500
@@ -96,7 +97,8 @@ articlesRouter.post(`/edit/:id`, upload(logger, TemplateName.POST_EDIT), async (
     announce: body.announcement,
     fullText: body[`full-text`],
     createdAt: humanizeDate(``, body[`date`]),
-    categories: body.categories
+    categories: body.categories,
+    userId: user.id
   };
 
   // ! обработать ошибку 500
