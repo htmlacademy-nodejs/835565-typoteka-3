@@ -7,5 +7,5 @@ block content
         .comments__text
           .comments__head
             p Евгений Петров •
-            time.comments__date(datetime='2019-03-21T20:33') #{humanizeDate(HumanizedDateFormat.FULL, createdAt)}
+            time.comments__date(datetime=comment.createdAt) #{humanizeDate(HumanizedDateFormat.FULL, comment.createdAt)}
           p.comments__message #{comment.text}

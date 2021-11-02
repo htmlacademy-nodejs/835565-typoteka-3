@@ -11,7 +11,7 @@ block content
                 img.publication__list-image(src='../img/avatar-small-2.png' width='20' height='20' alt='Аватар пользователя')
                 b.publication__list-name Александр Петров
                 time.publication__item-time(datetime=comment.createdAt) #{humanizeDate(HumanizedDateFormat.FULL, comment.createdAt)}
-              a.publication__item-text(href=`/articles/${comment.article.id}`) #{comment.text}
+              a.publication__item-text(href=`/articles/${comment.articleId}`) #{comment.text}
               p.publication__text-strong #{comment.article.title}
               button.publication__button.button.button--close-item(type='button')
                 span.visually-hidden Закрыть строку списка
