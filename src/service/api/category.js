@@ -2,6 +2,7 @@
 
 const {Router} = require(`express`);
 const {HttpCode} = require(`../../const`);
+const categoryValidator = require(`../middlewares/category-validator`);
 
 const categoriesRouter = new Router();
 
@@ -13,5 +14,12 @@ module.exports = (app, categoryService) => {
     const categories = await categoryService.findAll({needCount});
     res.status(HttpCode.OK)
       .json(categories);
+  });
+
+  categoriesRouter.post(`/`, categoryValidator, async (req, res) => {
+    const newCategory = await categoryService.create(req.body);
+
+    return res.status(HttpCode.CREATED)
+      .json(newCategory);
   });
 };

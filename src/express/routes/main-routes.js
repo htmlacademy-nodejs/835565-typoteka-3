@@ -194,4 +194,24 @@ mainRouter.get(`/categories`, checkAuth, async (req, res) => {
   }
 });
 
+mainRouter.post(`/categories/add`, async (req, res) => {
+  const {user} = req.session;
+  const {body} = req;
+
+  const newCategory = {
+    name: body[`add-category`]
+  };
+
+  try {
+    await api.createCategory(newCategory);
+    res.redirect(`/categories`);
+  } catch (errors) {
+    const validationMessages = prepareErrors(errors);
+    const categories = await api.getCategories({needCount: false})
+      .catch(() => res.render(`errors/500`));
+
+    res.render(`categories`, {categories, user, validationMessages});
+  }
+});
+
 module.exports = mainRouter;

@@ -9,6 +9,12 @@ class CategoryService {
     this._ArticleCategory = sequelize.models.ArticleCategory;
   }
 
+  async create(data) {
+    console.log(data);
+    const category = await this._Category.create(data);
+    return category.get();
+  }
+
   async findAll({needCount}) {
     if (needCount) {
       const result = await this._Category.findAll({
