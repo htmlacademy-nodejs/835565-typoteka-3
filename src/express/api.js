@@ -93,6 +93,12 @@ class API {
       data
     });
   }
+
+  deleteCategory(id) {
+    return this._load(`/categories/${id}`, {
+      method: HttpMethod.DELETE
+    });
+  }
 }
 
 const defaultAPI = new API(defaultUrl, TIMEOUT);

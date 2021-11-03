@@ -235,4 +235,15 @@ mainRouter.post(`/categories/edit/:id`, auth, async (req, res) => {
   }
 });
 
+mainRouter.post(`/categories/:id/delete`, checkAuth, async (req, res) => {
+  const {id} = req.params;
+
+  try {
+    await api.deleteCategory(id);
+    res.redirect(`/categories`);
+  } catch (error) {
+    res.status(error.response.status).send(error.response.statusText);
+  }
+});
+
 module.exports = mainRouter;

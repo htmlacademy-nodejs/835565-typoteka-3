@@ -23,6 +23,18 @@ class CategoryService {
     return !!affectedRow;
   }
 
+  async drop({id}) {
+    const deletedRow = await this._Category.destroy({
+      where: {id}
+    });
+
+    return !!deletedRow;
+  }
+
+  async findOne(id) {
+    return this._Category.findByPk(id);
+  }
+
   async findAll({needCount}) {
     if (needCount) {
       const result = await this._Category.findAll({

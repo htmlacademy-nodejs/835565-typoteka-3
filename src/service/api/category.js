@@ -31,4 +31,20 @@ module.exports = (app, categoryService) => {
     return res.status(HttpCode.OK)
       .send(`Updated`);
   });
+
+  categoriesRouter.delete(`/:categoryId`, routeParamsValidator, async (req, res) => {
+    const {categoryId} = req.params;
+
+    const category = await categoryService.findOne(categoryId);
+
+    if (!category) {
+      return res.status(HttpCode.NOT_FOUND)
+      .send(`Unable to delete unexisting category!`);
+    }
+
+    await categoryService.drop({id: categoryId});
+
+    return res.status(HttpCode.OK)
+      .send(`Deleted`);
+  });
 };
