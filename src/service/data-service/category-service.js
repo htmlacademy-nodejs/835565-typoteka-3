@@ -47,13 +47,17 @@ class CategoryService {
         include: [{
           model: this._ArticleCategory,
           as: Aliase.ARTICLE_CATEGORIES,
-          attributes: []
+          attributes: [],
+          required: true
         }],
-        order: [ORDER_BY_LATEST_DATE]
+
       });
       return result.map((item) => item.get());
     } else {
-      return this._Category.findAll({raw: true});
+      return this._Category.findAll({
+        raw: true,
+        order: [ORDER_BY_LATEST_DATE]
+      });
     }
   }
 }
