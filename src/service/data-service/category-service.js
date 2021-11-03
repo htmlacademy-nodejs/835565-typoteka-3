@@ -1,6 +1,7 @@
 'use strict';
 
 const Aliase = require(`../models/aliase`);
+const {ORDER_BY_LATEST_DATE} = require(`../../const`);
 
 class CategoryService {
   constructor(sequelize) {
@@ -28,7 +29,8 @@ class CategoryService {
           model: this._ArticleCategory,
           as: Aliase.ARTICLE_CATEGORIES,
           attributes: []
-        }]
+        }],
+        order: [ORDER_BY_LATEST_DATE]
       });
       return result.map((item) => item.get());
     } else {

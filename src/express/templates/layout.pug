@@ -35,6 +35,9 @@ html(lang='ru')
             each message of messages
               li.form__error= message
 
+    mixin categoryEditInput(category)
+      input(id=`modify-form-category-${category.id}` type='text' name=`category-${category.id}` value=category.name)
+
     mixin pagination(page, totalPages, width, prefix)
       -
         let start = page - width;
