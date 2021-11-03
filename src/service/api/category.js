@@ -3,6 +3,7 @@
 const {Router} = require(`express`);
 const {HttpCode} = require(`../../const`);
 const categoryValidator = require(`../middlewares/category-validator`);
+const routeParamsValidator = require(`../middlewares/route-params-validator`);
 
 const categoriesRouter = new Router();
 
@@ -21,6 +22,23 @@ module.exports = (app, categoryService) => {
 
     return res.status(HttpCode.CREATED)
       .json(newCategory);
+  });
+
+  categoriesRouter.get(`/:categoryId`, routeParamsValidator, async (req, res) => {
+    const {categoryId} = req.params;
+    const {limit, offset} = req.query;
+
+    const [category, {count, articlesByCategory}] = await Promise.all([
+      categoryService.findOne(categoryId),
+      categoryService.findPage({categoryId, limit, offset})
+    ]);
+
+    return res.status(HttpCode.OK)
+      .json({
+        category,
+        count,
+        articlesByCategory
+      });
   });
 
   categoriesRouter.put(`/:categoryId`, [routeParamsValidator, categoryValidator], async (req, res) => {

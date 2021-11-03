@@ -12,9 +12,7 @@ block content
             h2.post__title.title.title--main #{article.title}
             ul.post__themes.themes
               each category in article.categories
-                li.themes__item
-                  a.themes__item-link(href='#') #{category.name}
-                    sup #{category.count}
+                include partials/themes-item.pug
                   button.themes__remove-btn(type='button') Удалить категорию
           .post__picture
             if article.picture

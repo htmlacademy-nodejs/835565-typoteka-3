@@ -6,7 +6,9 @@ const {ORDER_BY_LATEST_DATE} = require(`../../const`);
 class CategoryService {
   constructor(sequelize) {
     this._sequelize = sequelize;
+    this._Article = sequelize.models.Article;
     this._Category = sequelize.models.Category;
+    this._Comment = sequelize.models.Comment;
     this._ArticleCategory = sequelize.models.ArticleCategory;
   }
 
@@ -59,6 +61,38 @@ class CategoryService {
         order: [ORDER_BY_LATEST_DATE]
       });
     }
+  }
+
+  async findPage({categoryId, limit, offset}) {
+    const articlesIdByCategory = await this._ArticleCategory.findAll({
+      attributes: [`ArticleId`],
+      where: {
+        CategoryId: categoryId
+      },
+      raw: true
+    });
+
+    const articlesId = articlesIdByCategory.map((item) => item.ArticleId);
+
+    const {count, rows} = await this._Article.findAndCountAll({
+      limit,
+      offset,
+      include: [
+        Aliase.CATEGORIES,
+        {
+          model: this._Comment,
+          as: Aliase.COMMENTS,
+          attributes: [`id`]
+        },
+      ],
+      order: [ORDER_BY_LATEST_DATE],
+      where: {
+        id: articlesId
+      },
+      distinct: true
+    });
+
+    return {count, articlesByCategory: rows};
   }
 }
 

@@ -49,6 +49,10 @@ class API {
     return this._load(`/categories`, {params: {needCount}});
   }
 
+  getCategory({categoryId, limit, offset}) {
+    return this._load(`/categories/${categoryId}`, {params: {limit, offset}});
+  }
+
   getComments({limit} = {}) {
     return this._load(`/comments`, {params: {limit}});
   }

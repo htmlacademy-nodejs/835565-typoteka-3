@@ -1,5 +1,6 @@
 block content
   section.main-page__theme-list
     h2.visually-hidden Список тем
-
-    include themes-list.pug
+    ul.themes
+      each category in categories
+        include themes-item.pug

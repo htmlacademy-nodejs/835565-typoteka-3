@@ -9,7 +9,9 @@ const {humanizeDate, prepareErrors} = require(`../../utils/utils-common`);
 const {
   HumanizedDateFormat,
   HttpCode,
-  TemplateName
+  TemplateName,
+  ARTICLES_PER_PAGE,
+  PAGINATION_WIDTH
 } = require(`../../const`);
 
 const api = require(`../api`).getAPI();
@@ -19,6 +21,7 @@ const logger = getLogger({name: `article-routes api`});
 const utils = {
   humanizeDate,
   HumanizedDateFormat,
+  PAGINATION_WIDTH
 };
 
 
@@ -177,6 +180,37 @@ articlesRouter.post(`/:id/comments`, async (req, res) => {
   }
 });
 
-articlesRouter.get(`/category/:id`, (req, res) => res.render(`posts-by-category`));
+articlesRouter.get(`/category/:categoryId`, async (req, res) => {
+  const {user} = req.session;
+  const {categoryId} = req.params;
+  let {page = 1} = req.query;
+
+  const offset = (page - 1) * ARTICLES_PER_PAGE;
+
+  try {
+    const [categories, {category, count, articlesByCategory}] = await Promise.all([
+      api.getCategories({needCount: true}),
+      api.getCategory({limit: ARTICLES_PER_PAGE, categoryId, offset})
+    ]);
+
+    const totalPages = Math.ceil(count / ARTICLES_PER_PAGE);
+
+    const options = {
+      user,
+      count,
+      page: +page,
+      totalPages,
+      categories,
+      category,
+      previewArticles: articlesByCategory,
+      ...utils
+    };
+
+    res.render(`posts-by-category`, {...options});
+  } catch (error) {
+    logger.error(`Error on 'articles/category/${categoryId}' route: ${error.message}`);
+    res.render(`errors/500`);
+  }
+});
 
 module.exports = articlesRouter;
