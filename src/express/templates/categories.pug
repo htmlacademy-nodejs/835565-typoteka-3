@@ -13,6 +13,7 @@ block content
       ul.category__list
         each category in categories
           li.category__list-item
+            form(action=`/categories/edit/${category.id}` method='POST' autocomplete='off' enctype='application/x-www-form-urlencoded')
               +categoryEditInput(category)
               label(for=`modify-form-category-${category.id}`)
                 span.visually-hidden Редактировать категорию

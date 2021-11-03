@@ -214,4 +214,25 @@ mainRouter.post(`/categories/add`, async (req, res) => {
   }
 });
 
+mainRouter.post(`/categories/edit/:id`, auth, async (req, res) => {
+  const {user} = req.session;
+  const {id} = req.params;
+  const {body} = req;
+
+  const categoryData = {
+    name: body[`category-${id}`]
+  };
+
+  try {
+    await api.editCategory({id, data: categoryData});
+    res.redirect(`/categories`);
+  } catch (errors) {
+    const validationMessages = prepareErrors(errors);
+    const categories = await api.getCategories({needCount: false})
+      .catch(() => res.render(`errors/500`));
+
+    res.render(`categories`, {categories, user, validationMessages});
+  }
+});
+
 module.exports = mainRouter;

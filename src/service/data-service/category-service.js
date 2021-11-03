@@ -11,9 +11,16 @@ class CategoryService {
   }
 
   async create(data) {
-    console.log(data);
     const category = await this._Category.create(data);
     return category.get();
+  }
+
+  async update({id, update}) {
+    const affectedRow = await this._Category.update(update, {
+      where: {id}
+    });
+
+    return !!affectedRow;
   }
 
   async findAll({needCount}) {

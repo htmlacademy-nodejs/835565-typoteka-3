@@ -22,4 +22,13 @@ module.exports = (app, categoryService) => {
     return res.status(HttpCode.CREATED)
       .json(newCategory);
   });
+
+  categoriesRouter.put(`/:categoryId`, [routeParamsValidator, categoryValidator], async (req, res) => {
+    const {categoryId} = req.params;
+
+    await categoryService.update({id: categoryId, update: req.body});
+
+    return res.status(HttpCode.OK)
+      .send(`Updated`);
+  });
 };

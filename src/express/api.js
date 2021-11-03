@@ -86,6 +86,13 @@ class API {
       data
     });
   }
+
+  editCategory({id, data}) {
+    return this._load(`/categories/${id}`, {
+      method: HttpMethod.PUT,
+      data
+    });
+  }
 }
 
 const defaultAPI = new API(defaultUrl, TIMEOUT);
