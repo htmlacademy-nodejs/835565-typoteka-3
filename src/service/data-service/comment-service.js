@@ -22,7 +22,12 @@ class CommentService {
     const deletedRows = await this._Comment.destroy({
       where: {id}
     });
+
     return !!deletedRows;
+  }
+
+  async findOne(id) {
+    return await this._Comment.findByPk(id);
   }
 
   async findAll() {

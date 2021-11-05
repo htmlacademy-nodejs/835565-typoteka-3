@@ -6,6 +6,7 @@ const articleValidator = require(`../middlewares/article-validator`);
 const articleExists = require(`../middlewares/article-exists`);
 const commentValidator = require(`../middlewares/comment-validator`);
 const routeParamsValidator = require(`../middlewares/route-params-validator`);
+const commentExists = require(`../middlewares/comment-exists`);
 
 const articlesRouter = new Router();
 
@@ -111,19 +112,13 @@ module.exports = (app, articlesService, commentService) => {
       .json(newComment);
   });
 
-  articlesRouter.delete(`/:articleId/comments/:commentId`, [...requestValidationMiddlewareSet], async (req, res) => {
-    const {articleId, commentId} = req.params;
+  articlesRouter.delete(`/:articleId/comments/:commentId`, [commentExists(commentService), ...requestValidationMiddlewareSet], async (req, res) => {
+    const {commentId} = req.params;
+    console.log(commentId);
 
-    const currentComment = await commentService.findOne(articleId, commentId);
-
-    if (!currentComment) {
-      return res.status(HttpCode.NOT_FOUND)
-        .send(`Cannot delete unexisting comment`);
-    }
-
-    const deletedComment = await commentService.drop(articleId, commentId);
+    await commentService.drop(commentId);
 
     return res.status(HttpCode.OK)
-      .json(deletedComment);
+      .send(`Deleted`);
   });
 };

@@ -180,6 +180,17 @@ articlesRouter.post(`/:id/comments`, async (req, res) => {
   }
 });
 
+articlesRouter.get(`/:id/comments/:commentId/delete`, checkAuth, async (req, res) => {
+  const {id, commentId} = req.params;
+
+  try {
+    await api.deleteComment({id, commentId});
+    res.redirect(`/my/comments`);
+  } catch (error) {
+    res.status(error.response.status).send(error.response.statusText);
+  }
+});
+
 articlesRouter.get(`/category/:categoryId`, async (req, res) => {
   const {user} = req.session;
   const {categoryId} = req.params;
