@@ -20,7 +20,7 @@ html(lang='ru')
     mixin categoriesCheckbox (category, article)
       -
         const checkedAttr = (article
-          ? (article.categories.some((it) => it.id === category.id))
+          ? (article.categories.some((it) => +it === category.id))
           : false
         );
       .new-publication__checkbox
