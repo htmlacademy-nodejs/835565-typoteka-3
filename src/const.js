@@ -91,6 +91,10 @@ const DaysGap = {
   MIN: 1,
   MAX: 14,
 };
+const HoursGap = {
+  MIN: 1,
+  MAX: 12,
+};
 const CommentsNum = {
   MIN: 2,
   MAX: 4,
@@ -156,6 +160,7 @@ module.exports = {
   SentencesNum,
   CategoriesNum,
   DaysGap,
+  HoursGap,
   mockImgsNum,
   CommentsNum,
   CommentsSentencesNum,
