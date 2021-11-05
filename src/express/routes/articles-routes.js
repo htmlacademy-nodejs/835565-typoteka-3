@@ -8,7 +8,6 @@ const {getLogger} = require(`../../service/lib/logger`);
 const {humanizeDate, prepareErrors} = require(`../../utils/utils-common`);
 const {
   HumanizedDateFormat,
-  HttpCode,
   TemplateName,
   ARTICLES_PER_PAGE,
   PAGINATION_WIDTH
@@ -148,13 +147,13 @@ articlesRouter.get(`/:id`, async (req, res) => {
 /**
  * Deleting single article
  */
-articlesRouter.delete(`/:id`, async (req, res) => {
-  const {user} = req.session;
+articlesRouter.get(`/:id/delete`, checkAuth, async (req, res) => {
   const {id} = req.params;
+  console.log(`DELETING`);
 
   try {
-    const article = await api.deleteArticle({id, userId: user.id});
-    res.status(HttpCode.OK).send(article);
+    await api.deleteArticle(id);
+    res.redirect(`/my`);
   } catch (error) {
     res.status(error.response.status).send(error.response.statusText);
   }

@@ -76,13 +76,6 @@ module.exports = (app, articlesService, commentService) => {
   articlesRouter.delete(`/:articleId`, [...requestValidationMiddlewareSet], async (req, res) => {
     const {articleId} = req.params;
 
-    const article = await articlesService.findOne({articleId});
-
-    if (!article) {
-      return res.status(HttpCode.NOT_FOUND)
-      .send(`Unable to delete unexisting article!`);
-    }
-
     await articlesService.drop(articleId);
 
     return res.status(HttpCode.OK)

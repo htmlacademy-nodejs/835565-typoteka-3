@@ -33,10 +33,11 @@ class ArticleService {
   }
 
   async drop(id) {
-    const deletedRows = await this._Article.destroy({
+    const deletedRow = await this._Article.destroy({
       where: {id}
     });
-    return !!deletedRows;
+
+    return !!deletedRow;
   }
 
   async findOne({articleId, viewMode}) {
