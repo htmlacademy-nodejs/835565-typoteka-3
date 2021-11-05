@@ -94,15 +94,6 @@ module.exports = (app, articlesService, commentService) => {
    * Current article's COMMENTS routes
    * to handle CRUD operations
    */
-  articlesRouter.get(`/:articleId/comments`, [...requestValidationMiddlewareSet], async (req, res) => {
-    const {articleId} = req.params;
-
-    const comments = await commentService.findAll({id: articleId});
-
-    return res.status(HttpCode.OK)
-      .json(comments);
-  });
-
   articlesRouter.post(`/:articleId/comments`, [commentValidator, ...requestValidationMiddlewareSet], async (req, res) => {
     const {articleId} = req.params;
 
@@ -114,7 +105,6 @@ module.exports = (app, articlesService, commentService) => {
 
   articlesRouter.delete(`/:articleId/comments/:commentId`, [commentExists(commentService), ...requestValidationMiddlewareSet], async (req, res) => {
     const {commentId} = req.params;
-    console.log(commentId);
 
     await commentService.drop(commentId);
 

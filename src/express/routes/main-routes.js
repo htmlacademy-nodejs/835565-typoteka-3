@@ -179,14 +179,16 @@ mainRouter.get(`/search`, async (req, res) => {
 
 
 /**
- * CATEGORIES PAGE route
- * (admin route)
+ * CATEGORIES PAGE routes
+ * (admin routes)
  */
 mainRouter.get(`/categories`, checkAuth, async (req, res) => {
   const {user} = req.session;
 
   try {
-    const categories = await api.getCategories({needCount: false});
+    const categories = await api.getCategories({needCount: false})
+      .catch(() => res.render(`errors/500`));
+
     res.render(`categories`, {categories, user});
   } catch (error) {
     logger.error(`Internal server error: ${error.message}`);
@@ -194,7 +196,7 @@ mainRouter.get(`/categories`, checkAuth, async (req, res) => {
   }
 });
 
-mainRouter.post(`/categories/add`, async (req, res) => {
+mainRouter.post(`/categories/add`, checkAuth, async (req, res) => {
   const {user} = req.session;
   const {body} = req;
 
@@ -214,7 +216,7 @@ mainRouter.post(`/categories/add`, async (req, res) => {
   }
 });
 
-mainRouter.post(`/categories/edit/:id`, auth, async (req, res) => {
+mainRouter.post(`/categories/edit/:id`, checkAuth, async (req, res) => {
   const {user} = req.session;
   const {id} = req.params;
   const {body} = req;

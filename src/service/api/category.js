@@ -12,7 +12,9 @@ module.exports = (app, categoryService) => {
 
   categoriesRouter.get(`/`, async (req, res) => {
     const {needCount} = req.query;
+
     const categories = await categoryService.findAll({needCount});
+
     res.status(HttpCode.OK)
       .json(categories);
   });

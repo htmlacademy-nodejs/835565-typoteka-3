@@ -24,6 +24,8 @@ const utils = {
   PAGINATION_WIDTH
 };
 
+const routePostMiddlewareSet = [checkAuth, upload(logger, TemplateName.POST_EDIT)];
+
 
 /**
  * EXPRESS ROUTES
@@ -42,7 +44,7 @@ articlesRouter.get(`/add`, checkAuth, async (req, res) => {
   }
 });
 
-articlesRouter.post(`/add`, upload(logger, TemplateName.POST_EDIT), async (req, res) => {
+articlesRouter.post(`/add`, [...routePostMiddlewareSet], async (req, res) => {
   const {user} = req.session;
   const {body, file} = req;
 
@@ -89,7 +91,7 @@ articlesRouter.get(`/edit/:id`, checkAuth, async (req, res) => {
   }
 });
 
-articlesRouter.post(`/edit/:id`, upload(logger, TemplateName.POST_EDIT), async (req, res) => {
+articlesRouter.post(`/edit/:id`, [...routePostMiddlewareSet], async (req, res) => {
   const {user} = req.session;
   const {id} = req.params;
 
@@ -111,9 +113,17 @@ articlesRouter.post(`/edit/:id`, upload(logger, TemplateName.POST_EDIT), async (
   } catch (errors) {
     const categories = await api.getCategories({needCount: false})
       .catch(() => res.render(`errors/500`));
-    const validationMessages = prepareErrors(errors);
 
-    res.render(`post-edit`, {validationMessages, user, categories, article: articleData, id, ...utils});
+    const options = {
+      id,
+      user,
+      article: articleData,
+      categories,
+      validationMessages: prepareErrors(errors),
+      ...utils
+    };
+
+    res.render(`post-edit`, {...options});
   }
 });
 
@@ -165,18 +175,14 @@ articlesRouter.post(`/:id/comments`, async (req, res) => {
     text: message
   };
 
+  // ! обработать ошибку 500
   try {
-    try {
-      await api.createComment({id, data: commentData});
-      res.redirect(`/articles/${id}`);
-    } catch (errors) {
-      const article = await api.getArticle({id, viewMode: true});
-      const validationMessages = prepareErrors(errors);
-      res.render(`post`, {validationMessages, article, id, user, ...utils});
-    }
-  } catch (error) {
-    logger.error(`An error occurred while creating new comment at article #${id}: ${error.message}`);
-    res.render(`errors/500`);
+    await api.createComment({id, data: commentData});
+    res.redirect(`/articles/${id}`);
+  } catch (errors) {
+    const article = await api.getArticle({id, viewMode: true});
+    const validationMessages = prepareErrors(errors);
+    res.render(`post`, {validationMessages, article, id, user, ...utils});
   }
 });
 

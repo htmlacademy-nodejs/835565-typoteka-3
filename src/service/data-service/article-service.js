@@ -19,7 +19,7 @@ class ArticleService {
   }
 
   async update({id, update}) {
-    const affectedRows = await this._Article.update(update, {
+    const affectedRow = await this._Article.update(update, {
       where: {id}
     });
 
@@ -29,7 +29,7 @@ class ArticleService {
 
     await updatedArticle.setCategories(update.categories);
 
-    return !!affectedRows;
+    return !!affectedRow;
   }
 
   async drop(id) {
