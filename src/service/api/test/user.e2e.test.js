@@ -1,25 +1,21 @@
 'use strict';
 
-const express = require(`express`);
 const request = require(`supertest`);
-const Sequelize = require(`sequelize`);
 
-const user = require(`./user`);
-const UserService = require(`../data-service/user-service`);
-const initDB = require(`../lib/init-db`);
+const user = require(`../user`);
+const UserService = require(`../../data-service/user-service`);
+const initDB = require(`../../lib/init-db`);
+const {mockApp, mockDB} = require(`./test-setup`);
 
-const {HttpCode} = require(`../../const`);
+const {HttpCode} = require(`../../../const`);
 const {mockUsers, mockCategories, mockArticles} = require(`./test-mocks`);
 
 const createAPI = async () => {
-  const mockDB = new Sequelize(`sqlite::memory:`, {logging: false});
   await initDB(mockDB, {categories: mockCategories, articles: mockArticles, users: mockUsers});
 
-  const app = express();
-  app.use(express.json());
-  user(app, new UserService(mockDB));
+  user(mockApp, new UserService(mockDB));
 
-  return app;
+  return mockApp;
 };
 
 const validUserData = {

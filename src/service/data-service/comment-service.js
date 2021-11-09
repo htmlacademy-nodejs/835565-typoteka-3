@@ -38,6 +38,7 @@ class CommentService {
         attributes: [`title`]
       },
       order: [ORDER_BY_LATEST_DATE],
+      // raw: true ?
     });
   }
 

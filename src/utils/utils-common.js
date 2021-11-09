@@ -57,6 +57,8 @@ const prepareErrors = (errors) => {
   return errors.response.data.split(`\n`);
 };
 
+const getRandomMockArticleId = (mockArticles) => getRandomNum(1, mockArticles.length);
+
 module.exports = {
   getRandomNum,
   shuffle,
@@ -65,5 +67,6 @@ module.exports = {
   humanizeDate,
   getRandomSubarray,
   prepareErrors,
+  getRandomMockArticleId,
 };
 

@@ -1,36 +1,30 @@
 'use strict';
 
-const express = require(`express`);
 const request = require(`supertest`);
-const Sequelize = require(`sequelize`);
 
-const search = require(`./search`);
-const SearchService = require(`../data-service/search-service`);
-const {HttpCode} = require(`../../const`);
-const {mockData, mockCategories} = require(`./search.e2e.test-mocks`);
-const initDB = require(`../lib/init-db`);
-
-const app = express();
-app.use(express.json());
-
-const mockDB = new Sequelize(`sqlite::memory:`, {logging: false});
+const search = require(`../search`);
+const SearchService = require(`../../data-service/search-service`);
+const {HttpCode} = require(`../../../const`);
+const {mockArticles, mockCategories, mockUsers} = require(`./test-mocks`);
+const initDB = require(`../../lib/init-db`);
+const {mockApp, mockDB} = require(`./test-setup`);
 
 beforeAll(async () => {
-  await initDB(mockDB, {categories: mockCategories, articles: mockData});
-  search(app, new SearchService(mockDB));
+  await initDB(mockDB, {categories: mockCategories, articles: mockArticles, users: mockUsers});
+  search(mockApp, new SearchService(mockDB));
 });
 
 describe(`Search API.`, () => {
 
   describe(`Positive search result.`, () => {
     let response;
-    const receivedMockArticle = mockData[0];
+    const receivedMockArticle = mockArticles[0];
 
     beforeAll(async () => {
-      response = await request(app)
+      response = await request(mockApp)
         .get(`/search`)
         .query({
-          query: `Поверь в себя`
+          query: `Рок`
         });
     });
 
@@ -42,7 +36,7 @@ describe(`Search API.`, () => {
   describe(`Negative search result.`, () => {
 
     test(`Returns 404 if nothing is found`, () =>
-      request(app)
+      request(mockApp)
       .get(`/search`)
       .query({
         query: `Абракадабра`
@@ -51,7 +45,7 @@ describe(`Search API.`, () => {
     );
 
     test(`Returns 400 if query string is absent`, () =>
-      request(app)
+      request(mockApp)
         .get(`/search`)
         .expect(HttpCode.BAD_REQUEST)
     );

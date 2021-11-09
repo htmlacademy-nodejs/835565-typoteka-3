@@ -164,7 +164,7 @@ articlesRouter.get(`/:id/delete`, checkAuth, async (req, res) => {
  * Adding/deleting comments
  * of a single article
  */
-articlesRouter.post(`/:id/comments`, async (req, res) => {
+articlesRouter.post(`/:id/comments`, checkAuth, async (req, res) => {
   const {user} = req.session;
   const {id} = req.params;
   const {message} = req.body;
