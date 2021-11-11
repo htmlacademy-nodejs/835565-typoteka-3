@@ -1,6 +1,7 @@
 'use strict';
 
 const {Router} = require(`express`);
+const csrf = require(`csurf`);
 
 const {humanizeDate, prepareErrors} = require(`../../utils/utils-common`);
 const {
@@ -13,6 +14,7 @@ const {
   TemplateName
 } = require(`../../const`);
 
+const csrfProtection = csrf();
 const api = require(`../api`).getAPI();
 const {getLogger} = require(`../../service/lib/logger`);
 const upload = require(`../middlewares/upload`);
@@ -182,21 +184,19 @@ mainRouter.get(`/search`, async (req, res) => {
  * CATEGORIES PAGE routes
  * (admin routes)
  */
-mainRouter.get(`/categories`, checkAuth, async (req, res) => {
+mainRouter.get(`/categories`, checkAuth, csrfProtection, async (req, res) => {
   const {user} = req.session;
 
   try {
-    const categories = await api.getCategories({needCount: false})
-      .catch(() => res.render(`errors/500`));
-
-    res.render(`categories`, {categories, user});
+    const categories = await api.getCategories({needCount: false});
+    res.render(`categories`, {categories, user, csrfToken: req.csrfToken()});
   } catch (error) {
     logger.error(`Internal server error: ${error.message}`);
     res.render(`errors/500`);
   }
 });
 
-mainRouter.post(`/categories/add`, checkAuth, async (req, res) => {
+mainRouter.post(`/categories/add`, checkAuth, csrfProtection, async (req, res) => {
   const {user} = req.session;
   const {body} = req;
 
@@ -212,11 +212,11 @@ mainRouter.post(`/categories/add`, checkAuth, async (req, res) => {
     const categories = await api.getCategories({needCount: false})
       .catch(() => res.render(`errors/500`));
 
-    res.render(`categories`, {categories, user, validationMessages});
+    res.render(`categories`, {categories, user, validationMessages, csrfToken: req.csrfToken()});
   }
 });
 
-mainRouter.post(`/categories/edit/:id`, checkAuth, async (req, res) => {
+mainRouter.post(`/categories/edit/:id`, checkAuth, csrfProtection, async (req, res) => {
   const {user} = req.session;
   const {id} = req.params;
   const {body} = req;
@@ -233,7 +233,7 @@ mainRouter.post(`/categories/edit/:id`, checkAuth, async (req, res) => {
     const categories = await api.getCategories({needCount: false})
       .catch(() => res.render(`errors/500`));
 
-    res.render(`categories`, {categories, user, validationMessages});
+    res.render(`categories`, {categories, user, validationMessages, csrfToken: req.csrfToken()});
   }
 });
 

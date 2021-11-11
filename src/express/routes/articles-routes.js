@@ -1,6 +1,7 @@
 'use strict';
 
 const {Router} = require(`express`);
+const csrf = require(`csurf`);
 
 const upload = require(`../middlewares/upload`);
 const checkAuth = require(`../middlewares/auth`);
@@ -13,6 +14,7 @@ const {
   PAGINATION_WIDTH
 } = require(`../../const`);
 
+const csrfProtection = csrf();
 const api = require(`../api`).getAPI();
 const articlesRouter = new Router();
 const logger = getLogger({name: `article-routes api`});
@@ -23,7 +25,7 @@ const utils = {
   PAGINATION_WIDTH
 };
 
-const routePostMiddlewareSet = [checkAuth, upload(logger, TemplateName.POST_EDIT)];
+const routePostMiddlewareSet = [checkAuth, upload(logger, TemplateName.POST_EDIT), csrfProtection];
 
 
 /**
@@ -31,12 +33,12 @@ const routePostMiddlewareSet = [checkAuth, upload(logger, TemplateName.POST_EDIT
  *
  * Adding single article
  */
-articlesRouter.get(`/add`, checkAuth, async (req, res) => {
+articlesRouter.get(`/add`, checkAuth, csrfProtection, async (req, res) => {
   const {user} = req.session;
 
   try {
     const categories = await api.getCategories({needCount: false});
-    res.render(`post-new`, {categories, user, ...utils});
+    res.render(`post-new`, {categories, user, csrfToken: req.csrfToken(), ...utils});
   } catch (error) {
     logger.error(`Error on 'articles/add' route: ${error.message}`);
     res.render(`errors/500`);
@@ -64,9 +66,17 @@ articlesRouter.post(`/add`, [...routePostMiddlewareSet], async (req, res) => {
   } catch (errors) {
     const categories = await api.getCategories({needCount: false})
       .catch(() => res.render(`errors/500`));
-    const validationMessages = prepareErrors(errors);
 
-    res.render(`post-edit`, {validationMessages, user, categories, article: newArticle, ...utils});
+    const options = {
+      user,
+      article: newArticle,
+      categories,
+      validationMessages: prepareErrors(errors),
+      csrfToken: req.csrfToken(),
+      ...utils
+    };
+
+    res.render(`post-edit`, {...options});
   }
 });
 
@@ -74,7 +84,7 @@ articlesRouter.post(`/add`, [...routePostMiddlewareSet], async (req, res) => {
 /**
  * Editing single article
  */
-articlesRouter.get(`/edit/:id`, checkAuth, async (req, res) => {
+articlesRouter.get(`/edit/:id`, checkAuth, csrfProtection, async (req, res) => {
   const {user} = req.session;
   const {id} = req.params;
 
@@ -83,7 +93,7 @@ articlesRouter.get(`/edit/:id`, checkAuth, async (req, res) => {
       api.getArticle({id, viewMode: false}),
       api.getCategories({needCount: false}),
     ]);
-    res.render(`post-edit`, {categories, article, user, id, ...utils});
+    res.render(`post-edit`, {categories, article, user, id, csrfToken: req.csrfToken(), ...utils});
   } catch (error) {
     logger.error(`Error on 'articles/edit/${id}' route: ${error.message}`);
     res.render(`errors/404`);
@@ -119,6 +129,7 @@ articlesRouter.post(`/edit/:id`, [...routePostMiddlewareSet], async (req, res) =
       article: articleData,
       categories,
       validationMessages: prepareErrors(errors),
+      csrfToken: req.csrfToken(),
       ...utils
     };
 
@@ -130,13 +141,13 @@ articlesRouter.post(`/edit/:id`, [...routePostMiddlewareSet], async (req, res) =
 /**
  * Viewing single article
  */
-articlesRouter.get(`/:id`, async (req, res) => {
+articlesRouter.get(`/:id`, csrfProtection, async (req, res) => {
   const {user} = req.session;
   const {id} = req.params;
 
   try {
     const article = await api.getArticle({id, viewMode: true});
-    res.render(`post`, {article, id, user, ...utils});
+    res.render(`post`, {article, id, user, csrfToken: req.csrfToken(), ...utils});
   } catch (error) {
     logger.error(`Error on 'articles/${id}' route: ${error.message}`);
     res.render(`errors/404`);
@@ -149,7 +160,6 @@ articlesRouter.get(`/:id`, async (req, res) => {
  */
 articlesRouter.get(`/:id/delete`, checkAuth, async (req, res) => {
   const {id} = req.params;
-  console.log(`DELETING`);
 
   try {
     await api.deleteArticle(id);
@@ -164,7 +174,7 @@ articlesRouter.get(`/:id/delete`, checkAuth, async (req, res) => {
  * Adding/deleting comments
  * of a single article
  */
-articlesRouter.post(`/:id/comments`, checkAuth, async (req, res) => {
+articlesRouter.post(`/:id/comments`, checkAuth, csrfProtection, async (req, res) => {
   const {user} = req.session;
   const {id} = req.params;
   const {message} = req.body;
