@@ -1,6 +1,8 @@
 'use strict';
 
 const express = require(`express`);
+const {queryParser} = require(`express-query-parser`);
+
 const routes = require(`../api`);
 const {getLogger} = require(`../lib/logger`);
 const sequelize = require(`../lib/sequelize`);
@@ -15,7 +17,9 @@ const {
 
 const logger = getLogger({name: `api`});
 const app = express();
+
 app.use(express.json());
+app.use(queryParser({parseBoolean: true}));
 
 app.use(API_PREFIX, routes);
 
