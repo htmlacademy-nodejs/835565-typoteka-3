@@ -59,13 +59,11 @@ articlesRouter.post(`/add`, [...routePostMiddlewareSet], async (req, res) => {
     userId: user.id
   };
 
-  // ! обработать ошибку 500
   try {
     await api.createArticle(newArticle);
     res.redirect(`/my`);
   } catch (errors) {
-    const categories = await api.getCategories({needCount: false})
-      .catch(() => res.render(`errors/500`));
+    const categories = await api.getCategories({needCount: false});
 
     const options = {
       user,
@@ -115,13 +113,11 @@ articlesRouter.post(`/edit/:id`, [...routePostMiddlewareSet], async (req, res) =
     userId: user.id
   };
 
-  // ! обработать ошибку 500
   try {
     await api.editArticle({id, data: articleData});
     res.redirect(`/my`);
   } catch (errors) {
-    const categories = await api.getCategories({needCount: false})
-      .catch(() => res.render(`errors/500`));
+    const categories = await api.getCategories({needCount: false});
 
     const options = {
       id,
@@ -184,7 +180,6 @@ articlesRouter.post(`/:id/comments`, checkAuth, csrfProtection, async (req, res)
     text: message
   };
 
-  // ! обработать ошибку 500
   try {
     await api.createComment({id, data: commentData});
     res.redirect(`/articles/${id}`);

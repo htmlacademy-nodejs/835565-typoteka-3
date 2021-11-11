@@ -102,7 +102,6 @@ mainRouter.post(`/register`, upload(logger, TemplateName.REGISTRATION), async (r
     avatar: file?.filename || ``
   };
 
-  // ! обработать ошибку 500
   try {
     await api.createUser(userData);
     res.redirect(`/login`);
@@ -208,8 +207,7 @@ mainRouter.post(`/categories/add`, checkAuth, csrfProtection, async (req, res) =
     await api.createCategory(newCategory);
     res.redirect(`/categories`);
   } catch (errors) {
-    const categories = await api.getCategories({needCount: false})
-      .catch(() => res.render(`errors/500`));
+    const categories = await api.getCategories({needCount: false});
     const validationMessages = prepareErrors(errors);
 
     res.render(`categories`, {categories, user, validationMessages, csrfToken: req.csrfToken()});
@@ -229,8 +227,7 @@ mainRouter.post(`/categories/edit/:id`, checkAuth, csrfProtection, async (req, r
     await api.editCategory({id, data: categoryData});
     res.redirect(`/categories`);
   } catch (errors) {
-    const categories = await api.getCategories({needCount: false})
-      .catch(() => res.render(`errors/500`));
+    const categories = await api.getCategories({needCount: false});
     const validationMessages = prepareErrors(errors);
 
     res.render(`categories`, {categories, user, validationMessages, csrfToken: req.csrfToken()});

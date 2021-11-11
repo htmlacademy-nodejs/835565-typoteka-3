@@ -6,7 +6,6 @@ const DEFAULT_COMMAND = `--help`;
 const USER_ARGV_INDEX = 2;
 const DEFAULT_PORT_SERVER = 3000;
 const API_PREFIX = `/api`;
-const NOT_FOUND_MESSAGE = `NOT FOUND`;
 
 const ExitCode = {
   SUCCESS: 0,
@@ -115,7 +114,6 @@ module.exports = {
   USER_ARGV_INDEX,
   DEFAULT_PORT_SERVER,
   API_PREFIX,
-  NOT_FOUND_MESSAGE,
   ExitCode,
   Env,
   HttpMethod,
