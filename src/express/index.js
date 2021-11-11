@@ -30,7 +30,7 @@ const mySessionStore = new SequelizeStore({
 
 sequelize.sync({force: false});
 
-app.use(express.urlencoded({extended: true}));
+app.use(express.urlencoded({extended: false}));
 
 app.use(session({
   name: `session_id`,

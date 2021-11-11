@@ -7,11 +7,17 @@ const jestDate = require(`jest-date`);
 const article = require(`../article`);
 const ArticleService = require(`../../data-service/article-service`);
 const CommentService = require(`../../data-service/comment-service`);
-const {getRandomMockArticleId, getRandomNum} = require(`../../../utils/utils-common`);
-const {HttpCode, HOT_ARTICLES_LIMIT, COMMENTS_COUNT_KEY_NAME, ARTICLES_PER_PAGE} = require(`../../../const`);
 const {mockArticles, mockCategories, mockUsers} = require(`./test-mocks`);
 const initDB = require(`../../lib/init-db`);
 const {mockApp, mockDB} = require(`./test-setup`);
+
+const {getRandomMockArticleId, getRandomNum} = require(`../../../utils/utils-common`);
+const {
+  HttpCode,
+  HOT_ARTICLES_LIMIT,
+  COMMENTS_COUNT_KEY_NAME,
+  ARTICLES_PER_PAGE
+} = require(`../../../const`);
 
 const createAPI = async () => {
   await initDB(mockDB, {categories: mockCategories, articles: mockArticles, users: mockUsers});
