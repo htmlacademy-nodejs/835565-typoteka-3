@@ -41,13 +41,13 @@ block content
                   if categories
                     each category in categories
                       +categoriesCheckbox(category, article)
-                    a.new-publication__form-link.button.button--transparent(href='#') Добавить категорию
+                    a.new-publication__form-link.button.button--transparent(href='/categories') Добавить категорию
                   else
-                    a.new-publication__form-link.button.button--transparent(href='#') Добавить категорию
+                    a.new-publication__form-link.button.button--transparent(href='/categories') Добавить категорию
               .form__wrapper.form__wrapper--text
                 .form__field.form__field--publication-text
                   label
-                    textarea(rows='5' name='announcement' placeholder='Анонс публикации') #{article.announce || ''}
+                    textarea(rows='5' name='announcement' placeholder='Анонс публикации' required='') #{article.announce || ''}
                 .form__field.form__field--publication-text
                   label
                     textarea(rows='10' name='full-text' placeholder='Полный текст публикации') #{article.fullText || ''}
