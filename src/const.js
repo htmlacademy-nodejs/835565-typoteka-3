@@ -56,6 +56,7 @@ const MAX_ID_LENGTH = 10;
 const LAST_COMMENTS_MAX_NUM = 4;
 const MAX_UPLOAD_FILE_SIZE = 1048576;
 const PAGINATION_WIDTH = 2;
+const EXPIRY_PERIOD = 10 * 60 * 1000; // 10 minustes
 
 const HumanizedDateFormat = {
   SHORT: `YYYY-MM-DD`,
@@ -150,6 +151,7 @@ module.exports = {
   LAST_COMMENTS_MAX_NUM,
   MAX_UPLOAD_FILE_SIZE,
   PAGINATION_WIDTH,
+  EXPIRY_PERIOD,
   HumanizedDateFormat,
   HttpCode,
   TemplateName,
