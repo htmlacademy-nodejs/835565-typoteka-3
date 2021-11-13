@@ -11,6 +11,7 @@ const ErrorCategoryMessage = {
 
 const schema = Joi.object({
   name: Joi.string()
+    .trim()
     .min(5)
     .max(30)
     .required()

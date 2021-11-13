@@ -11,6 +11,7 @@ const ErrorCommentMessage = {
 
 const schema = Joi.object({
   text: Joi.string()
+    .trim()
     .min(20)
     .required()
     .messages({'string.empty': ErrorCommentMessage.TEXT_EMPTY})

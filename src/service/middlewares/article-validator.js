@@ -34,6 +34,7 @@ const schema = Joi.object({
   .messages({'any.required': ErrorArticleMessage.CATEGORIES_EMPTY}),
 
   title: Joi.string()
+    .trim()
     .min(30)
     .max(250)
     .required()
@@ -44,6 +45,7 @@ const schema = Joi.object({
     }),
 
   announce: Joi.string()
+    .trim()
     .min(30)
     .max(250)
     .required()
@@ -55,11 +57,13 @@ const schema = Joi.object({
 
   fullText: Joi.string()
     .empty(``)
+    .trim()
     .max(1000)
     .messages({'string.max': ErrorArticleMessage.FULLTEXT_MAX}),
 
   picture: Joi.string()
     .empty(``)
+    .trim()
     .pattern(/.*\.jpg|\.jpeg|\.png$/i)
     .messages({'string.pattern.base': ErrorArticleMessage.PICTURE_FORMAT}),
 
