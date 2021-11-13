@@ -1,6 +1,7 @@
 'use strict';
 
 const express = require(`express`);
+const helmet = require(`helmet`);
 const {queryParser} = require(`express-query-parser`);
 
 const routes = require(`../api`);
@@ -18,6 +19,7 @@ const logger = getLogger({name: `api`});
 const app = express();
 
 app.use(express.json());
+app.use(helmet());
 app.use(queryParser({parseBoolean: true}));
 
 app.use(API_PREFIX, routes);
