@@ -59,6 +59,13 @@ const prepareErrors = (errors) => {
 
 const getRandomMockArticleId = (mockArticles) => getRandomNum(1, mockArticles.length);
 
+const adaptArticleToClient = (article) => (
+  {
+    ...article,
+    categories: article.categories.map((category) => ({id: +category}))
+  }
+);
+
 module.exports = {
   getRandomNum,
   shuffle,
@@ -68,5 +75,6 @@ module.exports = {
   getRandomSubarray,
   prepareErrors,
   getRandomMockArticleId,
+  adaptArticleToClient,
 };
 

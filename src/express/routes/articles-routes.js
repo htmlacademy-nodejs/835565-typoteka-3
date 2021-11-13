@@ -6,7 +6,7 @@ const csrf = require(`csurf`);
 const upload = require(`../middlewares/upload`);
 const checkAuth = require(`../middlewares/auth`);
 const {getLogger} = require(`../../service/lib/logger`);
-const {humanizeDate, prepareErrors} = require(`../../utils/utils-common`);
+const {humanizeDate, prepareErrors, adaptArticleToClient} = require(`../../utils/utils-common`);
 const {
   HumanizedDateFormat,
   TemplateName,
@@ -38,7 +38,7 @@ articlesRouter.get(`/add`, checkAuth, csrfProtection, async (req, res) => {
 
   try {
     const categories = await api.getCategories({needCount: false});
-    res.render(`post-new`, {categories, user, csrfToken: req.csrfToken(), ...utils});
+    res.render(`post-edit`, {categories, user, csrfToken: req.csrfToken(), ...utils});
   } catch (error) {
     logger.error(`Error on 'articles/add' route: ${error.message}`);
     res.render(`errors/500`);
@@ -67,7 +67,7 @@ articlesRouter.post(`/add`, [...routePostMiddlewareSet], async (req, res) => {
 
     const options = {
       user,
-      article: newArticle,
+      article: adaptArticleToClient(newArticle),
       categories,
       validationMessages: prepareErrors(errors),
       csrfToken: req.csrfToken(),
@@ -122,7 +122,7 @@ articlesRouter.post(`/edit/:id`, [...routePostMiddlewareSet], async (req, res) =
     const options = {
       id,
       user,
-      article: articleData,
+      article: adaptArticleToClient(articleData),
       categories,
       validationMessages: prepareErrors(errors),
       csrfToken: req.csrfToken(),
