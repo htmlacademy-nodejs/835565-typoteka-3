@@ -3,6 +3,7 @@
 const express = require(`express`);
 const session = require(`express-session`);
 const path = require(`path`);
+const helmet = require(`helmet`);
 
 const mainRoutes = require(`./routes/main-routes`);
 const myRoutes = require(`./routes/my-routes`);
@@ -22,6 +23,14 @@ if (process.env.NODE_ENV === Env.DEVELOPMENT) {
 }
 
 const app = express();
+
+app.use(helmet.contentSecurityPolicy({
+  useDefaults: true,
+  directives: {
+    "script-src": [`'unsafe-eval'`, `http://localhost:${DEFAULT_PORT_FRONT}`],
+  }
+}));
+app.disable(`x-powered-by`);
 
 const mySessionStore = new SequelizeStore({
   db: sequelize,
