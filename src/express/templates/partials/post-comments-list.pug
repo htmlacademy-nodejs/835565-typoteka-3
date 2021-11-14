@@ -3,9 +3,9 @@ block content
     each comment in article.comments
       li.comments__comment
         .comments__avatar.avatar
-          img(src='../img/avatar-1.png' alt='аватар пользователя')
+          img(src=`../../upload/img/${comment.user.avatar}` alt='аватар пользователя')
         .comments__text
           .comments__head
-            p Евгений Петров •
+            p #{comment.user.firstName} #{comment.user.lastName} •
             time.comments__date(datetime=comment.createdAt) #{humanizeDate(HumanizedDateFormat.FULL, comment.createdAt)}
           p.comments__message #{comment.text}
