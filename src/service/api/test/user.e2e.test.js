@@ -1,25 +1,21 @@
 'use strict';
 
-const express = require(`express`);
 const request = require(`supertest`);
-const Sequelize = require(`sequelize`);
 
-const user = require(`./user`);
-const UserService = require(`../data-service/user-service`);
-const initDB = require(`../lib/init-db`);
+const user = require(`../user`);
+const UserService = require(`../../data-service/user-service`);
+const initDB = require(`../../lib/init-db`);
+const {mockApp, mockDB} = require(`./test-setup`);
 
-const {HttpCode} = require(`../../const`);
+const {HttpCode} = require(`../../../const`);
 const {mockUsers, mockCategories, mockArticles} = require(`./test-mocks`);
 
 const createAPI = async () => {
-  const mockDB = new Sequelize(`sqlite::memory:`, {logging: false});
   await initDB(mockDB, {categories: mockCategories, articles: mockArticles, users: mockUsers});
 
-  const app = express();
-  app.use(express.json());
-  user(app, new UserService(mockDB));
+  user(mockApp, new UserService(mockDB));
 
-  return app;
+  return mockApp;
 };
 
 const validUserData = {
@@ -29,6 +25,11 @@ const validUserData = {
   password: `123456`,
   passwordRepeated: `123456`,
   // avatar in not required
+};
+
+const validAuthData = {
+  email: mockUsers[0].email,
+  password: `ivanov`
 };
 
 
@@ -114,6 +115,56 @@ describe(`Users API.`, () => {
         .post(`/user`)
         .send(invalidUser)
         .expect(HttpCode.BAD_REQUEST);
+    });
+  });
+
+  describe(`API authenticate user if data is valid:`, () => {
+    let response;
+
+    beforeAll(async () => {
+      const app = await createAPI();
+      response = await request(app)
+      .post(`/user/auth`)
+      .send(validAuthData);
+    });
+
+    test(`Received status 200`, () => expect(response.statusCode).toBe(HttpCode.OK));
+
+    test(`User name is correct`, () => {
+      const {firstName, lastName} = response.body;
+      expect(firstName).toBe(mockUsers[0].firstName);
+      expect(lastName).toBe(mockUsers[0].lastName);
+    });
+  });
+
+  describe(`API refuses to authenticate user if data is invalid:`, () => {
+    let app;
+
+    beforeAll(async () => {
+      app = await createAPI();
+    });
+
+    test(`Received status 401 if email is incorrect`, async () => {
+      const invalidAuthData = {
+        email: `not-exist@example.com`,
+        password: `nonexistent`
+      };
+
+      await request(app)
+        .post(`/user/auth`)
+        .send(invalidAuthData)
+        .expect(HttpCode.UNAUTHORIZED);
+    });
+
+    test(`Received status 401 if password doesn't match`, async () => {
+      const invalidAuthData = {
+        email: mockUsers[1].email,
+        password: `nonexistent`
+      };
+      await request(app)
+        .post(`/user/auth`)
+        .send(invalidAuthData)
+        .expect(HttpCode.UNAUTHORIZED);
     });
   });
 });

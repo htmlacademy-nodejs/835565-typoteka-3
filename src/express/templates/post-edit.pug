@@ -5,6 +5,7 @@ block content
       .popup.popup--new-publication.popup--anti
         .new-publication
           form(action=(id ? `/articles/edit/${id}` : '/articles/add') method='POST' enctype='multipart/form-data' autocomplete='off')
+            input(type="hidden" name="_csrf" value=csrfToken)
             .new-publication__header
               h1 Новая публикация
               .new-publication__date-form
@@ -16,8 +17,8 @@ block content
                       type='text'
                       name='date'
                       required=''
-                      placeholder=humanizeDate(HumanizedDateFormat.SHORT, article.createdAt)
-                      value=(article.createdAt)
+                      placeholder=article ? humanizeDate(HumanizedDateFormat.SHORT, (article.createdAt)) : new Date()
+                      value=(article ? article.createdAt : ``)
                     )
               button.new-publication__button.button.button--colored(type='submit') Опубликовать
             a.popup__button.button.button--popup-close(aria-label='Закрыть окно')
@@ -28,7 +29,7 @@ block content
               .form__wrapper.form__wrapper--intro
                 .form__field
                   label
-                    input#article-title(type='text' name='title' placeholder='Заголовок' value=(article.title || '') required='')
+                    input#article-title(type='text' name='title' placeholder='Заголовок' value=(article ? article.title : '') required='')
                 .form__field.form__field--post-image
                   label
                     input#image-name-field(type='text' name='photo' placeholder='Фотография' readonly='')
@@ -40,13 +41,13 @@ block content
                   if categories
                     each category in categories
                       +categoriesCheckbox(category, article)
-                    a.new-publication__form-link.button.button--transparent(href='#') Добавить категорию
+                    a.new-publication__form-link.button.button--transparent(href='/categories') Добавить категорию
                   else
-                    a.new-publication__form-link.button.button--transparent(href='#') Добавить категорию
+                    a.new-publication__form-link.button.button--transparent(href='/categories') Добавить категорию
               .form__wrapper.form__wrapper--text
                 .form__field.form__field--publication-text
                   label
-                    textarea(rows='5' name='announcement' placeholder='Анонс публикации') #{article.announce || ''}
+                    textarea(rows='5' name='announcement' placeholder='Анонс публикации' required='') #{article ? article.announce : ''}
                 .form__field.form__field--publication-text
                   label
-                    textarea(rows='10' name='full-text' placeholder='Полный текст публикации') #{article.fullText || ''}
+                    textarea(rows='10' name='full-text' placeholder='Полный текст публикации') #{article ? article.fullText : ''}

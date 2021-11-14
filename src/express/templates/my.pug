@@ -9,7 +9,7 @@ block content
             li.notes__list-item
               time.notes__item-time(datetime=article.createdAt) #{humanizeDate(HumanizedDateFormat.FULL, article.createdAt)}
               a.notes__item-text(href=`/articles/${article.id}`) #{article.title}
-              button.notes__button.button.button--close-item(type='button')
-                span.visually-hidden Закрыть строку списка
+              a.notes__button.button.button--close-item(href=`/articles/${article.id}/delete`)
+                span.visually-hidden Удалить запись
       else
         p У Вас еще нет записей...

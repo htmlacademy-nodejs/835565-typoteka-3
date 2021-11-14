@@ -20,7 +20,7 @@ html(lang='ru')
     mixin categoriesCheckbox (category, article)
       -
         const checkedAttr = (article
-          ? (article.categories.some((it) => it.id === category.id))
+          ? (article.categories?.some((it) => it.id === category.id))
           : false
         );
       .new-publication__checkbox
@@ -34,6 +34,9 @@ html(lang='ru')
           ul.form__errors
             each message of messages
               li.form__error= message
+
+    mixin categoryEditInput(category)
+      input(id=`modify-form-category-${category.id}` type='text' name=`category-${category.id}` value=category.name)
 
     mixin pagination(page, totalPages, width, prefix)
       -

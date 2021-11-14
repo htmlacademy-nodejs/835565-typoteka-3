@@ -2,6 +2,7 @@
 
 const {Router} = require(`express`);
 const {HumanizedDateFormat} = require(`../../const`);
+const checkAuth = require(`../middlewares/auth`);
 const {getLogger} = require(`../../service/lib/logger`);
 const {humanizeDate} = require(`../../utils/utils-common`);
 const api = require(`../api`).getAPI();
@@ -14,10 +15,14 @@ const utils = {
   HumanizedDateFormat
 };
 
+myRouter.use(checkAuth);
+
 myRouter.get(`/`, async (req, res) => {
+  const {user} = req.session;
+
   try {
-    const {user: articles} = await api.getArticles({user: true});
-    res.render(`my`, {articles, ...utils});
+    const {total: articles} = await api.getArticles();
+    res.render(`my`, {articles, user, ...utils});
   } catch (error) {
     logger.error(`Internal server error: ${error.message}`);
     res.render(`errors/500`);
@@ -25,9 +30,11 @@ myRouter.get(`/`, async (req, res) => {
 });
 
 myRouter.get(`/comments`, async (req, res) => {
+  const {user} = req.session;
+
   try {
-    const comments = await api.getComments({needArticles: true});
-    res.render(`comments`, {comments, ...utils});
+    const comments = await api.getComments();
+    res.render(`comments`, {comments, user, ...utils});
   } catch (error) {
     logger.error(`Internal server error: ${error.message}`);
     res.render(`errors/500`);

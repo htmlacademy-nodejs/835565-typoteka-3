@@ -1,5 +1,6 @@
 block content
   form(action=`/articles/${id}/comments` method='POST' autocomplete='off' enctype='application/x-www-form-urlencoded')
+    input(type="hidden" name="_csrf" value=csrfToken)
     .comments__avatar.avatar
       img(src='../img/avatar-2.png' alt='аватар пользователя')
     label

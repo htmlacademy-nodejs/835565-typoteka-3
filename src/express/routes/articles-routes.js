@@ -1,16 +1,20 @@
 'use strict';
 
 const {Router} = require(`express`);
+const csrf = require(`csurf`);
 
 const upload = require(`../middlewares/upload`);
+const checkAuth = require(`../middlewares/auth`);
 const {getLogger} = require(`../../service/lib/logger`);
-const {humanizeDate, prepareErrors} = require(`../../utils/utils-common`);
+const {humanizeDate, prepareErrors, adaptArticleToClient} = require(`../../utils/utils-common`);
 const {
   HumanizedDateFormat,
-  HttpCode,
-  TemplateName
+  TemplateName,
+  ARTICLES_PER_PAGE,
+  PAGINATION_WIDTH
 } = require(`../../const`);
 
+const csrfProtection = csrf();
 const api = require(`../api`).getAPI();
 const articlesRouter = new Router();
 const logger = getLogger({name: `article-routes api`});
@@ -18,7 +22,10 @@ const logger = getLogger({name: `article-routes api`});
 const utils = {
   humanizeDate,
   HumanizedDateFormat,
+  PAGINATION_WIDTH
 };
+
+const routePostMiddlewareSet = [checkAuth, upload(logger, TemplateName.POST_EDIT), csrfProtection];
 
 
 /**
@@ -26,20 +33,20 @@ const utils = {
  *
  * Adding single article
  */
-articlesRouter.get(`/add`, async (req, res) => {
+articlesRouter.get(`/add`, checkAuth, csrfProtection, async (req, res) => {
+  const {user} = req.session;
+
   try {
     const categories = await api.getCategories({needCount: false});
-    res.render(`post-new`, {categories, ...utils});
+    res.render(`post-edit`, {categories, user, csrfToken: req.csrfToken(), ...utils});
   } catch (error) {
     logger.error(`Error on 'articles/add' route: ${error.message}`);
     res.render(`errors/500`);
   }
 });
 
-articlesRouter.post(`/add`, upload(logger, TemplateName.POST_EDIT), async (req, res) => {
-  const categories = await api.getCategories({needCount: false})
-    .catch(() => res.render(`errors/500`));
-
+articlesRouter.post(`/add`, [...routePostMiddlewareSet], async (req, res) => {
+  const {user} = req.session;
   const {body, file} = req;
 
   const newArticle = {
@@ -48,16 +55,26 @@ articlesRouter.post(`/add`, upload(logger, TemplateName.POST_EDIT), async (req, 
     announce: body.announcement,
     fullText: body[`full-text`],
     createdAt: humanizeDate(``, body[`date`]),
-    categories: body.categories
+    categories: body.categories,
+    userId: user.id
   };
 
-  // ! обработать ошибку 500
   try {
     await api.createArticle(newArticle);
     res.redirect(`/my`);
   } catch (errors) {
-    const validationMessages = prepareErrors(errors);
-    res.render(`post-edit`, {validationMessages, categories, article: newArticle, ...utils});
+    const categories = await api.getCategories({needCount: false});
+
+    const options = {
+      user,
+      article: adaptArticleToClient(newArticle),
+      categories,
+      validationMessages: prepareErrors(errors),
+      csrfToken: req.csrfToken(),
+      ...utils
+    };
+
+    res.render(`post-edit`, {...options});
   }
 });
 
@@ -65,7 +82,8 @@ articlesRouter.post(`/add`, upload(logger, TemplateName.POST_EDIT), async (req, 
 /**
  * Editing single article
  */
-articlesRouter.get(`/edit/:id`, async (req, res) => {
+articlesRouter.get(`/edit/:id`, checkAuth, csrfProtection, async (req, res) => {
+  const {user} = req.session;
   const {id} = req.params;
 
   try {
@@ -73,18 +91,16 @@ articlesRouter.get(`/edit/:id`, async (req, res) => {
       api.getArticle({id, viewMode: false}),
       api.getCategories({needCount: false}),
     ]);
-    res.render(`post-edit`, {categories, article, id, ...utils});
+    res.render(`post-edit`, {categories, article, user, id, csrfToken: req.csrfToken(), ...utils});
   } catch (error) {
     logger.error(`Error on 'articles/edit/${id}' route: ${error.message}`);
     res.render(`errors/404`);
   }
 });
 
-articlesRouter.post(`/edit/:id`, upload(logger, TemplateName.POST_EDIT), async (req, res) => {
+articlesRouter.post(`/edit/:id`, [...routePostMiddlewareSet], async (req, res) => {
+  const {user} = req.session;
   const {id} = req.params;
-
-  const categories = await api.getCategories({needCount: false})
-    .catch(() => res.render(`errors/500`));
 
   const {body, file} = req;
   const articleData = {
@@ -93,16 +109,27 @@ articlesRouter.post(`/edit/:id`, upload(logger, TemplateName.POST_EDIT), async (
     announce: body.announcement,
     fullText: body[`full-text`],
     createdAt: humanizeDate(``, body[`date`]),
-    categories: body.categories
+    categories: body.categories,
+    userId: user.id
   };
 
-  // ! обработать ошибку 500
   try {
     await api.editArticle({id, data: articleData});
     res.redirect(`/my`);
   } catch (errors) {
-    const validationMessages = prepareErrors(errors);
-    res.render(`post-edit`, {validationMessages, categories, article: articleData, id, ...utils});
+    const categories = await api.getCategories({needCount: false});
+
+    const options = {
+      id,
+      user,
+      article: adaptArticleToClient(articleData),
+      categories,
+      validationMessages: prepareErrors(errors),
+      csrfToken: req.csrfToken(),
+      ...utils
+    };
+
+    res.render(`post-edit`, {...options});
   }
 });
 
@@ -110,12 +137,13 @@ articlesRouter.post(`/edit/:id`, upload(logger, TemplateName.POST_EDIT), async (
 /**
  * Viewing single article
  */
-articlesRouter.get(`/:id`, async (req, res) => {
+articlesRouter.get(`/:id`, csrfProtection, async (req, res) => {
+  const {user} = req.session;
   const {id} = req.params;
 
   try {
     const article = await api.getArticle({id, viewMode: true});
-    res.render(`post`, {article, id, ...utils});
+    res.render(`post`, {article, id, user, csrfToken: req.csrfToken(), ...utils});
   } catch (error) {
     logger.error(`Error on 'articles/${id}' route: ${error.message}`);
     res.render(`errors/404`);
@@ -126,12 +154,12 @@ articlesRouter.get(`/:id`, async (req, res) => {
 /**
  * Deleting single article
  */
-articlesRouter.delete(`/:id`, async (req, res) => {
+articlesRouter.get(`/:id/delete`, checkAuth, async (req, res) => {
   const {id} = req.params;
 
   try {
-    const article = await api.deleteArticle(id);
-    res.status(HttpCode.OK).send(article);
+    await api.deleteArticle(id);
+    res.redirect(`/my`);
   } catch (error) {
     res.status(error.response.status).send(error.response.statusText);
   }
@@ -142,29 +170,68 @@ articlesRouter.delete(`/:id`, async (req, res) => {
  * Adding/deleting comments
  * of a single article
  */
-articlesRouter.post(`/:id/comments`, async (req, res) => {
+articlesRouter.post(`/:id/comments`, checkAuth, csrfProtection, async (req, res) => {
+  const {user} = req.session;
   const {id} = req.params;
   const {message} = req.body;
 
   const commentData = {
+    userId: user.id,
     text: message
   };
 
   try {
-    try {
-      await api.createComment({id, data: commentData});
-      res.redirect(`/articles/${id}`);
-    } catch (errors) {
-      const article = await api.getArticle({id, viewMode: true});
-      const validationMessages = prepareErrors(errors);
-      res.render(`post`, {validationMessages, article, id, ...utils});
-    }
-  } catch (error) {
-    logger.error(`An error occurred while creating new comment at article #${id}: ${error.message}`);
-    res.render(`errors/500`);
+    await api.createComment({id, data: commentData});
+    res.redirect(`/articles/${id}`);
+  } catch (errors) {
+    const article = await api.getArticle({id, viewMode: true});
+    const validationMessages = prepareErrors(errors);
+    res.render(`post`, {validationMessages, article, id, user, ...utils});
   }
 });
 
-articlesRouter.get(`/category/:id`, (req, res) => res.render(`posts-by-category`));
+articlesRouter.get(`/:id/comments/:commentId/delete`, checkAuth, async (req, res) => {
+  const {id, commentId} = req.params;
+
+  try {
+    await api.deleteComment({id, commentId});
+    res.redirect(`/my/comments`);
+  } catch (error) {
+    res.status(error.response.status).send(error.response.statusText);
+  }
+});
+
+articlesRouter.get(`/category/:categoryId`, async (req, res) => {
+  const {user} = req.session;
+  const {categoryId} = req.params;
+  let {page = 1} = req.query;
+
+  const offset = (page - 1) * ARTICLES_PER_PAGE;
+
+  try {
+    const [categories, {category, count, articlesByCategory}] = await Promise.all([
+      api.getCategories({needCount: true}),
+      api.getCategory({limit: ARTICLES_PER_PAGE, categoryId, offset})
+    ]);
+
+    const totalPages = Math.ceil(count / ARTICLES_PER_PAGE);
+
+    const options = {
+      user,
+      count,
+      page: +page,
+      totalPages,
+      categories,
+      category,
+      previewArticles: articlesByCategory,
+      ...utils
+    };
+
+    res.render(`posts-by-category`, {...options});
+  } catch (error) {
+    logger.error(`Error on 'articles/category/${categoryId}' route: ${error.message}`);
+    res.render(`errors/500`);
+  }
+});
 
 module.exports = articlesRouter;

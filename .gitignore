@@ -12,6 +12,7 @@ Thumbs.db
 node_modules/
 mocks.json
 *http
+todo.md
 
 # Директория с загруженными изображениями
 src/express/upload/img/

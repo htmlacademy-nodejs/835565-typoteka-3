@@ -22,34 +22,31 @@ class CommentService {
     const deletedRows = await this._Comment.destroy({
       where: {id}
     });
+
     return !!deletedRows;
   }
 
-  async findAll({id, needArticles}) {
-    if (!needArticles) {
-      return await this._Comment.findAll({
-        where: {id},
-        raw: true
-      });
-    }
+  async findOne(id) {
+    return await this._Comment.findByPk(id);
+  }
 
+  async findAll() {
     return await this._Comment.findAll({
       include: {
         model: this._Article,
         as: Aliase.ARTICLE,
-        attributes: [`title`, `id`]
+        attributes: [`title`]
       },
-      order: [ORDER_BY_LATEST_DATE]
+      order: [ORDER_BY_LATEST_DATE],
+      // raw: true ?
     });
   }
 
   async findLimit({limit}) {
-    const options = {
+    return await this._Comment.findAll({
       limit,
       order: [ORDER_BY_LATEST_DATE]
-    };
-
-    return await this._Comment.findAll(options);
+    });
   }
 }
 

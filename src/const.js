@@ -6,7 +6,6 @@ const DEFAULT_COMMAND = `--help`;
 const USER_ARGV_INDEX = 2;
 const DEFAULT_PORT_SERVER = 3000;
 const API_PREFIX = `/api`;
-const NOT_FOUND_MESSAGE = `NOT FOUND`;
 
 const ExitCode = {
   SUCCESS: 0,
@@ -57,6 +56,7 @@ const MAX_ID_LENGTH = 10;
 const LAST_COMMENTS_MAX_NUM = 4;
 const MAX_UPLOAD_FILE_SIZE = 1048576;
 const PAGINATION_WIDTH = 2;
+const EXPIRY_PERIOD = 10 * 60 * 1000; // 10 minustes
 
 const HumanizedDateFormat = {
   SHORT: `YYYY-MM-DD`,
@@ -67,6 +67,8 @@ const HttpCode = {
   OK: 200,
   CREATED: 201,
   BAD_REQUEST: 400,
+  UNAUTHORIZED: 401,
+  FORBIDDEN: 403,
   NOT_FOUND: 404,
   SERVER_ERROR: 500,
 };
@@ -89,6 +91,10 @@ const DaysGap = {
   MIN: 1,
   MAX: 14,
 };
+const HoursGap = {
+  MIN: 1,
+  MAX: 12,
+};
 const CommentsNum = {
   MIN: 2,
   MAX: 4,
@@ -109,7 +115,6 @@ module.exports = {
   USER_ARGV_INDEX,
   DEFAULT_PORT_SERVER,
   API_PREFIX,
-  NOT_FOUND_MESSAGE,
   ExitCode,
   Env,
   HttpMethod,
@@ -146,6 +151,7 @@ module.exports = {
   LAST_COMMENTS_MAX_NUM,
   MAX_UPLOAD_FILE_SIZE,
   PAGINATION_WIDTH,
+  EXPIRY_PERIOD,
   HumanizedDateFormat,
   HttpCode,
   TemplateName,
@@ -154,6 +160,7 @@ module.exports = {
   SentencesNum,
   CategoriesNum,
   DaysGap,
+  HoursGap,
   mockImgsNum,
   CommentsNum,
   CommentsSentencesNum,

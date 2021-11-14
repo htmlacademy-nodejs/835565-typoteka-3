@@ -6,6 +6,7 @@ const articleValidator = require(`../middlewares/article-validator`);
 const articleExists = require(`../middlewares/article-exists`);
 const commentValidator = require(`../middlewares/comment-validator`);
 const routeParamsValidator = require(`../middlewares/route-params-validator`);
+const commentExists = require(`../middlewares/comment-exists`);
 
 const articlesRouter = new Router();
 
@@ -18,13 +19,8 @@ module.exports = (app, articlesService, commentService) => {
    * according to query option
    */
   articlesRouter.get(`/`, async (req, res) => {
-    const {user, limit, offset, needComments} = req.query;
+    const {limit, offset} = req.query;
     let articles = {};
-
-    if (user) {
-      articles.user = await articlesService.findAll({needComments});
-      return res.status(HttpCode.OK).json(articles);
-    }
 
     if (offset) {
       articles.recent = await articlesService.findPage({limit, offset});
@@ -36,7 +32,7 @@ module.exports = (app, articlesService, commentService) => {
       return res.status(HttpCode.OK).json(articles);
     }
 
-    articles.total = await articlesService.findAll({needComments});
+    articles.total = await articlesService.findAll();
 
     return res.status(HttpCode.OK).json(articles);
   });
@@ -80,13 +76,6 @@ module.exports = (app, articlesService, commentService) => {
   articlesRouter.delete(`/:articleId`, [...requestValidationMiddlewareSet], async (req, res) => {
     const {articleId} = req.params;
 
-    const article = await articlesService.findOne({articleId});
-
-    if (!article) {
-      return res.status(HttpCode.NOT_FOUND)
-      .send(`Unable to delete unexisting article!`);
-    }
-
     await articlesService.drop(articleId);
 
     return res.status(HttpCode.OK)
@@ -98,15 +87,6 @@ module.exports = (app, articlesService, commentService) => {
    * Current article's COMMENTS routes
    * to handle CRUD operations
    */
-  articlesRouter.get(`/:articleId/comments`, [...requestValidationMiddlewareSet], async (req, res) => {
-    const {articleId} = req.params;
-
-    const comments = await commentService.findAll({id: articleId});
-
-    return res.status(HttpCode.OK)
-      .json(comments);
-  });
-
   articlesRouter.post(`/:articleId/comments`, [commentValidator, ...requestValidationMiddlewareSet], async (req, res) => {
     const {articleId} = req.params;
 
@@ -116,19 +96,12 @@ module.exports = (app, articlesService, commentService) => {
       .json(newComment);
   });
 
-  articlesRouter.delete(`/:articleId/comments/:commentId`, [...requestValidationMiddlewareSet], async (req, res) => {
-    const {articleId, commentId} = req.params;
+  articlesRouter.delete(`/:articleId/comments/:commentId`, [commentExists(commentService), ...requestValidationMiddlewareSet], async (req, res) => {
+    const {commentId} = req.params;
 
-    const currentComment = await commentService.findOne(articleId, commentId);
-
-    if (!currentComment) {
-      return res.status(HttpCode.NOT_FOUND)
-        .send(`Cannot delete unexisting comment`);
-    }
-
-    const deletedComment = await commentService.drop(articleId, commentId);
+    await commentService.drop(commentId);
 
     return res.status(HttpCode.OK)
-      .json(deletedComment);
+      .send(`Deleted`);
   });
 };

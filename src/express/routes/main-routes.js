@@ -1,6 +1,7 @@
 'use strict';
 
 const {Router} = require(`express`);
+const csrf = require(`csurf`);
 
 const {humanizeDate, prepareErrors} = require(`../../utils/utils-common`);
 const {
@@ -13,9 +14,11 @@ const {
   TemplateName
 } = require(`../../const`);
 
+const csrfProtection = csrf();
 const api = require(`../api`).getAPI();
 const {getLogger} = require(`../../service/lib/logger`);
 const upload = require(`../middlewares/upload`);
+const checkAuth = require(`../middlewares/auth`);
 
 const mainRouter = new Router();
 const logger = getLogger({name: `main-routes api`});
@@ -28,8 +31,14 @@ const utils = {
 };
 
 
+/**
+ * MAIN PAGE route
+ * (public route)
+ */
 mainRouter.get(`/`, async (req, res) => {
+  const {user} = req.session;
   let {page = 1} = req.query;
+
   const offset = (page - 1) * ARTICLES_PER_PAGE;
 
   try {
@@ -54,6 +63,7 @@ mainRouter.get(`/`, async (req, res) => {
       categories,
       page: +page,
       totalPages,
+      user,
       ...utils
     };
 
@@ -64,7 +74,21 @@ mainRouter.get(`/`, async (req, res) => {
   }
 });
 
-mainRouter.get(`/register`, (req, res) => res.render(`registration`));
+
+/**
+ * REGISTRATION routes
+ * (public routes)
+ */
+mainRouter.get(`/register`, (req, res) => {
+  const {user} = req.session;
+
+  if (user) {
+    res.redirect(`/`);
+    return;
+  }
+
+  res.render(`registration`, {user});
+});
 
 mainRouter.post(`/register`, upload(logger, TemplateName.REGISTRATION), async (req, res) => {
   const {body, file} = req;
@@ -78,7 +102,6 @@ mainRouter.post(`/register`, upload(logger, TemplateName.REGISTRATION), async (r
     avatar: file?.filename || ``
   };
 
-  // ! обработать ошибку 500
   try {
     await api.createUser(userData);
     res.redirect(`/login`);
@@ -88,24 +111,66 @@ mainRouter.post(`/register`, upload(logger, TemplateName.REGISTRATION), async (r
   }
 });
 
-mainRouter.get(`/login`, (req, res) => res.render(`login`));
 
+/**
+ * LOGIN / LOGOUT routes
+ * (public routes)
+ */
+mainRouter.get(`/login`, (req, res) => {
+  const {user} = req.session;
+
+  res.render(`login`, {user});
+});
+
+mainRouter.post(`/login`, async (req, res) => {
+  const {email, password} = req.body;
+
+  try {
+    const user = await api.auth({email, password});
+    req.session.user = user;
+
+    req.session.save(() => {
+      res.redirect(`/`);
+    });
+  } catch (errors) {
+    const validationMessages = prepareErrors(errors);
+    const {user} = req.session;
+
+    res.render(`login`, {user, validationMessages});
+  }
+});
+
+mainRouter.get(`/logout`, (req, res) => {
+  delete req.session.user;
+  req.session.save(() => {
+    res.redirect(`/`);
+  });
+});
+
+
+/**
+ * SEARCH route
+ * (public route)
+ */
 mainRouter.get(`/search`, async (req, res) => {
+  const {user} = req.session;
   const {search} = req.query;
+
   try {
     if (search) {
       const options = {
+        user,
         search,
         results: await api.search(search),
         ...utils,
       };
       res.render(`search`, {...options});
     } else {
-      res.render(`search`);
+      res.render(`search`, {user});
     }
   } catch (error) {
     try {
-      res.render(`search-empty`, {search});
+      res.render(`search-empty`, {search, user});
     } catch (err) {
       logger.error(`Internal server error: ${err.message}`);
       res.render(`errors/500`);
@@ -113,13 +178,70 @@ mainRouter.get(`/search`, async (req, res) => {
   }
 });
 
-mainRouter.get(`/categories`, async (req, res) => {
+
+/**
+ * CATEGORIES PAGE routes
+ * (admin routes)
+ */
+mainRouter.get(`/categories`, checkAuth, csrfProtection, async (req, res) => {
+  const {user} = req.session;
+
   try {
     const categories = await api.getCategories({needCount: false});
-    res.render(`categories`, {categories});
+    res.render(`categories`, {categories, user, csrfToken: req.csrfToken()});
   } catch (error) {
     logger.error(`Internal server error: ${error.message}`);
     res.render(`errors/500`);
+  }
+});
+
+mainRouter.post(`/categories/add`, checkAuth, csrfProtection, async (req, res) => {
+  const {user} = req.session;
+  const {body} = req;
+
+  const newCategory = {
+    name: body[`add-category`]
+  };
+
+  try {
+    await api.createCategory(newCategory);
+    res.redirect(`/categories`);
+  } catch (errors) {
+    const categories = await api.getCategories({needCount: false});
+    const validationMessages = prepareErrors(errors);
+
+    res.render(`categories`, {categories, user, validationMessages, csrfToken: req.csrfToken()});
+  }
+});
+
+mainRouter.post(`/categories/edit/:id`, checkAuth, csrfProtection, async (req, res) => {
+  const {user} = req.session;
+  const {id} = req.params;
+  const {body} = req;
+
+  const categoryData = {
+    name: body[`category-${id}`]
+  };
+
+  try {
+    await api.editCategory({id, data: categoryData});
+    res.redirect(`/categories`);
+  } catch (errors) {
+    const categories = await api.getCategories({needCount: false});
+    const validationMessages = prepareErrors(errors);
+
+    res.render(`categories`, {categories, user, validationMessages, csrfToken: req.csrfToken()});
+  }
+});
+
+mainRouter.post(`/categories/:id/delete`, checkAuth, async (req, res) => {
+  const {id} = req.params;
+
+  try {
+    await api.deleteCategory(id);
+    res.redirect(`/categories`);
+  } catch (error) {
+    res.status(error.response.status).send(error.response.statusText);
   }
 });
 

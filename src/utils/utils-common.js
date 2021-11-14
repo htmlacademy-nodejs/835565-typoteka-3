@@ -4,7 +4,7 @@ const chalk = require(`chalk`);
 const fs = require(`fs`).promises;
 const dayjs = require(`dayjs`);
 
-const {DaysGap} = require(`../const`);
+const {DaysGap, HoursGap} = require(`../const`);
 
 const getRandomNum = (min, max) => {
   min = Math.ceil(min);
@@ -22,7 +22,8 @@ const shuffle = (someArray) => {
 
 const getRandomDate = () => {
   const randomDaysGap = getRandomNum(DaysGap.MIN, DaysGap.MAX);
-  return dayjs().add(-randomDaysGap, `day`).format();
+  const randomHoursGap = getRandomNum(HoursGap.MIN, HoursGap.MAX);
+  return dayjs().add(-randomDaysGap, `day`).add(-randomHoursGap, `hour`).format();
 };
 
 const readContent = async (filePath) => {
@@ -56,6 +57,15 @@ const prepareErrors = (errors) => {
   return errors.response.data.split(`\n`);
 };
 
+const getRandomMockArticleId = (mockArticles) => getRandomNum(1, mockArticles.length);
+
+const adaptArticleToClient = (article) => (
+  {
+    ...article,
+    categories: article.categories.map((category) => ({id: +category}))
+  }
+);
+
 module.exports = {
   getRandomNum,
   shuffle,
@@ -64,5 +74,7 @@ module.exports = {
   humanizeDate,
   getRandomSubarray,
   prepareErrors,
+  getRandomMockArticleId,
+  adaptArticleToClient,
 };
 

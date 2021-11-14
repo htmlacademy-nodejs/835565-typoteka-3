@@ -6,9 +6,11 @@ const {HttpCode} = require(`../../const`);
 const ErrorArticleMessage = {
   CATEGORIES_EMPTY: `Не выбрана ни одна категория.`,
 
+  TITLE_EMPTY: `Укажите заголовок публикации.`,
   TITLE_MIN: `Заголовок слишком короткий. Минимум 30 символов.`,
   TITLE_MAX: `Заголовок слишком длинный. Не более 250 символов.`,
 
+  ANNOUNCE_EMPTY: `Укажите анонс публикации.`,
   ANNOUNCE_MIN: `Анонс слишком короткий. Минимум 30 символов.`,
   ANNOUNCE_MAX: `Анонс слишком длинный. Не более 250 символов.`,
 
@@ -26,36 +28,42 @@ const schema = Joi.object({
       Joi.number()
         .integer()
         .positive()
-        .messages({'number.base': ErrorArticleMessage.CATEGORIES_EMPTY})
   )
-    .min(1)
-    .required(),
+  .min(1)
+  .required()
+  .messages({'any.required': ErrorArticleMessage.CATEGORIES_EMPTY}),
 
   title: Joi.string()
+    .trim()
     .min(30)
     .max(250)
     .required()
     .messages({
+      'string.empty': ErrorArticleMessage.TITLE_EMPTY,
       'string.min': ErrorArticleMessage.TITLE_MIN,
       'string.max': ErrorArticleMessage.TITLE_MAX
     }),
 
   announce: Joi.string()
+    .trim()
     .min(30)
     .max(250)
     .required()
     .messages({
+      'string.empty': ErrorArticleMessage.ANNOUNCE_EMPTY,
       'string.min': ErrorArticleMessage.ANNOUNCE_MIN,
       'string.max': ErrorArticleMessage.ANNOUNCE_MAX
     }),
 
   fullText: Joi.string()
     .empty(``)
+    .trim()
     .max(1000)
     .messages({'string.max': ErrorArticleMessage.FULLTEXT_MAX}),
 
   picture: Joi.string()
     .empty(``)
+    .trim()
     .pattern(/.*\.jpg|\.jpeg|\.png$/i)
     .messages({'string.pattern.base': ErrorArticleMessage.PICTURE_FORMAT}),
 
