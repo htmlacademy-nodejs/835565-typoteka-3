@@ -7,6 +7,7 @@ class CommentService {
   constructor(sequelize) {
     this._Article = sequelize.models.Article;
     this._Comment = sequelize.models.Comment;
+    this._User = sequelize.models.User;
   }
 
   async create(id, comment) {
@@ -45,6 +46,11 @@ class CommentService {
   async findLimit({limit}) {
     return await this._Comment.findAll({
       limit,
+      include: {
+        model: this._User,
+        as: Aliase.USER,
+        attributes: {exclude: [`passwordHash`]}
+      },
       order: [ORDER_BY_LATEST_DATE]
     });
   }
