@@ -44,11 +44,10 @@ const ARTICLE_DESCRIPTIONS_PATH = `../../data/descriptions.txt`;
 const ARTICLE_CATEGORIES_PATH = `../../data/categories.txt`;
 const COMMENTS_PATH = `../../data/comments.txt`;
 const LOG_FILE_PATH = `../../../logs/api.log`;
-const UPLOAD_DIR_PATH = `../upload/img/`;
+const UPLOAD_DIR_PATH = `../public/upload/img/`;
 const TEMPLATES_DIR_NAME = `templates`;
 const UPLOADED_FILE_INPUT_NAME = `upload`;
 const PUBLIC_DIR_NAME = `public`;
-const UPLOAD_DIR_NAME = `upload`;
 
 // Front
 const DEFAULT_PORT_FRONT = 8080;
@@ -139,7 +138,6 @@ module.exports = {
   TEMPLATES_DIR_NAME,
   UPLOAD_DIR_PATH,
   PUBLIC_DIR_NAME,
-  UPLOAD_DIR_NAME,
   UPLOADED_FILE_INPUT_NAME,
   DB_FILL_FILE_PATH,
   DB_QUERIES_FILE_PATH,

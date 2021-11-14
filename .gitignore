@@ -15,7 +15,7 @@ mocks.json
 todo.md
 
 # Директория с загруженными изображениями
-src/express/upload/img/
+src/express/public/upload/img/
 
 # Файл с переменными окружения
 .env
