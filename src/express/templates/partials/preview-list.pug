@@ -6,8 +6,9 @@ block content
           each category in previewArticle.categories
             li.preview__breadcrumbs-item
               a.preview__breadcrumbs-link(href=`/articles/category/${category.id}`) #{category.name}
-        .preview__background
-          img.preview__background-image(src='../../img/skyscraper@1x.jpg' width='460' height='240' srcset='../../img/skyscraper@1x.jpg 1x, img/skyscraper@2x.jpg 2x' alt='Фотография небоскреба')
+        if previewArticle.previewPicture
+          .preview__background
+            img.preview__background-image(src=`../../upload/img/${previewArticle.previewPicture}` width='460' height='240' alt='Превью картинка')
         time.preview__time(datetime=previewArticle.createdAt) #{humanizeDate(HumanizedDateFormat.FULL, previewArticle.createdAt)}
         h3.preview__name
           a.preview__name-link(href=`/articles/${previewArticle.id}`) #{previewArticle.title}

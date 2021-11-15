@@ -3,7 +3,7 @@
 const {Router} = require(`express`);
 const csrf = require(`csurf`);
 
-const {humanizeDate, prepareErrors} = require(`../../utils/utils-common`);
+const {humanizeDate, validationErrorHandler} = require(`../../utils/utils-common`);
 const {
   HumanizedDateFormat,
   LAST_COMMENTS_MAX_NUM,
@@ -11,13 +11,12 @@ const {
   ARTICLES_PER_PAGE,
   PAGINATION_WIDTH,
   COMMENTS_COUNT_KEY_NAME,
-  TemplateName
 } = require(`../../const`);
 
 const csrfProtection = csrf();
 const api = require(`../api`).getAPI();
 const {getLogger} = require(`../../service/lib/logger`);
-const upload = require(`../middlewares/upload`);
+const {uploadFile, resizeAvatar} = require(`../middlewares/upload`);
 const checkAuth = require(`../middlewares/auth`);
 
 const mainRouter = new Router();
@@ -90,8 +89,8 @@ mainRouter.get(`/register`, (req, res) => {
   res.render(`registration`, {user});
 });
 
-mainRouter.post(`/register`, upload(logger, TemplateName.REGISTRATION), async (req, res) => {
-  const {body, file} = req;
+mainRouter.post(`/register`, uploadFile, resizeAvatar, async (req, res) => {
+  const {body} = req;
 
   const userData = {
     email: body.email,
@@ -99,14 +98,15 @@ mainRouter.post(`/register`, upload(logger, TemplateName.REGISTRATION), async (r
     lastName: body.lastName,
     password: body.password,
     passwordRepeated: body[`repeat-password`],
-    avatar: file?.filename || ``
+    avatarFullsize: body.avatarImgs?.fullsizeAvatar || ``,
+    avatarSmall: body.avatarImgs?.smallAvatar || ``
   };
 
   try {
     await api.createUser(userData);
     res.redirect(`/login`);
-  } catch (errors) {
-    const validationMessages = prepareErrors(errors);
+  } catch (error) {
+    const validationMessages = validationErrorHandler(error);
     res.render(`registration`, {validationMessages, ...userData});
   }
 });
@@ -132,8 +132,8 @@ mainRouter.post(`/login`, async (req, res) => {
     req.session.save(() => {
       res.redirect(`/`);
     });
-  } catch (errors) {
-    const validationMessages = prepareErrors(errors);
+  } catch (error) {
+    const validationMessages = validationErrorHandler(error);
     const {user} = req.session;
 
     res.render(`login`, {user, validationMessages});
@@ -206,9 +206,9 @@ mainRouter.post(`/categories/add`, checkAuth, csrfProtection, async (req, res) =
   try {
     await api.createCategory(newCategory);
     res.redirect(`/categories`);
-  } catch (errors) {
+  } catch (error) {
     const categories = await api.getCategories({needCount: false});
-    const validationMessages = prepareErrors(errors);
+    const validationMessages = validationErrorHandler(error);
 
     res.render(`categories`, {categories, user, validationMessages, csrfToken: req.csrfToken()});
   }
@@ -226,9 +226,9 @@ mainRouter.post(`/categories/edit/:id`, checkAuth, csrfProtection, async (req, r
   try {
     await api.editCategory({id, data: categoryData});
     res.redirect(`/categories`);
-  } catch (errors) {
+  } catch (error) {
     const categories = await api.getCategories({needCount: false});
-    const validationMessages = prepareErrors(errors);
+    const validationMessages = validationErrorHandler(error);
 
     res.render(`categories`, {categories, user, validationMessages, csrfToken: req.csrfToken()});
   }

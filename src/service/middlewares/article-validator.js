@@ -61,11 +61,13 @@ const schema = Joi.object({
     .max(1000)
     .messages({'string.max': ErrorArticleMessage.FULLTEXT_MAX}),
 
-  picture: Joi.string()
+  fullsizePicture: Joi.string()
     .empty(``)
-    .trim()
-    .pattern(/.*\.jpg|\.jpeg|\.png$/i)
-    .messages({'string.pattern.base': ErrorArticleMessage.PICTURE_FORMAT}),
+    .trim(),
+
+  previewPicture: Joi.string()
+    .empty(``)
+    .trim(),
 
   createdAt: Joi.string()
     .isoDate()

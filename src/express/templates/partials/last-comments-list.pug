@@ -2,6 +2,6 @@ block content
   ul.last__list
     each comment in comments
       li.last__list-item
-        img.last__list-image(src='../../upload/img/avatar-small-1.png' width='20' height='20' alt='Аватар пользователя')
+        img.last__list-image(src=`../../upload/img/${comment.user.avatarSmall}` width='20' height='20' alt='Аватар пользователя')
         b.last__list-name #{comment.user.firstName} #{comment.user.lastName}
         a.last__list-link(href=`/articles/${comment.articleId}`) #{comment.text}

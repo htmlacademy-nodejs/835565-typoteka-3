@@ -22,7 +22,12 @@ module.exports = (sequelize) => User.init({
     type: DataTypes.STRING,
     allowNull: false
   },
-  avatar: {
+  avatarFullsize: {
+    defaultValue: null,
+    type: DataTypes.STRING,
+    allowNull: true
+  },
+  avatarSmall: {
     defaultValue: null,
     type: DataTypes.STRING,
     allowNull: true

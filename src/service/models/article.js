@@ -19,7 +19,12 @@ module.exports = (sequelize) => Article.init({
     type: DataTypes.TEXT,
     allowNull: false
   },
-  picture: {
+  fullsizePicture: {
+    defaultValue: null,
+    type: DataTypes.STRING,
+    allowNull: true
+  },
+  previewPicture: {
     defaultValue: null,
     type: DataTypes.STRING,
     allowNull: true

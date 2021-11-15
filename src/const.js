@@ -48,14 +48,16 @@ const UPLOAD_DIR_PATH = `../public/upload/img/`;
 const TEMPLATES_DIR_NAME = `templates`;
 const UPLOADED_FILE_INPUT_NAME = `upload`;
 const PUBLIC_DIR_NAME = `public`;
+const UPLOADED_IMG_OUTPUT_FROMAT = `jpeg`;
 
 // Front
 const DEFAULT_PORT_FRONT = 8080;
 const MAX_ID_LENGTH = 10;
 const LAST_COMMENTS_MAX_NUM = 4;
-const MAX_UPLOAD_FILE_SIZE = 1048576;
+const MAX_UPLOAD_FILE_SIZE = 1 * 1024 * 1024; // 1 Mb
 const PAGINATION_WIDTH = 2;
 const EXPIRY_PERIOD = 10 * 60 * 1000; // 10 minustes
+const ARTICLE_PICTURE_JPEG_QUALITY = 90;
 
 const HumanizedDateFormat = {
   SHORT: `YYYY-MM-DD`,
@@ -72,9 +74,26 @@ const HttpCode = {
   SERVER_ERROR: 500,
 };
 
-const TemplateName = {
-  REGISTRATION: `registration`,
-  POST_EDIT: `post-edit,`
+const ArticlePictureSize = {
+  PREVIEW: {
+    WIDTH: 460,
+    HEIGHT: 240
+  },
+  FULL_SIZE: {
+    WIDTH: 940,
+    HEIGHT: 490
+  }
+};
+
+const AvatarImgSize = {
+  FULL_SIZE: {
+    WIDTH: 50,
+    HEIGHT: 50
+  },
+  SMALL: {
+    WIDTH: 20,
+    HEIGHT: 20
+  }
 };
 
 // Mocks
@@ -101,10 +120,6 @@ const CommentsNum = {
 const CommentsSentencesNum = {
   MIN: 1,
   MAX: 2,
-};
-const mockImgsNum = {
-  MIN: 1,
-  MAX: 3,
 };
 
 module.exports = {
@@ -142,6 +157,7 @@ module.exports = {
   DB_FILL_FILE_PATH,
   DB_QUERIES_FILE_PATH,
   LOG_FILE_PATH,
+  UPLOADED_IMG_OUTPUT_FROMAT,
 
   // Front
   DEFAULT_PORT_FRONT,
@@ -150,16 +166,17 @@ module.exports = {
   MAX_UPLOAD_FILE_SIZE,
   PAGINATION_WIDTH,
   EXPIRY_PERIOD,
+  ARTICLE_PICTURE_JPEG_QUALITY,
   HumanizedDateFormat,
   HttpCode,
-  TemplateName,
+  ArticlePictureSize,
+  AvatarImgSize,
 
   // Mocks
   SentencesNum,
   CategoriesNum,
   DaysGap,
   HoursGap,
-  mockImgsNum,
   CommentsNum,
   CommentsSentencesNum,
 };
