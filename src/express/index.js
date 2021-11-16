@@ -14,7 +14,6 @@ const SequelizeStore = require(`connect-session-sequelize`)(session.Store);
 const {TEMPLATES_DIR_NAME, PUBLIC_DIR_NAME, DEFAULT_PORT_FRONT, Env, EXPIRY_PERIOD} = require(`../const`);
 
 const {SESSION_SECRET} = process.env;
-const expiryDate = new Date(Date.now() + EXPIRY_PERIOD); // 10 minutes
 
 if (process.env.NODE_ENV === Env.DEVELOPMENT) {
   if (!SESSION_SECRET) {
@@ -49,11 +48,6 @@ app.use(session({
   resave: false,
   proxy: true,
   saveUninitialized: false,
-  cookie: {
-    secure: true,
-    httpOnly: true,
-    expires: expiryDate
-  }
 }));
 
 app.use(`/articles`, articlesRoutes);
