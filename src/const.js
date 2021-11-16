@@ -59,6 +59,11 @@ const PAGINATION_WIDTH = 2;
 const EXPIRY_PERIOD = 10 * 60 * 1000; // 10 minustes
 const ARTICLE_PICTURE_JPEG_QUALITY = 90;
 
+const TextVisibleLimit = {
+  COMMENT: 100,
+  ANNOUNCE: 100,
+};
+
 const HumanizedDateFormat = {
   SHORT: `YYYY-MM-DD`,
   FULL: `DD.MM.YYYY, HH:mm`,
@@ -167,6 +172,7 @@ module.exports = {
   PAGINATION_WIDTH,
   EXPIRY_PERIOD,
   ARTICLE_PICTURE_JPEG_QUALITY,
+  TextVisibleLimit,
   HumanizedDateFormat,
   HttpCode,
   ArticlePictureSize,

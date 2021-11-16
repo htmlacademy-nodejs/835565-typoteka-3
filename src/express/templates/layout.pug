@@ -17,6 +17,11 @@ html(lang='ru')
 
   body
 
+    -
+      const getVisibleText = (text, limit) => (text.length > limit)
+        ? text.slice(0, limit).concat(`...`)
+        : text;
+
     mixin categoriesCheckbox (category, article)
       -
         const checkedAttr = (article
@@ -37,6 +42,15 @@ html(lang='ru')
 
     mixin categoryEditInput(category)
       input(id=`modify-form-category-${category.id}` type='text' name=`category-${category.id}` value=category.name)
+
+    mixin lastCommentText(comment)
+      - const visibleText = getVisibleText(comment.text, TextVisibleLimit.COMMENT);
+      a.last__list-link(href=`/articles/${comment.articleId}`) #{visibleText}
+
+    mixin announceText(article)
+      - const visibleText = getVisibleText(article.announce, TextVisibleLimit.ANNOUNCE);
+      a.hot__list-link(href=`/articles/${article.id}`) #{visibleText}
+        sup.hot__link-sup #{article[COMMENTS_COUNT_KEY_NAME]}
 
     mixin pagination(page, totalPages, width, prefix)
       -

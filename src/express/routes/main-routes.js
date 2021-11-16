@@ -6,6 +6,7 @@ const csrf = require(`csurf`);
 const {humanizeDate, validationErrorHandler} = require(`../../utils/utils-common`);
 const {
   HumanizedDateFormat,
+  TextVisibleLimit,
   LAST_COMMENTS_MAX_NUM,
   HOT_ARTICLES_LIMIT,
   ARTICLES_PER_PAGE,
@@ -25,8 +26,9 @@ const logger = getLogger({name: `main-routes api`});
 const utils = {
   humanizeDate,
   HumanizedDateFormat,
+  TextVisibleLimit,
   PAGINATION_WIDTH,
-  COMMENTS_COUNT_KEY_NAME
+  COMMENTS_COUNT_KEY_NAME,
 };
 
 
