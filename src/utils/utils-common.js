@@ -60,7 +60,7 @@ const getRandomMockArticleId = (mockArticles) => getRandomNum(1, mockArticles.le
 const adaptArticleToClient = (article) => (
   {
     ...article,
-    categories: article.categories.map((category) => ({id: +category}))
+    categories: article.categories?.map((category) => ({id: +category}))
   }
 );
 
