@@ -10,9 +10,12 @@
     "generate": "node ./src/service/service.js --generate 10",
     "fill": "node ./src/service/service.js --fill 5",
     "filldb": "cross-env NODE_ENV=development node -r dotenv/config ./src/service/service.js --filldb 25",
-    "start": "cross-env LOG_LEVEL=error NODE_ENV=production nodemon -r dotenv/config ./src/service/service.js --server",
+    "start": "concurrently -n \"SSR,BACKEND\" -c \"bgYellow,bgBlue.bold\" \"npm:start:ssr\" \"npm:start:rest\"",
+    "start-dev": "concurrently -n \"SSR,BACKEND\" -c \"bgYellow,bgBlue.bold\" \"npm:start::front\" \"npm:start::debug\"",
+    "start::front": "cross-env LOG_LEVEL=info NODE_ENV=development nodemon -r dotenv/config ./src/express/index.js",
     "start::debug": "cross-env LOG_LEVEL=info NODE_ENV=development nodemon -r dotenv/config ./src/service/service.js --server",
-    "start-front": "cross-env NODE_ENV=development nodemon -r dotenv/config ./src/express/index.js"
+    "start:rest": "cross-env LOG_LEVEL=error NODE_ENV=production node -r dotenv/config ./src/service/service.js --server",
+    "start:ssr": "cross-env LOG_LEVEL=error NODE_ENV=production node -r dotenv/config ./src/express/index.js"
   },
   "repository": {
     "type": "git",
@@ -38,6 +41,7 @@
     "axios": "0.22.0",
     "bcrypt": "5.0.1",
     "chalk": "4.1.1",
+    "concurrently": "6.4.0",
     "connect-session-sequelize": "7.1.2",
     "cross-env": "7.0.3",
     "csurf": "1.11.0",
