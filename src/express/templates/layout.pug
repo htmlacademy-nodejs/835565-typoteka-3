@@ -73,25 +73,26 @@ html(lang='ru')
 
         let i = start - 1
 
-      .preview__toggle-wrapper
-        ul.preview__pagination.pagination
-          li
-            a(
-              class=`pagination__button button button--backwards ${start === page ? `button--disabled` : ``}`
-              href=`${prefix}page=${page - 1}`
-              aria-label='Страница назад'
-            ) Назад
+      if totalPages > 1
+        .preview__toggle-wrapper
+          ul.preview__pagination.pagination
+            li
+              a(
+                class=`pagination__button button button--backwards ${start === page ? `button--disabled` : ``}`
+                href=`${prefix}page=${page - 1}`
+                aria-label='Страница назад'
+              ) Назад
 
-          while i++ < end
-            li(class=`pagination__item ${i === page ? `pagination__item--active` : ``}`)
-              a(href=`${prefix}page=${i}`)= i
+            while i++ < end
+              li(class=`pagination__item ${i === page ? `pagination__item--active` : ``}`)
+                a(href=`${prefix}page=${i}`)= i
 
-          li
-            a(
-              class=`pagination__button button button--forward ${end === page ? `button--disabled` : ``}`
-              href=`${prefix}page=${page + 1}`
-              aria-label='Страница назад'
-            ) Вперёд
+            li
+              a(
+                class=`pagination__button button button--forward ${end === page ? `button--disabled` : ``}`
+                href=`${prefix}page=${page + 1}`
+                aria-label='Страница назад'
+              ) Вперёд
 
     .wrapper
       include partials/header.pug
