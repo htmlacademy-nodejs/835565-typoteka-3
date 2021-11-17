@@ -222,6 +222,11 @@ articlesRouter.get(`/:id/comments/:commentId/delete`, checkAuth, async (req, res
   }
 });
 
+
+/**
+ * Get articles
+ * with a sertain category
+ */
 articlesRouter.get(`/category/:categoryId`, async (req, res) => {
   const {user} = req.session;
   const {categoryId} = req.params;
