@@ -2,6 +2,7 @@
 
 const {Router} = require(`express`);
 const {HttpCode} = require(`../../const`);
+const categoryExists = require(`../middlewares/category-exists`);
 const categoryHasArticle = require(`../middlewares/category-has-article`);
 const categoryValidator = require(`../middlewares/category-validator`);
 const routeParamsValidator = require(`../middlewares/route-params-validator`);
@@ -27,7 +28,7 @@ module.exports = (app, categoryService) => {
       .json(newCategory);
   });
 
-  categoriesRouter.get(`/:categoryId`, routeParamsValidator, async (req, res) => {
+  categoriesRouter.get(`/:categoryId`, [routeParamsValidator, categoryExists(categoryService)], async (req, res) => {
     const {categoryId} = req.params;
     const {limit, offset} = req.query;
 
@@ -44,7 +45,7 @@ module.exports = (app, categoryService) => {
       });
   });
 
-  categoriesRouter.put(`/:categoryId`, [routeParamsValidator, categoryValidator], async (req, res) => {
+  categoriesRouter.put(`/:categoryId`, [routeParamsValidator, categoryExists(categoryService), categoryValidator], async (req, res) => {
     const {categoryId} = req.params;
 
     await categoryService.update({id: categoryId, update: req.body});
@@ -53,15 +54,8 @@ module.exports = (app, categoryService) => {
       .send(`Updated`);
   });
 
-  categoriesRouter.delete(`/:categoryId`, [routeParamsValidator, categoryHasArticle(categoryService)], async (req, res) => {
+  categoriesRouter.delete(`/:categoryId`, [routeParamsValidator, categoryExists(categoryService), categoryHasArticle(categoryService)], async (req, res) => {
     const {categoryId} = req.params;
-
-    const category = await categoryService.findOne({id: categoryId});
-
-    if (!category) {
-      return res.status(HttpCode.NOT_FOUND)
-        .send(`Unable to delete unexisting category!`);
-    }
 
     await categoryService.drop({id: categoryId});
 
