@@ -9,7 +9,7 @@
     "eslint": "eslint --ext .js src/",
     "generate": "node ./src/service/service.js --generate 10",
     "fill": "node ./src/service/service.js --fill 5",
-    "filldb": "cross-env NODE_ENV=development node -r dotenv/config ./src/service/service.js --filldb 25",
+    "filldb": "cross-env NODE_ENV=development node -r dotenv/config ./src/service/service.js --filldb 100",
     "start": "concurrently -n \"SSR,BACKEND\" -c \"bgYellow,bgBlue.bold\" \"npm:start:ssr\" \"npm:start:rest\"",
     "start-dev": "concurrently -n \"SSR,BACKEND\" -c \"bgYellow,bgBlue.bold\" \"npm:start::front\" \"npm:start::debug\"",
     "start::front": "cross-env LOG_LEVEL=info NODE_ENV=development nodemon -r dotenv/config ./src/express/index.js",
