@@ -2,6 +2,7 @@
 
 const {Router} = require(`express`);
 const {HttpCode} = require(`../../const`);
+const categoryHasArticle = require(`../middlewares/category-has-article`);
 const categoryValidator = require(`../middlewares/category-validator`);
 const routeParamsValidator = require(`../middlewares/route-params-validator`);
 
@@ -31,7 +32,7 @@ module.exports = (app, categoryService) => {
     const {limit, offset} = req.query;
 
     const [category, {count, articlesByCategory}] = await Promise.all([
-      categoryService.findOne(categoryId),
+      categoryService.findOne({id: categoryId, needCount: false}),
       categoryService.findPage({categoryId, limit, offset})
     ]);
 
@@ -52,14 +53,14 @@ module.exports = (app, categoryService) => {
       .send(`Updated`);
   });
 
-  categoriesRouter.delete(`/:categoryId`, routeParamsValidator, async (req, res) => {
+  categoriesRouter.delete(`/:categoryId`, [routeParamsValidator, categoryHasArticle(categoryService)], async (req, res) => {
     const {categoryId} = req.params;
 
-    const category = await categoryService.findOne(categoryId);
+    const category = await categoryService.findOne({id: categoryId});
 
     if (!category) {
       return res.status(HttpCode.NOT_FOUND)
-      .send(`Unable to delete unexisting category!`);
+        .send(`Unable to delete unexisting category!`);
     }
 
     await categoryService.drop({id: categoryId});

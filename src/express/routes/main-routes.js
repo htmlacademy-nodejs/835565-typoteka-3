@@ -236,14 +236,18 @@ mainRouter.post(`/categories/edit/:id`, checkAuth, csrfProtection, async (req, r
   }
 });
 
-mainRouter.post(`/categories/:id/delete`, checkAuth, async (req, res) => {
+mainRouter.post(`/categories/:id/delete`, checkAuth, csrfProtection, async (req, res) => {
+  const {user} = req.session;
   const {id} = req.params;
 
   try {
     await api.deleteCategory(id);
     res.redirect(`/categories`);
   } catch (error) {
-    res.status(error.response.status).send(error.response.statusText);
+    const categories = await api.getCategories({needCount: false});
+    const validationMessages = validationErrorHandler(error);
+
+    res.render(`categories`, {categories, user, validationMessages, csrfToken: req.csrfToken()});
   }
 });
 

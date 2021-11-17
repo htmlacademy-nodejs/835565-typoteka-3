@@ -33,7 +33,25 @@ class CategoryService {
     return !!deletedRow;
   }
 
-  async findOne(id) {
+  async findOne({id, needCount}) {
+    if (needCount) {
+      return this._Category.findOne({
+        where: {id},
+        attributes: {
+          include: [
+            [this._sequelize.fn(`COUNT`, this._sequelize.col(`CategoryId`)), `count`]
+          ]
+        },
+        group: [this._sequelize.col(`Category.id`)],
+        include: [{
+          model: this._ArticleCategory,
+          as: Aliase.ARTICLE_CATEGORIES,
+          attributes: [],
+        }],
+        raw: true
+      });
+    }
+
     return this._Category.findByPk(id);
   }
 
