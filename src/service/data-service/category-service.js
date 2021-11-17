@@ -61,22 +61,20 @@ class CategoryService {
         attributes: [
           `id`,
           `name`,
-          [this._sequelize.fn(`COUNT`, `*`), `count`]
+          [this._sequelize.fn(`COUNT`, this._sequelize.col(`CategoryId`)), `count`]
         ],
         group: [this._sequelize.col(`Category.id`)],
         include: [{
           model: this._ArticleCategory,
           as: Aliase.ARTICLE_CATEGORIES,
           attributes: [],
-          required: true
         }],
-
+        order: [ORDER_BY_LATEST_DATE]
       });
       return result.map((item) => item.get());
     } else {
       return this._Category.findAll({
         raw: true,
-        order: [ORDER_BY_LATEST_DATE]
       });
     }
   }

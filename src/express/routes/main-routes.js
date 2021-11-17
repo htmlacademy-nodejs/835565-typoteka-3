@@ -189,7 +189,7 @@ mainRouter.get(`/categories`, checkAuth, csrfProtection, async (req, res) => {
   const {user} = req.session;
 
   try {
-    const categories = await api.getCategories({needCount: false});
+    const categories = await api.getCategories({needCount: true});
     res.render(`categories`, {categories, user, csrfToken: req.csrfToken()});
   } catch (error) {
     logger.error(`Internal server error: ${error.message}`);
@@ -209,7 +209,7 @@ mainRouter.post(`/categories/add`, checkAuth, csrfProtection, async (req, res) =
     await api.createCategory(newCategory);
     res.redirect(`/categories`);
   } catch (error) {
-    const categories = await api.getCategories({needCount: false});
+    const categories = await api.getCategories({needCount: true});
     const validationMessages = validationErrorHandler(error);
 
     res.render(`categories`, {categories, user, validationMessages, csrfToken: req.csrfToken()});
@@ -229,7 +229,7 @@ mainRouter.post(`/categories/edit/:id`, checkAuth, csrfProtection, async (req, r
     await api.editCategory({id, data: categoryData});
     res.redirect(`/categories`);
   } catch (error) {
-    const categories = await api.getCategories({needCount: false});
+    const categories = await api.getCategories({needCount: true});
     const validationMessages = validationErrorHandler(error);
 
     res.render(`categories`, {categories, user, validationMessages, csrfToken: req.csrfToken()});
@@ -244,7 +244,7 @@ mainRouter.post(`/categories/:id/delete`, checkAuth, csrfProtection, async (req,
     await api.deleteCategory(id);
     res.redirect(`/categories`);
   } catch (error) {
-    const categories = await api.getCategories({needCount: false});
+    const categories = await api.getCategories({needCount: true});
     const validationMessages = validationErrorHandler(error);
 
     res.render(`categories`, {categories, user, validationMessages, csrfToken: req.csrfToken()});
