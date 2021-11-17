@@ -2,15 +2,14 @@
 
 const {Router} = require(`express`);
 const {HttpCode} = require(`../../const`);
-const categoryExists = require(`../middlewares/category-exists`);
-const categoryHasArticle = require(`../middlewares/category-has-article`);
-const categoryValidator = require(`../middlewares/category-validator`);
+const {categoryExists, categoryHasArticle, categoryValidator} = require(`../middlewares/category-middlewares`);
 const routeParamsValidator = require(`../middlewares/route-params-validator`);
 
 const categoriesRouter = new Router();
 
 module.exports = (app, categoryService) => {
   app.use(`/categories`, categoriesRouter);
+  const categoryMiddlewareSet = [routeParamsValidator, categoryExists(categoryService)];
 
   categoriesRouter.get(`/`, async (req, res) => {
     const {needCount} = req.query;
@@ -28,7 +27,7 @@ module.exports = (app, categoryService) => {
       .json(newCategory);
   });
 
-  categoriesRouter.get(`/:categoryId`, [routeParamsValidator, categoryExists(categoryService)], async (req, res) => {
+  categoriesRouter.get(`/:categoryId`, categoryMiddlewareSet, async (req, res) => {
     const {categoryId} = req.params;
     const {limit, offset} = req.query;
 
@@ -45,7 +44,7 @@ module.exports = (app, categoryService) => {
       });
   });
 
-  categoriesRouter.put(`/:categoryId`, [routeParamsValidator, categoryExists(categoryService), categoryValidator], async (req, res) => {
+  categoriesRouter.put(`/:categoryId`, [...categoryMiddlewareSet, categoryValidator], async (req, res) => {
     const {categoryId} = req.params;
 
     await categoryService.update({id: categoryId, update: req.body});
@@ -54,7 +53,7 @@ module.exports = (app, categoryService) => {
       .send(`Updated`);
   });
 
-  categoriesRouter.delete(`/:categoryId`, [routeParamsValidator, categoryExists(categoryService), categoryHasArticle(categoryService)], async (req, res) => {
+  categoriesRouter.delete(`/:categoryId`, [...categoryMiddlewareSet, categoryHasArticle(categoryService)], async (req, res) => {
     const {categoryId} = req.params;
 
     await categoryService.drop({id: categoryId});

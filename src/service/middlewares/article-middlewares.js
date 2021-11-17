@@ -1,26 +1,22 @@
 'use strict';
 
 const Joi = require(`joi`);
+
 const {HttpCode} = require(`../../const`);
 
 const ErrorArticleMessage = {
-  CATEGORIES_EMPTY: `Не выбрана ни одна категория.`,
-
-  TITLE_EMPTY: `Укажите заголовок публикации.`,
-  TITLE_MIN: `Заголовок слишком короткий. Минимум 30 символов.`,
-  TITLE_MAX: `Заголовок слишком длинный. Не более 250 символов.`,
-
-  ANNOUNCE_EMPTY: `Укажите анонс публикации.`,
-  ANNOUNCE_MIN: `Анонс слишком короткий. Минимум 30 символов.`,
-  ANNOUNCE_MAX: `Анонс слишком длинный. Не более 250 символов.`,
-
-  FULLTEXT_MAX: `Текст не может содержать более 1000 символов.`,
-
-  PICTURE_FORMAT: `Формат изображения не поддерживается (только jpg или png).`,
-
-  DATE_EMPTY: `Не указана дата публикации.`,
-
-  USER_ID: `Некорректный идентификатор пользователя`
+  CATEGORIES_EMPTY: `Не выбрана ни одна категория`,
+  TITLE_EMPTY: `Укажите заголовок публикации`,
+  TITLE_MIN: `Заголовок слишком короткий. Минимум 30 символов`,
+  TITLE_MAX: `Заголовок слишком длинный. Не более 250 символов`,
+  ANNOUNCE_EMPTY: `Укажите анонс публикации`,
+  ANNOUNCE_MIN: `Анонс слишком короткий. Минимум 30 символов`,
+  ANNOUNCE_MAX: `Анонс слишком длинный. Не более 250 символов`,
+  FULLTEXT_MAX: `Текст не может содержать более 1000 символов`,
+  PICTURE_FORMAT: `Формат изображения не поддерживается (только jpg или png)`,
+  DATE_EMPTY: `Не указана дата публикации`,
+  USER_ID: `Некорректный идентификатор пользователя`,
+  NOT_FOUND: `Такой публикации не существует`
 };
 
 const schema = Joi.object({
@@ -81,7 +77,7 @@ const schema = Joi.object({
     .messages({'number.base': ErrorArticleMessage.USER_ID})
 });
 
-module.exports = (req, res, next) => {
+const articleValidator = (req, res, next) => {
   const newArticle = req.body;
 
   const {error} = schema.validate(newArticle, {abortEarly: false});
@@ -92,4 +88,21 @@ module.exports = (req, res, next) => {
   }
 
   return next();
+};
+
+const articleExists = (articlesService) => async (req, res, next) => {
+  const {articleId} = req.params;
+  const article = await articlesService.findOne({articleId});
+
+  if (!article) {
+    return res.status(HttpCode.NOT_FOUND)
+      .send(ErrorArticleMessage.NOT_FOUND);
+  }
+
+  return next();
+};
+
+module.exports = {
+  articleValidator,
+  articleExists
 };
