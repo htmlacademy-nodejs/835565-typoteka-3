@@ -13,5 +13,4 @@ module.exports = (sequelize) => Comment.init({
   sequelize,
   modelName: `Comment`,
   tableName: `comments`,
-  paranoid: true
 });

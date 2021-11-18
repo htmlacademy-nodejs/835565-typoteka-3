@@ -33,5 +33,4 @@ module.exports = (sequelize) => Article.init({
   sequelize,
   modelName: `Article`,
   tableName: `articles`,
-  paranoid: true
 });
