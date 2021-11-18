@@ -33,13 +33,19 @@ class CommentService {
 
   async findAll() {
     return await this._Comment.findAll({
-      include: {
-        model: this._Article,
-        as: Aliase.ARTICLE,
-        attributes: [`title`]
-      },
+      include: [
+        {
+          model: this._User,
+          as: Aliase.USER,
+          attributes: {exclude: [`passwordHash`]}
+        },
+        {
+          model: this._Article,
+          as: Aliase.ARTICLE,
+          attributes: [`title`]
+        }
+      ],
       order: [ORDER_BY_LATEST_DATE],
-      // raw: true ?
     });
   }
 
