@@ -1,15 +1,14 @@
 'use strict';
 
-const Aliase = require(`../models/aliase`);
 const {ORDER_BY_LATEST_DATE} = require(`../../const`);
 
 class CategoryService {
   constructor(sequelize) {
     this._sequelize = sequelize;
-    this._Article = sequelize.models.Article;
-    this._Category = sequelize.models.Category;
-    this._Comment = sequelize.models.Comment;
-    this._ArticleCategory = sequelize.models.ArticleCategory;
+    this._Article = sequelize.models.article;
+    this._Category = sequelize.models.category;
+    this._Comment = sequelize.models.comment;
+    this._ArticlesCategories = sequelize.models.articlesCategories;
   }
 
   async create(data) {
@@ -39,13 +38,12 @@ class CategoryService {
         where: {id},
         attributes: {
           include: [
-            [this._sequelize.fn(`COUNT`, this._sequelize.col(`CategoryId`)), `count`]
+            [this._sequelize.fn(`COUNT`, this._sequelize.col(`categoryId`)), `count`]
           ]
         },
-        group: [this._sequelize.col(`Category.id`)],
+        group: [this._sequelize.col(`category.id`)],
         include: [{
-          model: this._ArticleCategory,
-          as: Aliase.ARTICLE_CATEGORIES,
+          model: this._ArticlesCategories,
           attributes: [],
         }],
         raw: true
@@ -61,12 +59,11 @@ class CategoryService {
         attributes: [
           `id`,
           `name`,
-          [this._sequelize.fn(`COUNT`, this._sequelize.col(`CategoryId`)), `count`]
+          [this._sequelize.fn(`COUNT`, this._sequelize.col(`categoryId`)), `count`]
         ],
-        group: [this._sequelize.col(`Category.id`)],
+        group: [this._sequelize.col(`category.id`)],
         include: [{
-          model: this._ArticleCategory,
-          as: Aliase.ARTICLE_CATEGORIES,
+          model: this._ArticlesCategories,
           attributes: [],
         }],
         order: [ORDER_BY_LATEST_DATE]
@@ -80,24 +77,23 @@ class CategoryService {
   }
 
   async findPage({categoryId, limit, offset}) {
-    const articlesIdByCategory = await this._ArticleCategory.findAll({
-      attributes: [`ArticleId`],
+    const articlesIdByCategory = await this._ArticlesCategories.findAll({
+      attributes: [`articleId`],
       where: {
-        CategoryId: categoryId
+        categoryId
       },
       raw: true
     });
 
-    const articlesId = articlesIdByCategory.map((item) => item.ArticleId);
+    const articlesId = articlesIdByCategory.map((item) => item.articleId);
 
     const {count, rows} = await this._Article.findAndCountAll({
       limit,
       offset,
       include: [
-        Aliase.CATEGORIES,
+        {model: this._Category},
         {
           model: this._Comment,
-          as: Aliase.COMMENTS,
           attributes: [`id`]
         },
       ],

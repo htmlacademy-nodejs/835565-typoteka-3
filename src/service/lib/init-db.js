@@ -1,7 +1,14 @@
+/**
+ *
+ * This module is currently deprecated,
+ * since migrations are implemented
+ *
+ */
+
 'use strict';
 
 const defineModels = require(`../models`);
-const Aliase = require(`../models/aliase`);
+const {Aliase} = require(`../../const`);
 
 module.exports = async (sequelize, {articles, categories, users}) => {
   const {Category, Article, User} = defineModels(sequelize);

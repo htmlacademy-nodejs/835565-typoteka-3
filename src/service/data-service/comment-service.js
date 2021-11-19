@@ -1,13 +1,12 @@
 'use strict';
 
 const {ORDER_BY_LATEST_DATE} = require(`../../const`);
-const Aliase = require(`../models/aliase`);
 
 class CommentService {
   constructor(sequelize) {
-    this._Article = sequelize.models.Article;
-    this._Comment = sequelize.models.Comment;
-    this._User = sequelize.models.User;
+    this._Article = sequelize.models.article;
+    this._Comment = sequelize.models.comment;
+    this._User = sequelize.models.user;
   }
 
   async create(id, comment) {
@@ -15,7 +14,7 @@ class CommentService {
       articleId: id,
       ...comment
     }, {
-      include: [Aliase.ARTICLE]
+      include: [{model: this._Article}]
     });
   }
 
@@ -36,12 +35,10 @@ class CommentService {
       include: [
         {
           model: this._User,
-          as: Aliase.USER,
           attributes: {exclude: [`passwordHash`]}
         },
         {
           model: this._Article,
-          as: Aliase.ARTICLE,
           attributes: [`title`]
         }
       ],
@@ -54,7 +51,6 @@ class CommentService {
       limit,
       include: {
         model: this._User,
-        as: Aliase.USER,
         attributes: {exclude: [`passwordHash`]}
       },
       order: [ORDER_BY_LATEST_DATE]

@@ -34,6 +34,18 @@ const COMMENTS_COUNT_KEY_NAME = `commentsCount`;
 const SALT_ROUNDS = 10;
 const USER_NAME_REGEXP = /[^0-9$&+,:;=?@#|'<>.^*()%!]+$/;
 
+const Aliase = {
+  ARTICLE: `article`,
+  ARTICLES: `articles`,
+  COMMENT: `comment`,
+  COMMENTS: `comments`,
+  CATEGORY: `category`,
+  CATEGORIES: `categories`,
+  ARTICLES_CATEGORIES: `articlesCategories`,
+  USERS: `users`,
+  USER: `user`
+};
+
 // File names and paths
 const FILE_NAME = `mocks.json`;
 const FILE_PATH = `../../../mocks.json`;
@@ -147,6 +159,7 @@ module.exports = {
   COMMENTS_COUNT_KEY_NAME,
   SALT_ROUNDS,
   USER_NAME_REGEXP,
+  Aliase,
 
   // File names and paths
   FILE_NAME,

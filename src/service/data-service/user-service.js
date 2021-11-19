@@ -3,7 +3,7 @@
 class UserService {
   constructor(sequelize) {
     this._sequelize = sequelize;
-    this._User = sequelize.models.User;
+    this._User = sequelize.models.user;
   }
 
   async create(userData) {

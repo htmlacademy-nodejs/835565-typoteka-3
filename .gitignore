@@ -13,6 +13,7 @@ node_modules/
 mocks.json
 *http
 todo.md
+db/mockSeeders
 
 # Директория с загруженными изображениями
 src/express/public/upload/img/

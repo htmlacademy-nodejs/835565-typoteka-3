@@ -1,3 +1,10 @@
+/**
+ *
+ * This module is currently deprecated,
+ * since migrations are implemented
+ *
+ */
+
 'use strict';
 
 const sequelize = require(`../lib/sequelize`);

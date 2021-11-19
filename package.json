@@ -8,6 +8,7 @@
     "jest": "jest",
     "eslint": "eslint --ext .js src/",
     "generate": "node ./src/service/service.js --generate 10",
+    "generate-seeders": "node ./src/service/service.js --generate-seeders 10",
     "fill": "node ./src/service/service.js --fill 5",
     "filldb": "cross-env NODE_ENV=development node -r dotenv/config ./src/service/service.js --filldb 100",
     "start": "concurrently -n \"SSR,BACKEND\" -c \"bgYellow,bgBlue.bold\" \"npm:start:ssr\" \"npm:start:rest\"",
@@ -15,7 +16,12 @@
     "start::front": "cross-env LOG_LEVEL=info NODE_ENV=development nodemon -r dotenv/config ./src/express/index.js",
     "start::debug": "cross-env LOG_LEVEL=info NODE_ENV=development nodemon -r dotenv/config ./src/service/service.js --server",
     "start:rest": "cross-env LOG_LEVEL=error NODE_ENV=production node -r dotenv/config ./src/service/service.js --server",
-    "start:ssr": "cross-env LOG_LEVEL=error NODE_ENV=production node -r dotenv/config ./src/express/index.js"
+    "start:ssr": "cross-env LOG_LEVEL=error NODE_ENV=production node -r dotenv/config ./src/express/index.js",
+    "db:drop": "cross-env NODE_ENV=development npx sequelize-cli db:drop",
+    "db:create": "cross-env NODE_ENV=development npx sequelize-cli db:create",
+    "migrate": "cross-env NODE_ENV=development npx sequelize-cli db:migrate",
+    "seed": "cross-env NODE_ENV=development npx sequelize-cli db:seed:all",
+    "db:reset": "npm run db:drop && npm run db:create && npm run generate-seeders && npm run migrate && npm run seed"
   },
   "repository": {
     "type": "git",
@@ -34,6 +40,7 @@
     "jest-date": "1.1.4",
     "nodemon": "2.0.7",
     "pino-pretty": "5.0.2",
+    "sequelize-cli": "6.3.0",
     "sqlite3": "5.0.2",
     "supertest": "6.1.3"
   },

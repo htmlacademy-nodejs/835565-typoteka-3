@@ -176,6 +176,7 @@ WHERE id = ${updatedArticleId}`;
 };
 
 module.exports = {
+  getRandomImgFileName,
   generateMockData,
   generateMockDataForDB,
   generateQueryToFillDB,

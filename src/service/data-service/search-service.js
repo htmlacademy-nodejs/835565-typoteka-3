@@ -2,15 +2,14 @@
 
 const {Op} = require(`sequelize`);
 const {ORDER_BY_LATEST_DATE} = require(`../../const`);
-const Aliase = require(`../models/aliase`);
 
 class SearchService {
   constructor(sequelize) {
-    this._Article = sequelize.models.Article;
-    this._User = sequelize.models.User;
+    this._Article = sequelize.models.article;
+    this._User = sequelize.models.user;
+    this._Category = sequelize.models.category;
   }
 
-  // ! unify register of search!
   async findAll(searchText) {
     const articles = await this._Article.findAll({
       where: {
@@ -19,10 +18,11 @@ class SearchService {
         }
       },
       include: [
-        Aliase.CATEGORIES,
+        {
+          model: this._Category
+        },
         {
           model: this._User,
-          as: Aliase.USER,
           attributes: {
             exclude: [`passwordHash`]
           }
