@@ -37,12 +37,19 @@ app.set(`view engine`, `pug`);
 app.use(express.static(path.resolve(__dirname, PUBLIC_DIR_NAME)));
 app.use(express.urlencoded({extended: false}));
 
-app.use(helmet.contentSecurityPolicy({
-  useDefaults: true,
-  directives: {
-    "script-src": [`'unsafe-eval'`, `http://localhost:${DEFAULT_PORT_FRONT}`],
-  }
-}));
+app.use(
+    helmet({
+      contentSecurityPolicy: {
+        useDefaults: true,
+        directives: {
+          "script-src": [`'unsafe-eval'`, `http://localhost:${DEFAULT_PORT_FRONT}`],
+        }
+      },
+      referrerPolicy: {
+        policy: `same-origin`
+      }
+    })
+);
 app.disable(`x-powered-by`);
 
 app.use(session({
