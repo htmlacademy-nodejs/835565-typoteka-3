@@ -52,6 +52,31 @@ html(lang='ru')
       a.hot__list-link(href=`/articles/${article.id}`) #{visibleText}
         sup.hot__link-sup #{article[COMMENTS_COUNT_KEY_NAME]}
 
+    mixin adminHeader(user)
+      if user.isAdmin
+        a.button.button--colored.header__button-new(href='/articles/add') Новая запись
+        .header__dropdown
+          a.button.button--burger.header__burger(href='#') Открыть меню
+          ul.navigation.header__navigation
+            li.navigation__item
+              a(href='/my') Все публикации
+            li.navigation__item
+              a(href='/my/comments') Все комментарии
+            li.navigation__item
+              a(href='/categories') Категории
+            li.navigation__item
+              a(href='/logout') Выйти
+      else
+        nav.header__nav
+          ul.header__nav-list
+            if user
+              li.header__list-item
+                p #{user.firstName} #{user.lastName}
+              li.header__list-item
+                a.header__exit(href='/logout') Выйти
+        a.header__avatar.avatar
+          img(src=`../../upload/img/${user.avatarFullsize}` alt='аватар пользователя')
+
     mixin pagination(page, totalPages, width, prefix)
       -
         let start = page - width;

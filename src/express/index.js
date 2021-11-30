@@ -50,6 +50,11 @@ app.use(session({
   saveUninitialized: false,
 }));
 
+app.use((req, res, next) => {
+  console.log(res.statusCode);
+  next();
+});
+
 app.use(`/articles`, articlesRoutes);
 app.use(`/my`, myRoutes);
 app.use(`/`, mainRoutes);

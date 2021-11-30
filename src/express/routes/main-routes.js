@@ -101,7 +101,8 @@ mainRouter.post(`/register`, uploadFile, resizeAvatar, async (req, res) => {
     password: body.password,
     passwordRepeated: body[`repeat-password`],
     avatarFullsize: body.avatarImgs?.fullsizeAvatar || ``,
-    avatarSmall: body.avatarImgs?.smallAvatar || ``
+    avatarSmall: body.avatarImgs?.smallAvatar || ``,
+    isAdmin: false
   };
 
   try {
@@ -120,6 +121,11 @@ mainRouter.post(`/register`, uploadFile, resizeAvatar, async (req, res) => {
  */
 mainRouter.get(`/login`, (req, res) => {
   const {user} = req.session;
+
+  if (user) {
+    res.redirect(`/`);
+    return;
+  }
 
   res.render(`login`, {user});
 });

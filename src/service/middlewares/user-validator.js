@@ -13,7 +13,8 @@ const ErrorRegisterMessage = {
   EMAIL_EXISTS: `Электронный адрес уже используется`,
   PASSWORD: `Пароль содержит меньше 6-ти символов`,
   PASSWORD_EMPTY: `Пароль не может быть пустым`,
-  PASSWORD_REPEAT: `Пароли не совпадают`
+  PASSWORD_REPEAT: `Пароли не совпадают`,
+  ADMIN: `Нельзя зарегистрировать нового администратора`
 };
 
 const schema = Joi.object({
@@ -58,7 +59,12 @@ const schema = Joi.object({
 
   avatarSmall: Joi.string()
     .empty(``)
-    .trim()
+    .trim(),
+
+  isAdmin: Joi.boolean()
+    .required()
+    .valid(false)
+    .messages({'any.only': ErrorRegisterMessage.ADMIN})
 });
 
 module.exports = (userService) => async (req, res, next) => {

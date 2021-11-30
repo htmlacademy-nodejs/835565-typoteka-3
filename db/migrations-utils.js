@@ -26,7 +26,8 @@ const getMockUsers = async () => (
       createdAt: new Date(),
       updatedAt: new Date(),
       avatarFullsize: `avatar-1.png`,
-      avatarSmall: `avatar-small-1.png`
+      avatarSmall: `avatar-small-1.png`,
+      isAdmin: true
     },
     {
       firstName: `Пётр`,
@@ -36,7 +37,8 @@ const getMockUsers = async () => (
       createdAt: new Date(),
       updatedAt: new Date(),
       avatarFullsize: `avatar-2.png`,
-      avatarSmall: `avatar-small-2.png`
+      avatarSmall: `avatar-small-2.png`,
+      isAdmin: false
     },
     {
       firstName: `Сергей`,
@@ -46,7 +48,8 @@ const getMockUsers = async () => (
       createdAt: new Date(),
       updatedAt: new Date(),
       avatarFullsize: `avatar-3.webp`,
-      avatarSmall: `avatar-small-3.webp`
+      avatarSmall: `avatar-small-3.webp`,
+      isAdmin: false
     }
   ]
 );
