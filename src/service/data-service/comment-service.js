@@ -1,12 +1,12 @@
 'use strict';
 
 const {ORDER_BY_LATEST_DATE} = require(`../../const`);
-const Aliase = require(`../models/aliase`);
 
 class CommentService {
   constructor(sequelize) {
-    this._Article = sequelize.models.Article;
-    this._Comment = sequelize.models.Comment;
+    this._Article = sequelize.models.article;
+    this._Comment = sequelize.models.comment;
+    this._User = sequelize.models.user;
   }
 
   async create(id, comment) {
@@ -14,7 +14,7 @@ class CommentService {
       articleId: id,
       ...comment
     }, {
-      include: [Aliase.ARTICLE]
+      include: [{model: this._Article}]
     });
   }
 
@@ -32,19 +32,27 @@ class CommentService {
 
   async findAll() {
     return await this._Comment.findAll({
-      include: {
-        model: this._Article,
-        as: Aliase.ARTICLE,
-        attributes: [`title`]
-      },
+      include: [
+        {
+          model: this._User,
+          attributes: {exclude: [`passwordHash`]}
+        },
+        {
+          model: this._Article,
+          attributes: [`title`]
+        }
+      ],
       order: [ORDER_BY_LATEST_DATE],
-      // raw: true ?
     });
   }
 
   async findLimit({limit}) {
     return await this._Comment.findAll({
       limit,
+      include: {
+        model: this._User,
+        attributes: {exclude: [`passwordHash`]}
+      },
       order: [ORDER_BY_LATEST_DATE]
     });
   }

@@ -53,16 +53,14 @@ const getRandomSubarray = (items, count) => {
   return result;
 };
 
-const prepareErrors = (errors) => {
-  return errors.response.data.split(`\n`);
-};
+const validationErrorHandler = (error) => error.response?.data.split(`\n`) || [error];
 
 const getRandomMockArticleId = (mockArticles) => getRandomNum(1, mockArticles.length);
 
 const adaptArticleToClient = (article) => (
   {
     ...article,
-    categories: article.categories.map((category) => ({id: +category}))
+    categories: article.categories?.map((category) => ({id: +category}))
   }
 );
 
@@ -73,7 +71,7 @@ module.exports = {
   readContent,
   humanizeDate,
   getRandomSubarray,
-  prepareErrors,
+  validationErrorHandler,
   getRandomMockArticleId,
   adaptArticleToClient,
 };

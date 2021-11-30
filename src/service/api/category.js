@@ -2,13 +2,14 @@
 
 const {Router} = require(`express`);
 const {HttpCode} = require(`../../const`);
-const categoryValidator = require(`../middlewares/category-validator`);
+const {categoryExists, categoryHasArticle, categoryValidator} = require(`../middlewares/category-middlewares`);
 const routeParamsValidator = require(`../middlewares/route-params-validator`);
 
 const categoriesRouter = new Router();
 
 module.exports = (app, categoryService) => {
   app.use(`/categories`, categoriesRouter);
+  const categoryMiddlewareSet = [routeParamsValidator, categoryExists(categoryService)];
 
   categoriesRouter.get(`/`, async (req, res) => {
     const {needCount} = req.query;
@@ -26,12 +27,12 @@ module.exports = (app, categoryService) => {
       .json(newCategory);
   });
 
-  categoriesRouter.get(`/:categoryId`, routeParamsValidator, async (req, res) => {
+  categoriesRouter.get(`/:categoryId`, categoryMiddlewareSet, async (req, res) => {
     const {categoryId} = req.params;
     const {limit, offset} = req.query;
 
     const [category, {count, articlesByCategory}] = await Promise.all([
-      categoryService.findOne(categoryId),
+      categoryService.findOne({id: categoryId, needCount: false}),
       categoryService.findPage({categoryId, limit, offset})
     ]);
 
@@ -43,7 +44,7 @@ module.exports = (app, categoryService) => {
       });
   });
 
-  categoriesRouter.put(`/:categoryId`, [routeParamsValidator, categoryValidator], async (req, res) => {
+  categoriesRouter.put(`/:categoryId`, [...categoryMiddlewareSet, categoryValidator], async (req, res) => {
     const {categoryId} = req.params;
 
     await categoryService.update({id: categoryId, update: req.body});
@@ -52,15 +53,8 @@ module.exports = (app, categoryService) => {
       .send(`Updated`);
   });
 
-  categoriesRouter.delete(`/:categoryId`, routeParamsValidator, async (req, res) => {
+  categoriesRouter.delete(`/:categoryId`, [...categoryMiddlewareSet, categoryHasArticle(categoryService)], async (req, res) => {
     const {categoryId} = req.params;
-
-    const category = await categoryService.findOne(categoryId);
-
-    if (!category) {
-      return res.status(HttpCode.NOT_FOUND)
-      .send(`Unable to delete unexisting category!`);
-    }
 
     await categoryService.drop({id: categoryId});
 

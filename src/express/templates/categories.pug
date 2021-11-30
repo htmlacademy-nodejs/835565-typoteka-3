@@ -20,4 +20,8 @@ block content
               label(for=`modify-form-category-${category.id}`)
                 span.visually-hidden Редактировать категорию
               button.category__button.button.button--category(type='submit') Сохранить
-              button.category__button.button.button--category(type='submit' formaction=`/categories/${category.id}/delete`) Удалить
+              button.category__button.button.button--category(
+                type='submit'
+                disabled=(category.count > 0)
+                formaction=`/categories/${category.id}/delete`
+              ) Удалить

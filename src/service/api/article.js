@@ -2,11 +2,10 @@
 
 const {Router} = require(`express`);
 const {HttpCode} = require(`../../const`);
-const articleValidator = require(`../middlewares/article-validator`);
-const articleExists = require(`../middlewares/article-exists`);
-const commentValidator = require(`../middlewares/comment-validator`);
+
+const {articleValidator, articleExists} = require(`../middlewares/article-middlewares`);
+const {commentValidator, commentExists} = require(`../middlewares/comment-middlewares`);
 const routeParamsValidator = require(`../middlewares/route-params-validator`);
-const commentExists = require(`../middlewares/comment-exists`);
 
 const articlesRouter = new Router();
 
@@ -64,7 +63,7 @@ module.exports = (app, articlesService, commentService) => {
       .json(newArticle);
   });
 
-  articlesRouter.put(`/:articleId`, [articleValidator, ...requestValidationMiddlewareSet], async (req, res) => {
+  articlesRouter.put(`/:articleId`, [...requestValidationMiddlewareSet, articleValidator], async (req, res) => {
     const {articleId} = req.params;
 
     await articlesService.update({id: articleId, update: req.body});
@@ -87,7 +86,7 @@ module.exports = (app, articlesService, commentService) => {
    * Current article's COMMENTS routes
    * to handle CRUD operations
    */
-  articlesRouter.post(`/:articleId/comments`, [commentValidator, ...requestValidationMiddlewareSet], async (req, res) => {
+  articlesRouter.post(`/:articleId/comments`, [...requestValidationMiddlewareSet, commentValidator], async (req, res) => {
     const {articleId} = req.params;
 
     const newComment = await commentService.create(articleId, req.body);
@@ -96,7 +95,7 @@ module.exports = (app, articlesService, commentService) => {
       .json(newComment);
   });
 
-  articlesRouter.delete(`/:articleId/comments/:commentId`, [commentExists(commentService), ...requestValidationMiddlewareSet], async (req, res) => {
+  articlesRouter.delete(`/:articleId/comments/:commentId`, [...requestValidationMiddlewareSet, commentExists(commentService)], async (req, res) => {
     const {commentId} = req.params;
 
     await commentService.drop(commentId);

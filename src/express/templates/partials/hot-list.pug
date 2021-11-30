@@ -2,6 +2,4 @@ block content
   ul.hot__list
     each hotArticle in hotArticles
       li.hot__list-item
-        a.hot__list-link(href=`/articles/${hotArticle.id}`)
-          | #{hotArticle.announce}
-          sup.hot__link-sup #{hotArticle[COMMENTS_COUNT_KEY_NAME]}
+        +announceText(hotArticle)

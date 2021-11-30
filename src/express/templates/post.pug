@@ -14,12 +14,11 @@ block content
               each category in article.categories
                 include partials/themes-item.pug
                   button.themes__remove-btn(type='button') Удалить категорию
-          .post__picture
-            if article.picture
-              img(src='../img/sea-fullsize@1x.jpg' alt='пейзаж море, скалы, пляж')
+          if article.fullsizePicture
+            .post__picture
+              img(src=`../../upload/img/${article.fullsizePicture}` alt='Иллюстрация к статье')
           .post__text
             h3 #{article.announce}
-            //- p #{article.announce}
             p #{article.fullText}
       .post__wrapper.post__wrapper--comments
         section.post__comments.comments

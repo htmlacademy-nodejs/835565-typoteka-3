@@ -7,12 +7,15 @@ const {
   CommentsSentencesNum,
   SentencesNum,
   CategoriesNum,
-  mockImgsNum,
 } = require(`../const`);
 const {shuffle, getRandomDate, getRandomNum, getRandomSubarray} = require(`./utils-common`);
 
 const getRandomImgFileName = () => {
-  return `${getRandomNum(mockImgsNum.MIN, mockImgsNum.MAX)}.jpg`;
+  return (
+    Math.random() > 0.5
+      ? {fullPic: `sea-fullsize@1x.jpg`, smallPic: `sea@1x.jpg`}
+      : {fullPic: ``, smallPic: ``}
+  );
 };
 
 const generateComments = (count, comments) => {
@@ -24,16 +27,21 @@ const generateComments = (count, comments) => {
 };
 
 const generateMockData = (count, {titles, descriptions, categories, comments}) => {
-  return Array(count).fill({}).map(() => ({
-    id: nanoid(MAX_ID_LENGTH),
-    title: titles[getRandomNum(0, titles.length - 1)],
-    createdAt: getRandomDate(),
-    announce: shuffle(descriptions).slice(0, getRandomNum(SentencesNum.MIN, SentencesNum.MAX)).join(` `),
-    fullText: shuffle(descriptions).slice(0, getRandomNum(SentencesNum.MIN, descriptions.length - 1)).join(` `),
-    сategories: shuffle(categories).slice(0, getRandomNum(CategoriesNum.MIN, CategoriesNum.MAX)),
-    comments: generateComments(getRandomNum(CommentsNum.MIN, CommentsNum.MAX), comments),
-    picture: getRandomImgFileName(),
-  }));
+  return Array(count).fill({}).map(() => {
+    const {fullPic, smallPic} = getRandomImgFileName();
+
+    return {
+      id: nanoid(MAX_ID_LENGTH),
+      title: titles[getRandomNum(0, titles.length - 1)],
+      createdAt: getRandomDate(),
+      announce: shuffle(descriptions).slice(0, getRandomNum(SentencesNum.MIN, SentencesNum.MAX)).join(` `),
+      fullText: shuffle(descriptions).slice(0, getRandomNum(SentencesNum.MIN, descriptions.length - 1)).join(` `),
+      сategories: shuffle(categories).slice(0, getRandomNum(CategoriesNum.MIN, CategoriesNum.MAX)),
+      comments: generateComments(getRandomNum(CommentsNum.MIN, CommentsNum.MAX), comments),
+      fullsizePicture: fullPic,
+      previewPicture: smallPic
+    };
+  });
 };
 
 const generateCommentsForDB = (count, users, comments) => (
@@ -47,20 +55,25 @@ const generateCommentsForDB = (count, users, comments) => (
 );
 
 const generateMockDataForDB = (count, {titles, descriptions, commentsSentences, categories, mockUsers}) => {
-  return Array(count).fill({}).map(() => ({
-    user: mockUsers[getRandomNum(0, mockUsers.length - 1)].email,
-    title: titles[getRandomNum(0, titles.length - 1)],
-    createdAt: getRandomDate(),
-    announce: shuffle(descriptions).slice(0, getRandomNum(SentencesNum.MIN, SentencesNum.MAX)).join(` `),
-    fullText: shuffle(descriptions).slice(0, getRandomNum(SentencesNum.MIN, descriptions.length - 1)).join(` `),
-    сategories: getRandomSubarray(categories, getRandomNum(CategoriesNum.MIN, CategoriesNum.MAX)),
-    comments: generateCommentsForDB(
-        getRandomNum(CommentsNum.MIN, CommentsNum.MAX),
-        mockUsers,
-        commentsSentences
-    ),
-    picture: getRandomImgFileName(),
-  }));
+  return Array(count).fill({}).map(() => {
+    const {fullPic, smallPic} = getRandomImgFileName();
+
+    return {
+      user: mockUsers[getRandomNum(0, mockUsers.length - 1)].email,
+      title: titles[getRandomNum(0, titles.length - 1)],
+      createdAt: getRandomDate(),
+      announce: shuffle(descriptions).slice(0, getRandomNum(SentencesNum.MIN, SentencesNum.MAX)).join(` `),
+      fullText: shuffle(descriptions).slice(0, getRandomNum(SentencesNum.MIN, descriptions.length - 1)).join(` `),
+      сategories: getRandomSubarray(categories, getRandomNum(CategoriesNum.MIN, CategoriesNum.MAX)),
+      comments: generateCommentsForDB(
+          getRandomNum(CommentsNum.MIN, CommentsNum.MAX),
+          mockUsers,
+          commentsSentences
+      ),
+      fullsizePicture: fullPic,
+      previewPicture: smallPic
+    };
+  });
 };
 
 const generateQueryToFillDB = ({userValues, categoryValues, articlesValues, articleCategoryValues, commentValues}) => {
@@ -163,6 +176,7 @@ WHERE id = ${updatedArticleId}`;
 };
 
 module.exports = {
+  getRandomImgFileName,
   generateMockData,
   generateMockDataForDB,
   generateQueryToFillDB,

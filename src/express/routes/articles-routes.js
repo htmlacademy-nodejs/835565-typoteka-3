@@ -3,13 +3,13 @@
 const {Router} = require(`express`);
 const csrf = require(`csurf`);
 
-const upload = require(`../middlewares/upload`);
+const {uploadFile, resizePicture} = require(`../middlewares/upload`);
 const checkAuth = require(`../middlewares/auth`);
 const {getLogger} = require(`../../service/lib/logger`);
-const {humanizeDate, prepareErrors, adaptArticleToClient} = require(`../../utils/utils-common`);
+
+const {humanizeDate, validationErrorHandler, adaptArticleToClient} = require(`../../utils/utils-common`);
 const {
   HumanizedDateFormat,
-  TemplateName,
   ARTICLES_PER_PAGE,
   PAGINATION_WIDTH
 } = require(`../../const`);
@@ -25,7 +25,7 @@ const utils = {
   PAGINATION_WIDTH
 };
 
-const routePostMiddlewareSet = [checkAuth, upload(logger, TemplateName.POST_EDIT), csrfProtection];
+const routePostMiddlewareSet = [checkAuth, uploadFile, resizePicture, csrfProtection];
 
 
 /**
@@ -47,29 +47,36 @@ articlesRouter.get(`/add`, checkAuth, csrfProtection, async (req, res) => {
 
 articlesRouter.post(`/add`, [...routePostMiddlewareSet], async (req, res) => {
   const {user} = req.session;
-  const {body, file} = req;
+  const {body} = req;
+
+  const {uploadError} = body;
 
   const newArticle = {
     title: body.title,
-    picture: file?.filename || ``,
+    fullsizePicture: body.images?.fullsizePicture || ``,
+    previewPicture: body.images?.previewPicture || ``,
     announce: body.announcement,
     fullText: body[`full-text`],
     createdAt: humanizeDate(``, body[`date`]),
     categories: body.categories,
-    userId: user.id
+    userId: user.id,
   };
 
   try {
+    if (uploadError) {
+      throw uploadError;
+    }
+
     await api.createArticle(newArticle);
     res.redirect(`/my`);
-  } catch (errors) {
+  } catch (error) {
     const categories = await api.getCategories({needCount: false});
 
     const options = {
       user,
       article: adaptArticleToClient(newArticle),
       categories,
-      validationMessages: prepareErrors(errors),
+      validationMessages: validationErrorHandler(error),
       csrfToken: req.csrfToken(),
       ...utils
     };
@@ -101,11 +108,14 @@ articlesRouter.get(`/edit/:id`, checkAuth, csrfProtection, async (req, res) => {
 articlesRouter.post(`/edit/:id`, [...routePostMiddlewareSet], async (req, res) => {
   const {user} = req.session;
   const {id} = req.params;
+  const {body} = req;
 
-  const {body, file} = req;
+  const {uploadError} = body;
+
   const articleData = {
     title: body.title,
-    picture: file?.filename || ``,
+    fullsizePicture: body.images?.fullsizePicture || ``,
+    previewPicture: body.images?.previewPicture || ``,
     announce: body.announcement,
     fullText: body[`full-text`],
     createdAt: humanizeDate(``, body[`date`]),
@@ -114,6 +124,10 @@ articlesRouter.post(`/edit/:id`, [...routePostMiddlewareSet], async (req, res) =
   };
 
   try {
+    if (uploadError) {
+      throw uploadError;
+    }
+
     await api.editArticle({id, data: articleData});
     res.redirect(`/my`);
   } catch (errors) {
@@ -124,7 +138,7 @@ articlesRouter.post(`/edit/:id`, [...routePostMiddlewareSet], async (req, res) =
       user,
       article: adaptArticleToClient(articleData),
       categories,
-      validationMessages: prepareErrors(errors),
+      validationMessages: validationErrorHandler(errors),
       csrfToken: req.csrfToken(),
       ...utils
     };
@@ -185,8 +199,15 @@ articlesRouter.post(`/:id/comments`, checkAuth, csrfProtection, async (req, res)
     res.redirect(`/articles/${id}`);
   } catch (errors) {
     const article = await api.getArticle({id, viewMode: true});
-    const validationMessages = prepareErrors(errors);
-    res.render(`post`, {validationMessages, article, id, user, ...utils});
+
+    const options = {
+      id,
+      user,
+      article,
+      validationMessages: validationErrorHandler(errors),
+      ...utils
+    };
+    res.render(`post`, {...options});
   }
 });
 
@@ -201,6 +222,11 @@ articlesRouter.get(`/:id/comments/:commentId/delete`, checkAuth, async (req, res
   }
 });
 
+
+/**
+ * Get articles
+ * with a sertain category
+ */
 articlesRouter.get(`/category/:categoryId`, async (req, res) => {
   const {user} = req.session;
   const {categoryId} = req.params;

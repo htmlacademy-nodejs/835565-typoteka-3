@@ -1,15 +1,14 @@
 'use strict';
 
 const {ORDER_BY_LATEST_DATE, COMMENTS_COUNT_KEY_NAME} = require(`../../const`);
-const Aliase = require(`../models/aliase`);
 
 class ArticleService {
   constructor(sequelize) {
     this._sequelize = sequelize;
-    this._Comment = sequelize.models.Comment;
-    this._Category = sequelize.models.Category;
-    this._Article = sequelize.models.Article;
-    this._User = sequelize.models.User;
+    this._Comment = sequelize.models.comment;
+    this._Category = sequelize.models.category;
+    this._Article = sequelize.models.article;
+    this._User = sequelize.models.user;
   }
 
   async create(data) {
@@ -43,10 +42,11 @@ class ArticleService {
   async findOne({articleId, viewMode}) {
     const options = {
       include: [
-        Aliase.CATEGORIES,
+        {
+          model: this._Category
+        },
         {
           model: this._User,
-          as: Aliase.USER,
           attributes: {exclude: [`passwordHash`]}
         }
       ],
@@ -56,18 +56,16 @@ class ArticleService {
     if (viewMode) {
       options.include.push({
         model: this._Comment,
-        as: Aliase.COMMENTS,
         include: [
           {
             model: this._User,
-            as: Aliase.USER,
             attributes: {exclude: [`passwordHash`]}
           }
         ]
       });
 
       options.order = [
-        [{model: this._Comment, as: Aliase.COMMENTS}, `createdAt`, `DESC`]
+        [{model: this._Comment}, `createdAt`, `DESC`]
       ];
     }
 
@@ -79,7 +77,6 @@ class ArticleService {
       include: [
         {
           model: this._User,
-          as: Aliase.USER,
           attributes: {exclude: [`passwordHash`]}
         }
       ],
@@ -99,12 +96,11 @@ class ArticleService {
       include: [
         {
           model: this._Comment,
-          as: Aliase.COMMENTS,
           attributes: [],
         },
       ],
       group: [
-        `Article.id`,
+        `article.id`,
       ],
       order: [
         [this._sequelize.fn(`COUNT`, this._sequelize.col(`comments.id`)), `DESC`]
@@ -125,10 +121,11 @@ class ArticleService {
       limit,
       offset,
       include: [
-        Aliase.CATEGORIES,
+        {
+          model: this._Category
+        },
         {
           model: this._Comment,
-          as: Aliase.COMMENTS,
           attributes: [`id`]
         },
       ],

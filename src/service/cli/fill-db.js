@@ -1,3 +1,10 @@
+/**
+ *
+ * This module is currently deprecated,
+ * since migrations are implemented
+ *
+ */
+
 'use strict';
 
 const sequelize = require(`../lib/sequelize`);
@@ -41,21 +48,40 @@ module.exports = {
         lastName: `Иванов`,
         email: `ivanov@example.com`,
         passwordHash: await passwordUtility.hash(`ivanov`),
-        avatar: `avatar01.jpg`
+        avatarFullsize: `avatar-1.png`,
+        avatarSmall: `avatar-small-1.png`
       },
       {
         firstName: `Пётр`,
         lastName: `Петров`,
         email: `petrov@example.com`,
         passwordHash: await passwordUtility.hash(`petrov`),
-        avatar: `avatar02.jpg`
+        avatarFullsize: `avatar-2.png`,
+        avatarSmall: `avatar-small-2.png`
       },
       {
         firstName: `Сергей`,
         lastName: `Сергеев`,
         email: `sergeev@example.com`,
         passwordHash: await passwordUtility.hash(`sergeev`),
-        avatar: `avatar03.jpg`
+        avatarFullsize: `avatar-3.webp`,
+        avatarSmall: `avatar-small-3.webp`
+      },
+      {
+        firstName: `Алексей`,
+        lastName: `Алексеев`,
+        email: `alekseev@example.com`,
+        passwordHash: await passwordUtility.hash(`alekseev`),
+        avatarFullsize: `avatar-2.webp`,
+        avatarSmall: `avatar-small-2.webp`
+      },
+      {
+        firstName: `Михаил`,
+        lastName: `Михайлов`,
+        email: `mikhailov@example.com`,
+        passwordHash: await passwordUtility.hash(`mikhailov`),
+        avatarFullsize: `avatar-1.png`,
+        avatarSmall: `avatar-small-1.png`
       }
     ];
 

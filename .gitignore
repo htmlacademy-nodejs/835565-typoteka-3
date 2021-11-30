@@ -13,9 +13,10 @@ node_modules/
 mocks.json
 *http
 todo.md
+db/mockSeeders
 
 # Директория с загруженными изображениями
-src/express/upload/img/
+src/express/public/upload/img/
 
 # Файл с переменными окружения
 .env

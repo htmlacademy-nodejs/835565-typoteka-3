@@ -4,9 +4,9 @@ block content
     h1 #{category.name}
     section.articles-category__theme-list
       h2.visually-hidden Список тем
-        ul.themes
-          each category in categories
-            include partials/themes-item.pug
+      ul.themes
+        each category in categories
+          include partials/themes-item.pug
     section.articles-category__list.preview
       h2.visually-hidden Список превью статей
       include partials/preview-list.pug

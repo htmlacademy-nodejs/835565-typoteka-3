@@ -17,6 +17,11 @@ html(lang='ru')
 
   body
 
+    -
+      const getVisibleText = (text, limit) => (text.length > limit)
+        ? text.slice(0, limit).concat(`...`)
+        : text;
+
     mixin categoriesCheckbox (category, article)
       -
         const checkedAttr = (article
@@ -37,6 +42,15 @@ html(lang='ru')
 
     mixin categoryEditInput(category)
       input(id=`modify-form-category-${category.id}` type='text' name=`category-${category.id}` value=category.name)
+
+    mixin lastCommentText(comment)
+      - const visibleText = getVisibleText(comment.text, TextVisibleLimit.COMMENT);
+      a.last__list-link(href=`/articles/${comment.articleId}`) #{visibleText}
+
+    mixin announceText(article)
+      - const visibleText = getVisibleText(article.announce, TextVisibleLimit.ANNOUNCE);
+      a.hot__list-link(href=`/articles/${article.id}`) #{visibleText}
+        sup.hot__link-sup #{article[COMMENTS_COUNT_KEY_NAME]}
 
     mixin pagination(page, totalPages, width, prefix)
       -
@@ -59,25 +73,26 @@ html(lang='ru')
 
         let i = start - 1
 
-      .preview__toggle-wrapper
-        ul.preview__pagination.pagination
-          li
-            a(
-              class=`pagination__button button button--backwards ${start === page ? `button--disabled` : ``}`
-              href=`${prefix}page=${page - 1}`
-              aria-label='Страница назад'
-            ) Назад
+      if totalPages > 1
+        .preview__toggle-wrapper
+          ul.preview__pagination.pagination
+            li
+              a(
+                class=`pagination__button button button--backwards ${start === page ? `button--disabled` : ``}`
+                href=`${prefix}page=${page - 1}`
+                aria-label='Страница назад'
+              ) Назад
 
-          while i++ < end
-            li(class=`pagination__item ${i === page ? `pagination__item--active` : ``}`)
-              a(href=`${prefix}page=${i}`)= i
+            while i++ < end
+              li(class=`pagination__item ${i === page ? `pagination__item--active` : ``}`)
+                a(href=`${prefix}page=${i}`)= i
 
-          li
-            a(
-              class=`pagination__button button button--forward ${end === page ? `button--disabled` : ``}`
-              href=`${prefix}page=${page + 1}`
-              aria-label='Страница назад'
-            ) Вперёд
+            li
+              a(
+                class=`pagination__button button button--forward ${end === page ? `button--disabled` : ``}`
+                href=`${prefix}page=${page + 1}`
+                aria-label='Страница назад'
+              ) Вперёд
 
     .wrapper
       include partials/header.pug

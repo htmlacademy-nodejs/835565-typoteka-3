@@ -52,7 +52,11 @@ const schema = Joi.object({
     .required()
     .messages({'any.only': ErrorRegisterMessage.PASSWORD_REPEAT}),
 
-  avatar: Joi.string()
+  avatarFullsize: Joi.string()
+    .empty(``)
+    .trim(),
+
+  avatarSmall: Joi.string()
     .empty(``)
     .trim()
 });
