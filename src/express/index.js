@@ -11,7 +11,7 @@ const articlesRoutes = require(`./routes/articles-routes`);
 const sequelize = require(`../service/lib/sequelize`);
 const SequelizeStore = require(`connect-session-sequelize`)(session.Store);
 
-const {TEMPLATES_DIR_NAME, PUBLIC_DIR_NAME, DEFAULT_PORT_FRONT, Env, EXPIRY_PERIOD} = require(`../const`);
+const {TEMPLATES_DIR_NAME, PUBLIC_DIR_NAME, DEFAULT_PORT_FRONT, Env, EXPIRY_PERIOD, HttpCode} = require(`../const`);
 
 const {SESSION_SECRET} = process.env;
 
@@ -23,14 +23,6 @@ if (process.env.NODE_ENV === Env.DEVELOPMENT) {
 
 const app = express();
 
-app.use(helmet.contentSecurityPolicy({
-  useDefaults: true,
-  directives: {
-    "script-src": [`'unsafe-eval'`, `http://localhost:${DEFAULT_PORT_FRONT}`],
-  }
-}));
-app.disable(`x-powered-by`);
-
 const mySessionStore = new SequelizeStore({
   db: sequelize,
   expiration: EXPIRY_PERIOD, // 10 minutes
@@ -39,7 +31,19 @@ const mySessionStore = new SequelizeStore({
 
 sequelize.sync({force: false});
 
+app.set(`views`, path.resolve(__dirname, TEMPLATES_DIR_NAME));
+app.set(`view engine`, `pug`);
+
+app.use(express.static(path.resolve(__dirname, PUBLIC_DIR_NAME)));
 app.use(express.urlencoded({extended: false}));
+
+app.use(helmet.contentSecurityPolicy({
+  useDefaults: true,
+  directives: {
+    "script-src": [`'unsafe-eval'`, `http://localhost:${DEFAULT_PORT_FRONT}`],
+  }
+}));
+app.disable(`x-powered-by`);
 
 app.use(session({
   name: `session_id`,
@@ -50,18 +54,16 @@ app.use(session({
   saveUninitialized: false,
 }));
 
-app.use((req, res, next) => {
-  console.log(res.statusCode);
-  next();
+app.use((_err, _req, res, _next) => {
+  return res.status(HttpCode.NOT_FOUND).render(`errors/404`);
+});
+app.use((_err, _req, res, _next) => {
+  return res.status(HttpCode.NOT_FOUND).render(`errors/500`);
 });
 
 app.use(`/articles`, articlesRoutes);
 app.use(`/my`, myRoutes);
 app.use(`/`, mainRoutes);
-
-app.use(express.static(path.resolve(__dirname, PUBLIC_DIR_NAME)));
-app.set(`views`, path.resolve(__dirname, TEMPLATES_DIR_NAME));
-app.set(`view engine`, `pug`);
 
 app.listen(DEFAULT_PORT_FRONT, (error) => {
   if (error) {
