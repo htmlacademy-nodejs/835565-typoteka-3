@@ -2,6 +2,7 @@
 
 const chalk = require(`chalk`);
 const fs = require(`fs`).promises;
+const path = require(`path`);
 const dayjs = require(`dayjs`);
 
 const {DaysGap, HoursGap} = require(`../const`);
@@ -64,6 +65,24 @@ const adaptArticleToClient = (article) => (
   }
 );
 
+const createDirs = async (dirpaths) => {
+  for (const dirpath of dirpaths) {
+    console.info(chalk.green(`Creating folder: ${dirpath}`));
+    await fs.mkdir(path.resolve(process.cwd(), dirpath), {
+      recursive: true,
+    });
+  }
+};
+
+const copyFiles = async (sourceDir, targetDir) => {
+  const files = await fs.readdir(sourceDir);
+
+  for (const file of files) {
+    console.info(chalk.green(`Copying file: ${file}`));
+    await fs.copyFile(path.join(sourceDir, file), path.join(targetDir, file));
+  }
+};
+
 module.exports = {
   getRandomNum,
   shuffle,
@@ -74,5 +93,7 @@ module.exports = {
   validationErrorHandler,
   getRandomMockArticleId,
   adaptArticleToClient,
+  createDirs,
+  copyFiles,
 };
 

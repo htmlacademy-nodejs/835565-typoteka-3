@@ -4,13 +4,20 @@ const path = require(`path`);
 const fs = require(`fs`).promises;
 const chalk = require(`chalk`);
 
-const {readContent} = require(`../../utils/utils-common`);
+const {
+  readContent,
+  copyFiles,
+  createDirs,
+} = require(`../../utils/utils-common`);
 const {
   DEFAULT_COUNT,
   ARTICLE_TITLES_PATH,
   ARTICLE_DESCRIPTIONS_PATH,
   COMMENTS_PATH,
   ARTICLE_CATEGORIES_PATH,
+  UPLOAD_DIR_PATH,
+  SEEDERS_IMG_DIR_PATH,
+  MOCK_SEEDERS_DIR_PATH,
 } = require(`../../const`);
 const {
   getMockUsers,
@@ -67,22 +74,31 @@ module.exports = {
     };
 
     try {
-      console.info(chalk.green(`Writing...`));
+      console.info(chalk.green(`Creating folders...`));
+      await createDirs([MOCK_SEEDERS_DIR_PATH, UPLOAD_DIR_PATH]);
 
-      await fs.mkdir(`./db/mockSeeders`, {
-        recursive: true,
-      });
+      console.info(chalk.green(`Copying mock images...`));
+      await copyFiles(
+          path.resolve(process.cwd(), SEEDERS_IMG_DIR_PATH),
+          path.resolve(process.cwd(), UPLOAD_DIR_PATH)
+      );
+
+      console.info(chalk.green(`Writing generated data...`));
       const promises = Object.keys(data).map(async (item) => {
-        await fs.writeFile(`./db/mockSeeders/${item}.json`, data[item]);
+        console.info(chalk.green(`Writing file: ${item}.json`));
+        await fs.writeFile(
+            `${process.cwd()}/${MOCK_SEEDERS_DIR_PATH}/${item}.json`,
+            data[item]
+        );
       });
 
       await Promise.all(promises);
 
-      console.info(chalk.green(`Operation success. All files created.`));
+      console.info(chalk.green(`Operation finished successfully.`));
       process.exit();
     } catch (error) {
       console.error(
-          chalk.red(`Can't write data to files. Error: ${error.message}`)
+          chalk.red(`Error occurred while generating seeders data: ${error.message}`)
       );
       process.exit(1);
     }

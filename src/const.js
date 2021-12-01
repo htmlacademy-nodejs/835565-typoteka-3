@@ -56,11 +56,13 @@ const ARTICLE_DESCRIPTIONS_PATH = `../../data/descriptions.txt`;
 const ARTICLE_CATEGORIES_PATH = `../../data/categories.txt`;
 const COMMENTS_PATH = `../../data/comments.txt`;
 const LOG_FILE_PATH = `../../../logs/api.log`;
-const UPLOAD_DIR_PATH = `../public/upload/img/`;
+const UPLOAD_DIR_PATH = `src/express/public/upload/img/`;
 const TEMPLATES_DIR_NAME = `templates`;
 const UPLOADED_FILE_INPUT_NAME = `upload`;
 const PUBLIC_DIR_NAME = `public`;
 const UPLOADED_IMG_OUTPUT_FROMAT = `jpeg`;
+const SEEDERS_IMG_DIR_PATH = `db/seeders/seedersImgs/`;
+const MOCK_SEEDERS_DIR_PATH = `db/mockSeeders/`;
 
 // Front
 const DEFAULT_PORT_FRONT = 8080;
@@ -176,6 +178,8 @@ module.exports = {
   DB_QUERIES_FILE_PATH,
   LOG_FILE_PATH,
   UPLOADED_IMG_OUTPUT_FROMAT,
+  SEEDERS_IMG_DIR_PATH,
+  MOCK_SEEDERS_DIR_PATH,
 
   // Front
   DEFAULT_PORT_FRONT,
