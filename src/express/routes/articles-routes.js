@@ -205,6 +205,7 @@ articlesRouter.post(`/:id/comments`, checkAuth, csrfProtection, async (req, res)
       user,
       article,
       validationMessages: validationErrorHandler(errors),
+      csrfToken: req.csrfToken(),
       ...utils
     };
     res.render(`post`, {...options});
