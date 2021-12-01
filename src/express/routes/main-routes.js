@@ -31,6 +31,8 @@ const utils = {
   COMMENTS_COUNT_KEY_NAME,
 };
 
+let backURL;
+
 
 /**
  * MAIN PAGE route
@@ -82,13 +84,14 @@ mainRouter.get(`/`, async (req, res) => {
  */
 mainRouter.get(`/register`, (req, res) => {
   const {user} = req.session;
+  backURL = req.headers.referer || `/`;
 
   if (user) {
     res.redirect(`/`);
     return;
   }
 
-  res.render(`registration`, {user});
+  res.render(`registration`, {user, backURL});
 });
 
 mainRouter.post(`/register`, uploadFile, resizeAvatar, async (req, res) => {
@@ -110,7 +113,7 @@ mainRouter.post(`/register`, uploadFile, resizeAvatar, async (req, res) => {
     res.redirect(`/login`);
   } catch (error) {
     const validationMessages = validationErrorHandler(error);
-    res.render(`registration`, {validationMessages, ...userData});
+    res.render(`registration`, {validationMessages, backURL, ...userData});
   }
 });
 
@@ -121,13 +124,14 @@ mainRouter.post(`/register`, uploadFile, resizeAvatar, async (req, res) => {
  */
 mainRouter.get(`/login`, (req, res) => {
   const {user} = req.session;
+  backURL = req.headers.referer || `/`;
 
   if (user) {
     res.redirect(`/`);
     return;
   }
 
-  res.render(`login`, {user});
+  res.render(`login`, {user, backURL});
 });
 
 mainRouter.post(`/login`, async (req, res) => {
@@ -144,7 +148,7 @@ mainRouter.post(`/login`, async (req, res) => {
     const validationMessages = validationErrorHandler(error);
     const {user} = req.session;
 
-    res.render(`login`, {user, validationMessages});
+    res.render(`login`, {user, validationMessages, backURL});
   }
 });
 
@@ -217,8 +221,14 @@ mainRouter.post(`/categories/add`, checkAuth, csrfProtection, async (req, res) =
   } catch (error) {
     const categories = await api.getCategories({needCount: true});
     const validationMessages = validationErrorHandler(error);
+    const options = {
+      user,
+      categories,
+      validationMessages,
+      csrfToken: req.csrfToken()
+    };
 
-    res.render(`categories`, {categories, user, validationMessages, csrfToken: req.csrfToken()});
+    res.render(`categories`, {...options});
   }
 });
 
@@ -237,8 +247,14 @@ mainRouter.post(`/categories/edit/:id`, checkAuth, csrfProtection, async (req, r
   } catch (error) {
     const categories = await api.getCategories({needCount: true});
     const validationMessages = validationErrorHandler(error);
+    const options = {
+      user,
+      categories,
+      validationMessages,
+      csrfToken: req.csrfToken()
+    };
 
-    res.render(`categories`, {categories, user, validationMessages, csrfToken: req.csrfToken()});
+    res.render(`categories`, {...options});
   }
 });
 
@@ -252,8 +268,14 @@ mainRouter.post(`/categories/:id/delete`, checkAuth, csrfProtection, async (req,
   } catch (error) {
     const categories = await api.getCategories({needCount: true});
     const validationMessages = validationErrorHandler(error);
+    const options = {
+      user,
+      categories,
+      validationMessages,
+      csrfToken: req.csrfToken()
+    };
 
-    res.render(`categories`, {categories, user, validationMessages, csrfToken: req.csrfToken()});
+    res.render(`categories`, {...options});
   }
 });
 

@@ -26,7 +26,7 @@ const utils = {
 };
 
 const routePostMiddlewareSet = [checkAuth, uploadFile, resizePicture, csrfProtection];
-
+let backURL;
 
 /**
  * EXPRESS ROUTES
@@ -35,10 +35,19 @@ const routePostMiddlewareSet = [checkAuth, uploadFile, resizePicture, csrfProtec
  */
 articlesRouter.get(`/add`, checkAuth, csrfProtection, async (req, res) => {
   const {user} = req.session;
+  backURL = req.headers.referer || `/`;
 
   try {
     const categories = await api.getCategories({needCount: false});
-    res.render(`post-edit`, {categories, user, csrfToken: req.csrfToken(), ...utils});
+    const options = {
+      user,
+      categories,
+      csrfToken: req.csrfToken(),
+      backURL,
+      ...utils
+    };
+
+    res.render(`post-edit`, {...options});
   } catch (error) {
     logger.error(`Error on 'articles/add' route: ${error.message}`);
     res.render(`errors/500`);
@@ -78,6 +87,7 @@ articlesRouter.post(`/add`, [...routePostMiddlewareSet], async (req, res) => {
       categories,
       validationMessages: validationErrorHandler(error),
       csrfToken: req.csrfToken(),
+      backURL,
       ...utils
     };
 
@@ -92,13 +102,24 @@ articlesRouter.post(`/add`, [...routePostMiddlewareSet], async (req, res) => {
 articlesRouter.get(`/edit/:id`, checkAuth, csrfProtection, async (req, res) => {
   const {user} = req.session;
   const {id} = req.params;
+  backURL = req.headers.referer || `/`;
 
   try {
     const [article, categories] = await Promise.all([
       api.getArticle({id, viewMode: false}),
       api.getCategories({needCount: false}),
     ]);
-    res.render(`post-edit`, {categories, article, user, id, csrfToken: req.csrfToken(), ...utils});
+    const options = {
+      id,
+      user,
+      article,
+      categories,
+      csrfToken: req.csrfToken(),
+      backURL,
+      ...utils
+    };
+
+    res.render(`post-edit`, {...options});
   } catch (error) {
     logger.error(`Error on 'articles/edit/${id}' route: ${error.message}`);
     res.render(`errors/404`);
@@ -154,10 +175,20 @@ articlesRouter.post(`/edit/:id`, [...routePostMiddlewareSet], async (req, res) =
 articlesRouter.get(`/:id`, csrfProtection, async (req, res) => {
   const {user} = req.session;
   const {id} = req.params;
+  backURL = req.headers.referer || `/`;
 
   try {
     const article = await api.getArticle({id, viewMode: true});
-    res.render(`post`, {article, id, user, csrfToken: req.csrfToken(), ...utils});
+    const options = {
+      id,
+      user,
+      article,
+      csrfToken: req.csrfToken(),
+      backURL,
+      ...utils
+    };
+
+    res.render(`post`, {...options});
   } catch (error) {
     logger.error(`Error on 'articles/${id}' route: ${error.message}`);
     res.render(`errors/404`);
