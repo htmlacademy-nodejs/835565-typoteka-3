@@ -11,11 +11,13 @@ const articlesRoutes = require(`./routes/articles-routes`);
 const sequelize = require(`../service/lib/sequelize`);
 const SequelizeStore = require(`connect-session-sequelize`)(session.Store);
 
-const {TEMPLATES_DIR_NAME, PUBLIC_DIR_NAME, DEFAULT_PORT_FRONT, Env, EXPIRY_PERIOD, HttpCode} = require(`../const`);
+const {TEMPLATES_DIR_NAME, PUBLIC_DIR_NAME, DEFAULT_PORT_FRONT, Env, EXPIRY_PERIOD_DEV, HttpCode, EXPIRY_PERIOD_PROD} = require(`../const`);
 
 const {SESSION_SECRET} = process.env;
+let expPeriod = EXPIRY_PERIOD_PROD;
 
 if (process.env.NODE_ENV === Env.DEVELOPMENT) {
+  expPeriod = EXPIRY_PERIOD_DEV;
   if (!SESSION_SECRET) {
     throw new Error(`SESSION_SECRET environment variable is not defined`);
   }
@@ -25,7 +27,7 @@ const app = express();
 
 const mySessionStore = new SequelizeStore({
   db: sequelize,
-  expiration: EXPIRY_PERIOD, // 10 minutes
+  expiration: expPeriod,
   checkExpirationInterval: 60 * 1000, // 1 minute
   logging: false
 });

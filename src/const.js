@@ -70,7 +70,8 @@ const MAX_ID_LENGTH = 10;
 const LAST_COMMENTS_MAX_NUM = 4;
 const MAX_UPLOAD_FILE_SIZE = 1 * 1024 * 1024; // 1 Mb
 const PAGINATION_WIDTH = 2;
-const EXPIRY_PERIOD = 10 * 60 * 1000; // 10 minustes
+const EXPIRY_PERIOD_DEV = 10 * 60 * 1000; // 10 minustes in dev mode
+const EXPIRY_PERIOD_PROD = 10 * 60 * 60 * 1000; // 10 hours in prod mode
 const ARTICLE_PICTURE_JPEG_QUALITY = 90;
 
 const TextVisibleLimit = {
@@ -187,7 +188,8 @@ module.exports = {
   LAST_COMMENTS_MAX_NUM,
   MAX_UPLOAD_FILE_SIZE,
   PAGINATION_WIDTH,
-  EXPIRY_PERIOD,
+  EXPIRY_PERIOD_DEV,
+  EXPIRY_PERIOD_PROD,
   ARTICLE_PICTURE_JPEG_QUALITY,
   TextVisibleLimit,
   HumanizedDateFormat,
