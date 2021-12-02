@@ -47,8 +47,6 @@ const Aliase = {
 };
 
 // File names and paths
-const FILE_NAME = `mocks.json`;
-const FILE_PATH = `../../../mocks.json`;
 const DB_FILL_FILE_PATH = `../../../sql/fill-db.sql`;
 const DB_QUERIES_FILE_PATH = `../../../sql/queries.sql`;
 const ARTICLE_TITLES_PATH = `../../data/titles.txt`;
@@ -165,8 +163,6 @@ module.exports = {
   Aliase,
 
   // File names and paths
-  FILE_NAME,
-  FILE_PATH,
   ARTICLE_TITLES_PATH,
   ARTICLE_DESCRIPTIONS_PATH,
   ARTICLE_CATEGORIES_PATH,
