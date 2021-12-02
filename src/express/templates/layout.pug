@@ -75,7 +75,25 @@ html(lang='ru')
               li.header__list-item
                 a.header__exit(href='/logout') Выйти
         a.header__avatar.avatar
-          img(src=`../../upload/img/${user.avatarFullsize}` alt='аватар пользователя')
+          +fullsizeUserAvatar(user)
+
+    mixin fullsizeUserAvatar(user)
+      img(
+            src=(user.avatarFullsize ? `../../upload/img/${user.avatarFullsize}` : `../../img/blank_user.png`)
+            width='50'
+            height='50'
+            alt='аватар пользователя'
+          )
+
+    mixin smallUserAvatar(user)
+      img(
+        class!=attributes.class
+        src=(user.avatarSmall ? `../upload/img/${user.avatarSmall}` : `../../img/blank_user-small.png`)
+        width='20'
+        height='20'
+        alt='Аватар пользователя'
+      )
+
 
     mixin pagination(page, totalPages, width, prefix)
       -

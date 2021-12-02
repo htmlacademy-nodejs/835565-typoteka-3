@@ -2,6 +2,6 @@ block content
   ul.last__list
     each comment in comments
       li.last__list-item
-        img.last__list-image(src=`../../upload/img/${comment.user.avatarSmall}` width='20' height='20' alt='Аватар пользователя')
+        +smallUserAvatar(comment.user)(class='last__list-image')
         b.last__list-name #{comment.user.firstName} #{comment.user.lastName}
         +lastCommentText(comment)
