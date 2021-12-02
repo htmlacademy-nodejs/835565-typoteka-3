@@ -26,7 +26,8 @@ const app = express();
 const mySessionStore = new SequelizeStore({
   db: sequelize,
   expiration: EXPIRY_PERIOD, // 10 minutes
-  checkExpirationInterval: 60 * 1000 // 1 minute
+  checkExpirationInterval: 60 * 1000, // 1 minute
+  logging: false
 });
 
 sequelize.sync({force: false});
