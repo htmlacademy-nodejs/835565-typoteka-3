@@ -1,0 +1,119 @@
+-
+  const getVisibleText = (text, limit) => (text.length > limit)
+    ? text.slice(0, limit).concat(`...`)
+    : text;
+
+mixin categoriesCheckbox (category, article)
+  -
+    const checkedAttr = (article
+      ? (article.categories?.some((it) => it.id === category.id))
+      : false
+    );
+  .new-publication__checkbox
+    input(id=`checkbox-${category.id}` type='checkbox' name=`categories[]` value=category.id checked=checkedAttr)
+    label(for=`checkbox-${category.id}`) #{category.name}
+
+mixin insertErrorMessages(messages)
+  if messages
+    .form__validation-error
+      p.form__error-message При отправке формы произошли ошибки:
+      ul.form__errors
+        each message of messages
+          li.form__error= message
+
+mixin categoryEditInput(category)
+  input(id=`modify-form-category-${category.id}` type='text' name=`category-${category.id}` value=category.name)
+
+mixin lastCommentText(comment)
+  - const visibleText = getVisibleText(comment.text, TextVisibleLimit.COMMENT);
+  a.last__list-link(href=`/articles/${comment.articleId}`) #{visibleText}
+
+mixin announceText(article)
+  - const visibleText = getVisibleText(article.announce, TextVisibleLimit.ANNOUNCE);
+  a.hot__list-link(href=`/articles/${article.id}`) #{visibleText}
+    sup.hot__link-sup #{article[COMMENTS_COUNT_KEY_NAME]}
+
+mixin adminHeader(user)
+  if user.isAdmin
+    a.button.button--colored.header__button-new(href='/articles/add') Новая запись
+    .header__dropdown
+      a.button.button--burger.header__burger(href='#') Открыть меню
+      ul.navigation.header__navigation
+        li.navigation__item
+          a(href='/my') Все публикации
+        li.navigation__item
+          a(href='/my/comments') Все комментарии
+        li.navigation__item
+          a(href='/categories') Категории
+        li.navigation__item
+          a(href='/logout') Выйти
+  else
+    nav.header__nav
+      ul.header__nav-list
+        if user
+          li.header__list-item
+            p #{user.firstName} #{user.lastName}
+          li.header__list-item
+            a.header__exit(href='/logout') Выйти
+    a.header__avatar.avatar
+      +fullsizeUserAvatar(user)
+
+mixin fullsizeUserAvatar(user)
+  img(
+        src=(user.avatarFullsize ? `../../upload/img/${user.avatarFullsize}` : `../../img/blank_user.png`)
+        width='50'
+        height='50'
+        alt='аватар пользователя'
+      )
+
+mixin smallUserAvatar(user)
+  img(
+    class!=attributes.class
+    src=(user.avatarSmall ? `../upload/img/${user.avatarSmall}` : `../../img/blank_user-small.png`)
+    width='20'
+    height='20'
+    alt='Аватар пользователя'
+  )
+
+
+mixin pagination(page, totalPages, width, prefix)
+  -
+    let start = page - width;
+    let end = page + width;
+
+    if(start < 1){
+      end += 1 - start;
+      start = 1;
+    }
+
+    if(end > totalPages){
+      start -= end - totalPages;
+      end = totalPages;
+    }
+
+    if(start < 1){
+      start = 1;
+    }
+
+    let i = start - 1
+
+  if totalPages > 1
+    .preview__toggle-wrapper
+      ul.preview__pagination.pagination
+        li
+          a(
+            class=`pagination__button button button--backwards ${start === page ? `button--disabled` : ``}`
+            href=`${prefix}page=${page - 1}`
+            aria-label='Страница назад'
+          ) Назад
+
+        while i++ < end
+          li(class=`pagination__item ${i === page ? `pagination__item--active` : ``}`)
+            a(href=`${prefix}page=${i}`)= i
+
+        li
+          a(
+            class=`pagination__button button button--forward ${end === page ? `button--disabled` : ``}`
+            href=`${prefix}page=${page + 1}`
+            aria-label='Страница назад'
+          ) Вперёд
