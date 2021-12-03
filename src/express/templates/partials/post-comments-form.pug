@@ -4,5 +4,5 @@ block content
     .comments__avatar.avatar
       +fullsizeUserAvatar(user)
     label
-      textarea(rows='1' name='message' placeholder='Присоединиться к обсуждению')
+      textarea(rows='1' name='message' placeholder='Присоединиться к обсуждению' autofocus=focus) #{text}
     button.comments__button.button.button--colored(type='submit') Опубликовать

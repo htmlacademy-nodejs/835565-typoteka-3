@@ -236,6 +236,8 @@ articlesRouter.post(`/:id/comments`, [checkAuth, csrfProtection], async (req, re
       id,
       user,
       article,
+      text: commentData.text,
+      focus: true,
       validationMessages: validationErrorHandler(errors),
       csrfToken: req.csrfToken(),
       ...utils
