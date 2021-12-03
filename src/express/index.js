@@ -65,10 +65,10 @@ app.use(session({
 }));
 
 app.use((_err, _req, res, _next) => {
-  return res.status(HttpCode.NOT_FOUND).render(`errors/404`);
+  res.status(HttpCode.NOT_FOUND).render(`errors/404`);
 });
 app.use((_err, _req, res, _next) => {
-  return res.status(HttpCode.NOT_FOUND).render(`errors/500`);
+  res.status(HttpCode.SERVER_ERROR).render(`errors/500`);
 });
 
 app.use(`/articles`, articlesRoutes);

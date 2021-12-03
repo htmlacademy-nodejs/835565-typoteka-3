@@ -2,7 +2,9 @@
 const chalk = require(`chalk`);
 const version = require(`./version`);
 const server = require(`./server`);
-const fill = require(`./fill`);
+const createDB = require(`./create-db`);
+const createSchema = require(`./create-schema`);
+const fillDB = require(`./fill-db`);
 
 const moduleName = `--help`;
 
@@ -17,7 +19,9 @@ const helpMessage = `
   ${version.name}:              выводит номер версии приложения
   ${moduleName}:                 справка
   ${server.name}:               запускает http-сервер
-  ${fill.name} <count>          формирует .sql файл для начального заполнения базы данных
+  ${createDB.name}            формирует .sql файл для создания базы данных
+  ${createSchema.name}         формирует .sql файл схемы базы данных
+  ${fillDB.name} <count>       формирует .sql файл для начального заполнения базы данных
 `;
 
 module.exports = {
