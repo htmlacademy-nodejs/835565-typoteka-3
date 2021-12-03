@@ -16,9 +16,10 @@ const utils = {
   HumanizedDateFormat
 };
 
-// myRouter.use(admin);
+myRouter.use(checkAuth);
+myRouter.use(admin);
 
-myRouter.get(`/`, [checkAuth, admin], async (req, res) => {
+myRouter.get(`/`, async (req, res) => {
   const {user} = req.session;
 
   try {

@@ -13,6 +13,7 @@ const {
   ARTICLES_PER_PAGE,
   PAGINATION_WIDTH
 } = require(`../../const`);
+const admin = require(`../middlewares/admin`);
 
 const csrfProtection = csrf();
 const api = require(`../api`).getAPI();
@@ -25,7 +26,7 @@ const utils = {
   PAGINATION_WIDTH
 };
 
-const routePostMiddlewareSet = [checkAuth, uploadFile, resizePicture, csrfProtection];
+const routePostMiddlewareSet = [checkAuth, admin, uploadFile, resizePicture, csrfProtection];
 let backURL;
 
 /**
@@ -33,7 +34,7 @@ let backURL;
  *
  * Adding single article
  */
-articlesRouter.get(`/add`, checkAuth, csrfProtection, async (req, res) => {
+articlesRouter.get(`/add`, [checkAuth, admin, csrfProtection], async (req, res) => {
   const {user} = req.session;
   backURL = req.headers.referer || `/`;
 
@@ -99,7 +100,7 @@ articlesRouter.post(`/add`, [...routePostMiddlewareSet], async (req, res) => {
 /**
  * Editing single article
  */
-articlesRouter.get(`/edit/:id`, checkAuth, csrfProtection, async (req, res) => {
+articlesRouter.get(`/edit/:id`, [checkAuth, admin, csrfProtection], async (req, res) => {
   const {user} = req.session;
   const {id} = req.params;
   backURL = req.headers.referer || `/`;
@@ -199,7 +200,7 @@ articlesRouter.get(`/:id`, csrfProtection, async (req, res) => {
 /**
  * Deleting single article
  */
-articlesRouter.get(`/:id/delete`, checkAuth, async (req, res) => {
+articlesRouter.get(`/:id/delete`, [checkAuth, admin], async (req, res) => {
   const {id} = req.params;
 
   try {
@@ -215,7 +216,7 @@ articlesRouter.get(`/:id/delete`, checkAuth, async (req, res) => {
  * Adding/deleting comments
  * of a single article
  */
-articlesRouter.post(`/:id/comments`, checkAuth, csrfProtection, async (req, res) => {
+articlesRouter.post(`/:id/comments`, [checkAuth, csrfProtection], async (req, res) => {
   const {user} = req.session;
   const {id} = req.params;
   const {message} = req.body;
@@ -243,7 +244,7 @@ articlesRouter.post(`/:id/comments`, checkAuth, csrfProtection, async (req, res)
   }
 });
 
-articlesRouter.get(`/:id/comments/:commentId/delete`, checkAuth, async (req, res) => {
+articlesRouter.get(`/:id/comments/:commentId/delete`, [checkAuth, admin], async (req, res) => {
   const {id, commentId} = req.params;
 
   try {

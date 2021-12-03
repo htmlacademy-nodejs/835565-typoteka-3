@@ -19,6 +19,7 @@ const api = require(`../api`).getAPI();
 const {getLogger} = require(`../../service/lib/logger`);
 const {uploadFile, resizeAvatar} = require(`../middlewares/upload`);
 const checkAuth = require(`../middlewares/auth`);
+const admin = require(`../middlewares/admin`);
 
 const mainRouter = new Router();
 const logger = getLogger({name: `main-routes api`});
@@ -195,7 +196,7 @@ mainRouter.get(`/search`, async (req, res) => {
  * CATEGORIES PAGE routes
  * (admin routes)
  */
-mainRouter.get(`/categories`, checkAuth, csrfProtection, async (req, res) => {
+mainRouter.get(`/categories`, checkAuth, admin, csrfProtection, async (req, res) => {
   const {user} = req.session;
 
   try {
@@ -207,7 +208,7 @@ mainRouter.get(`/categories`, checkAuth, csrfProtection, async (req, res) => {
   }
 });
 
-mainRouter.post(`/categories/add`, checkAuth, csrfProtection, async (req, res) => {
+mainRouter.post(`/categories/add`, checkAuth, admin, csrfProtection, async (req, res) => {
   const {user} = req.session;
   const {body} = req;
 
@@ -232,7 +233,7 @@ mainRouter.post(`/categories/add`, checkAuth, csrfProtection, async (req, res) =
   }
 });
 
-mainRouter.post(`/categories/edit/:id`, checkAuth, csrfProtection, async (req, res) => {
+mainRouter.post(`/categories/edit/:id`, checkAuth, admin, csrfProtection, async (req, res) => {
   const {user} = req.session;
   const {id} = req.params;
   const {body} = req;
@@ -258,7 +259,7 @@ mainRouter.post(`/categories/edit/:id`, checkAuth, csrfProtection, async (req, r
   }
 });
 
-mainRouter.post(`/categories/:id/delete`, checkAuth, csrfProtection, async (req, res) => {
+mainRouter.post(`/categories/:id/delete`, checkAuth, admin, csrfProtection, async (req, res) => {
   const {user} = req.session;
   const {id} = req.params;
 
