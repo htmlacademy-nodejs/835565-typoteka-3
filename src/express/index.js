@@ -64,16 +64,17 @@ app.use(session({
   saveUninitialized: false,
 }));
 
-app.use((_err, _req, res, _next) => {
-  res.status(HttpCode.NOT_FOUND).render(`errors/404`);
-});
-app.use((_err, _req, res, _next) => {
-  res.status(HttpCode.SERVER_ERROR).render(`errors/500`);
-});
-
 app.use(`/articles`, articlesRoutes);
 app.use(`/my`, myRoutes);
 app.use(`/`, mainRoutes);
+
+app.use((_req, res, _next) => {
+  res.status(HttpCode.NOT_FOUND).render(`errors/404`);
+});
+app.use((_req, res, _next) => {
+  res.status(HttpCode.SERVER_ERROR).render(`errors/500`);
+});
+
 
 app.listen(DEFAULT_PORT_FRONT, (error) => {
   if (error) {
