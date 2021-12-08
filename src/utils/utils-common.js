@@ -2,6 +2,7 @@
 
 const chalk = require(`chalk`);
 const fs = require(`fs`).promises;
+const path = require(`path`);
 const dayjs = require(`dayjs`);
 
 const {DaysGap, HoursGap} = require(`../const`);
@@ -40,19 +41,6 @@ const humanizeDate = (format, date) => {
   return dayjs(date).format(format);
 };
 
-const getRandomSubarray = (items, count) => {
-  items = items.slice();
-  const result = [];
-  while (count--) {
-    result.push(
-        ...items.splice(
-            getRandomNum(0, items.length - 1), 1
-        )
-    );
-  }
-  return result;
-};
-
 const validationErrorHandler = (error) => error.response?.data.split(`\n`) || [error];
 
 const getRandomMockArticleId = (mockArticles) => getRandomNum(1, mockArticles.length);
@@ -64,15 +52,38 @@ const adaptArticleToClient = (article) => (
   }
 );
 
+const createDirs = async (dirpaths) => {
+  console.info(chalk.green(`Creating folders...`));
+  for (const dirpath of dirpaths) {
+    console.info(chalk.green(`Creating folder: ${dirpath}`));
+    await fs.mkdir(path.resolve(process.cwd(), dirpath), {
+      recursive: true,
+    });
+  }
+  console.info(chalk.green(`Finished. \n`));
+};
+
+const copyFiles = async (sourceDir, targetDir) => {
+  const files = await fs.readdir(sourceDir);
+  console.info(chalk.green(`Copying mock images...`));
+
+  for (const file of files) {
+    console.info(chalk.green(`Copying file: ${file}`));
+    await fs.copyFile(path.join(sourceDir, file), path.join(targetDir, file));
+  }
+  console.info(chalk.green(`Finished. \n`));
+};
+
 module.exports = {
   getRandomNum,
   shuffle,
   getRandomDate,
   readContent,
   humanizeDate,
-  getRandomSubarray,
   validationErrorHandler,
   getRandomMockArticleId,
   adaptArticleToClient,
+  createDirs,
+  copyFiles,
 };
 

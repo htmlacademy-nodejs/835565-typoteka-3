@@ -13,6 +13,7 @@ const {
   ARTICLES_PER_PAGE,
   PAGINATION_WIDTH
 } = require(`../../const`);
+const admin = require(`../middlewares/admin`);
 
 const csrfProtection = csrf();
 const api = require(`../api`).getAPI();
@@ -25,20 +26,29 @@ const utils = {
   PAGINATION_WIDTH
 };
 
-const routePostMiddlewareSet = [checkAuth, uploadFile, resizePicture, csrfProtection];
-
+const routePostMiddlewareSet = [checkAuth, admin, uploadFile, resizePicture, csrfProtection];
+let backURL;
 
 /**
  * EXPRESS ROUTES
  *
  * Adding single article
  */
-articlesRouter.get(`/add`, checkAuth, csrfProtection, async (req, res) => {
+articlesRouter.get(`/add`, [checkAuth, admin, csrfProtection], async (req, res) => {
   const {user} = req.session;
+  backURL = req.get(`Referer`);
 
   try {
     const categories = await api.getCategories({needCount: false});
-    res.render(`post-edit`, {categories, user, csrfToken: req.csrfToken(), ...utils});
+    const options = {
+      user,
+      categories,
+      csrfToken: req.csrfToken(),
+      backURL,
+      ...utils
+    };
+
+    res.render(`post-edit`, {...options});
   } catch (error) {
     logger.error(`Error on 'articles/add' route: ${error.message}`);
     res.render(`errors/500`);
@@ -78,6 +88,7 @@ articlesRouter.post(`/add`, [...routePostMiddlewareSet], async (req, res) => {
       categories,
       validationMessages: validationErrorHandler(error),
       csrfToken: req.csrfToken(),
+      backURL,
       ...utils
     };
 
@@ -89,16 +100,27 @@ articlesRouter.post(`/add`, [...routePostMiddlewareSet], async (req, res) => {
 /**
  * Editing single article
  */
-articlesRouter.get(`/edit/:id`, checkAuth, csrfProtection, async (req, res) => {
+articlesRouter.get(`/edit/:id`, [checkAuth, admin, csrfProtection], async (req, res) => {
   const {user} = req.session;
   const {id} = req.params;
+  backURL = req.get(`Referer`);
 
   try {
     const [article, categories] = await Promise.all([
       api.getArticle({id, viewMode: false}),
       api.getCategories({needCount: false}),
     ]);
-    res.render(`post-edit`, {categories, article, user, id, csrfToken: req.csrfToken(), ...utils});
+    const options = {
+      id,
+      user,
+      article,
+      categories,
+      csrfToken: req.csrfToken(),
+      backURL,
+      ...utils
+    };
+
+    res.render(`post-edit`, {...options});
   } catch (error) {
     logger.error(`Error on 'articles/edit/${id}' route: ${error.message}`);
     res.render(`errors/404`);
@@ -155,9 +177,20 @@ articlesRouter.get(`/:id`, csrfProtection, async (req, res) => {
   const {user} = req.session;
   const {id} = req.params;
 
+  backURL = req.get(`Referer`);
+
   try {
     const article = await api.getArticle({id, viewMode: true});
-    res.render(`post`, {article, id, user, csrfToken: req.csrfToken(), ...utils});
+    const options = {
+      id,
+      user,
+      article,
+      csrfToken: req.csrfToken(),
+      backURL,
+      ...utils
+    };
+
+    res.render(`post`, {...options});
   } catch (error) {
     logger.error(`Error on 'articles/${id}' route: ${error.message}`);
     res.render(`errors/404`);
@@ -168,7 +201,7 @@ articlesRouter.get(`/:id`, csrfProtection, async (req, res) => {
 /**
  * Deleting single article
  */
-articlesRouter.get(`/:id/delete`, checkAuth, async (req, res) => {
+articlesRouter.get(`/:id/delete`, [checkAuth, admin], async (req, res) => {
   const {id} = req.params;
 
   try {
@@ -184,7 +217,7 @@ articlesRouter.get(`/:id/delete`, checkAuth, async (req, res) => {
  * Adding/deleting comments
  * of a single article
  */
-articlesRouter.post(`/:id/comments`, checkAuth, csrfProtection, async (req, res) => {
+articlesRouter.post(`/:id/comments`, [checkAuth, csrfProtection], async (req, res) => {
   const {user} = req.session;
   const {id} = req.params;
   const {message} = req.body;
@@ -204,14 +237,17 @@ articlesRouter.post(`/:id/comments`, checkAuth, csrfProtection, async (req, res)
       id,
       user,
       article,
+      text: commentData.text,
+      focus: true,
       validationMessages: validationErrorHandler(errors),
+      csrfToken: req.csrfToken(),
       ...utils
     };
     res.render(`post`, {...options});
   }
 });
 
-articlesRouter.get(`/:id/comments/:commentId/delete`, checkAuth, async (req, res) => {
+articlesRouter.get(`/:id/comments/:commentId/delete`, [checkAuth, admin], async (req, res) => {
   const {id, commentId} = req.params;
 
   try {

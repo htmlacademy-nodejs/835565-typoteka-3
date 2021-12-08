@@ -16,10 +16,11 @@ const {
   UPLOADED_IMG_OUTPUT_FROMAT,
   ArticlePictureSize,
   AvatarImgSize,
-  HttpCode} = require(`../../const`);
+  HttpCode
+} = require(`../../const`);
 
 const logger = getLogger({name: `upload middleware`});
-const uploadDirAbsolute = path.resolve(__dirname, UPLOAD_DIR_PATH);
+const uploadDirAbsolute = path.resolve(process.cwd(), UPLOAD_DIR_PATH);
 const storage = multer.memoryStorage();
 
 const getRandomFileName = () => `${nanoid(MAX_ID_LENGTH)}.${UPLOADED_IMG_OUTPUT_FROMAT}`;
@@ -77,7 +78,7 @@ const resizeAvatar = async (req, res, next) => {
         AvatarImgSize.FULL_SIZE.HEIGHT
     )
     .toFormat(`jpeg`)
-    .toFile(`${uploadDirAbsolute}/${fullsizeAvatarFilename}`);
+    .toFile(path.join(uploadDirAbsolute, fullsizeAvatarFilename));
 
   req.body.avatarImgs.fullsizeAvatar = fullsizeAvatarFilename;
 
@@ -87,7 +88,7 @@ const resizeAvatar = async (req, res, next) => {
         AvatarImgSize.SMALL.HEIGHT
     )
     .toFormat(`jpeg`)
-    .toFile(`${uploadDirAbsolute}/${smallsizeAvatarFilename}`);
+    .toFile(path.join(uploadDirAbsolute, smallsizeAvatarFilename));
 
   req.body.avatarImgs.smallAvatar = smallsizeAvatarFilename;
 
@@ -113,7 +114,7 @@ const resizePicture = async (req, res, next) => {
     )
     .toFormat(`jpeg`)
     .jpeg({quality: ARTICLE_PICTURE_JPEG_QUALITY})
-    .toFile(`${uploadDirAbsolute}/${fullsizeImgFilename}`);
+    .toFile(path.join(uploadDirAbsolute, fullsizeImgFilename));
 
   req.body.images.fullsizePicture = `${fullsizeImgFilename}`;
 
@@ -123,7 +124,7 @@ const resizePicture = async (req, res, next) => {
         ArticlePictureSize.PREVIEW.HEIGHT
     )
     .toFormat(`jpeg`)
-    .toFile(`${uploadDirAbsolute}/${previewImgFilename}`);
+    .toFile(path.join(uploadDirAbsolute, previewImgFilename));
 
   req.body.images.previewPicture = `${previewImgFilename}`;
 

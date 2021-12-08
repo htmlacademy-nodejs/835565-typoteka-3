@@ -3,7 +3,7 @@ block content
     each comment in article.comments
       li.comments__comment
         .comments__avatar.avatar
-          img(src=`../../upload/img/${comment.user.avatarFullsize}` alt='аватар пользователя')
+          +fullsizeUserAvatar(comment.user)
         .comments__text
           .comments__head
             p #{comment.user.firstName} #{comment.user.lastName} •

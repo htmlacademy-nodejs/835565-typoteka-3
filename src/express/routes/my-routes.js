@@ -5,6 +5,7 @@ const {HumanizedDateFormat} = require(`../../const`);
 const checkAuth = require(`../middlewares/auth`);
 const {getLogger} = require(`../../service/lib/logger`);
 const {humanizeDate} = require(`../../utils/utils-common`);
+const admin = require(`../middlewares/admin`);
 const api = require(`../api`).getAPI();
 
 const myRouter = new Router();
@@ -16,6 +17,7 @@ const utils = {
 };
 
 myRouter.use(checkAuth);
+myRouter.use(admin);
 
 myRouter.get(`/`, async (req, res) => {
   const {user} = req.session;

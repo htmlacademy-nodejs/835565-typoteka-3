@@ -19,13 +19,19 @@ const logger = getLogger({name: `api`});
 const app = express();
 
 app.use(express.json());
-app.use(helmet.contentSecurityPolicy({
-  useDefaults: true,
-  directives: {
-    "script-src": [`'self'`, `http://localhost:${DEFAULT_PORT_SERVER}`],
-  }
-}));
+
+app.use(
+    helmet({
+      contentSecurityPolicy: {
+        useDefaults: true,
+        directives: {
+          "script-src": [`'unsafe-eval'`, `http://localhost:${DEFAULT_PORT_SERVER}`],
+        }
+      }
+    })
+);
 app.disable(`x-powered-by`);
+
 app.use(queryParser({parseBoolean: true}));
 
 app.use(API_PREFIX, routes);

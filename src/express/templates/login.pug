@@ -4,9 +4,7 @@ block content
     h1.visually-hidden Регистрация пользователя
     section
       .popup.popup--registration.popup--anti
-        a.popup__button.button.button--popup-close(aria-label='Закрыть окно')
-          | Закрыть
-          | окно
+        a.popup__button.button.button--popup-close(href=`${backURL}` aria-label='Закрыть окно') Закрыть окно
         h2.popup__title Войти
         .popup__form.form.form--log-in
           form(action='/login' method='POST')

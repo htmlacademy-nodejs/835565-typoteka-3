@@ -1,102 +1,112 @@
-/**
- *
- * This module is currently deprecated,
- * since migrations are implemented
- *
- */
-
 'use strict';
 
-const sequelize = require(`../lib/sequelize`);
+const fs = require(`fs`).promises;
+const chalk = require(`chalk`);
 const path = require(`path`);
-const initDB = require(`../lib/init-db`);
-const passwordUtility = require(`../lib/password`);
 
-const {getLogger} = require(`../lib/logger`);
-const {readContent} = require(`../../utils/utils-common`);
-const {generateMockDataForDB} = require(`../../utils/utils-data`);
-
+const {getMockData, generateQueryToFillDB} = require(`../../utils/utils-data`);
+const {createDirs} = require(`../../utils/utils-common`);
 const {
   DEFAULT_COUNT,
-  ExitCode,
-  ARTICLE_TITLES_PATH,
-  ARTICLE_DESCRIPTIONS_PATH,
-  ARTICLE_CATEGORIES_PATH,
-  COMMENTS_PATH,
+  DB_FILL_FILE_PATH,
+  SQL_FILES_DIR_PATH,
+  ExitCode
 } = require(`../../const`);
 
-const logger = getLogger({name: `fill-db`});
-
 module.exports = {
-  name: `--filldb`,
+  name: `--fill-db`,
   async run(args) {
     const [count] = args;
     const articlesCount = Number.parseInt(count, 10) || DEFAULT_COUNT;
 
-    try {
-      logger.info(`Trying to connect to database...`);
-      await sequelize.authenticate();
-    } catch (err) {
-      logger.error(`An error occurred: ${err.message}`);
-      process.exit(ExitCode.ERROR);
-    }
-    logger.info(`Connection to database established`);
-
-    const mockUsers = [
-      {
-        firstName: `Иван`,
-        lastName: `Иванов`,
-        email: `ivanov@example.com`,
-        passwordHash: await passwordUtility.hash(`ivanov`),
-        avatarFullsize: `avatar-1.png`,
-        avatarSmall: `avatar-small-1.png`
-      },
-      {
-        firstName: `Пётр`,
-        lastName: `Петров`,
-        email: `petrov@example.com`,
-        passwordHash: await passwordUtility.hash(`petrov`),
-        avatarFullsize: `avatar-2.png`,
-        avatarSmall: `avatar-small-2.png`
-      },
-      {
-        firstName: `Сергей`,
-        lastName: `Сергеев`,
-        email: `sergeev@example.com`,
-        passwordHash: await passwordUtility.hash(`sergeev`),
-        avatarFullsize: `avatar-3.webp`,
-        avatarSmall: `avatar-small-3.webp`
-      },
-      {
-        firstName: `Алексей`,
-        lastName: `Алексеев`,
-        email: `alekseev@example.com`,
-        passwordHash: await passwordUtility.hash(`alekseev`),
-        avatarFullsize: `avatar-2.webp`,
-        avatarSmall: `avatar-small-2.webp`
-      },
-      {
-        firstName: `Михаил`,
-        lastName: `Михайлов`,
-        email: `mikhailov@example.com`,
-        passwordHash: await passwordUtility.hash(`mikhailov`),
-        avatarFullsize: `avatar-1.png`,
-        avatarSmall: `avatar-small-1.png`
-      }
-    ];
-
-    const categories = await readContent(path.resolve(__dirname, ARTICLE_CATEGORIES_PATH));
-
-    const options = {
-      titles: await readContent(path.resolve(__dirname, ARTICLE_TITLES_PATH)),
-      descriptions: await readContent(path.resolve(__dirname, ARTICLE_DESCRIPTIONS_PATH)),
-      commentsSentences: await readContent(path.resolve(__dirname, COMMENTS_PATH)),
-      categories,
+    const {
       mockUsers,
+      mockArticles,
+      mockCategories,
+      mockComments,
+      mockArticlesCategories
+    } = await getMockData(articlesCount);
+
+    const valuesToFill = {
+      userValues: mockUsers.map(
+          ({
+            email,
+            passwordHash,
+            firstName,
+            lastName,
+            avatarFullsize,
+            avatarSmall,
+            isAdmin,
+            createdAt,
+            updatedAt,
+          }) => `(
+            '${email}',
+            '${passwordHash}',
+            '${firstName}',
+            '${lastName}',
+            '${avatarFullsize}',
+            '${avatarSmall}',
+            '${isAdmin}' ,
+            '${createdAt}',
+            '${updatedAt}'
+          )`
+      ).join(`,\n`),
+
+      categoryValues: mockCategories.map(
+          ({name, createdAt, updatedAt}) =>
+            `('${name}', '${createdAt}', '${updatedAt}')`
+      ).join(`,\n`),
+
+      articlesValues: mockArticles.map(
+          ({
+            userId,
+            title,
+            announce,
+            fullText,
+            fullsizePicture,
+            previewPicture,
+            createdAt,
+            updatedAt
+          }) => `(
+            '${userId}',
+            '${title}',
+            '${announce}',
+            '${fullText}',
+            '${fullsizePicture}',
+            '${previewPicture}',
+            '${createdAt}',
+            '${updatedAt}'
+          )`
+      ).join(`,\n`),
+
+      articleCategoryValues: mockArticlesCategories
+        .map(({articleId, categoryId}) => `(${articleId}, ${categoryId})`)
+        .join(`,\n`),
+
+      commentValues: mockComments
+        .map(
+            ({text, userId, articleId, createdAt, updatedAt}) =>
+              `('${text}', '${userId}', '${articleId}', '${createdAt}', '${updatedAt}')`
+        ).join(`,\n`),
     };
 
-    const articles = generateMockDataForDB(articlesCount, options);
+    const contentToFill = generateQueryToFillDB(valuesToFill);
 
-    initDB(sequelize, {articles, categories, users: mockUsers});
-  }
+    try {
+      await Promise.all([
+        createDirs([SQL_FILES_DIR_PATH]),
+        fs.writeFile(
+            path.resolve(__dirname, DB_FILL_FILE_PATH),
+            contentToFill
+        )
+      ]);
+      console.info(chalk.green(`Operation success. File created.`));
+      process.exit();
+    } catch (error) {
+      console.error(
+          chalk.red(`Can't write data to file. Error: ${error.message}`)
+      );
+      process.exit(ExitCode.ERROR);
+    }
+  },
 };

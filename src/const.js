@@ -47,20 +47,22 @@ const Aliase = {
 };
 
 // File names and paths
-const FILE_NAME = `mocks.json`;
-const FILE_PATH = `../../../mocks.json`;
+const SQL_FILES_DIR_PATH = `./sql/`;
+const DB_CREATE_FILE_PATH = `../../../sql/create-db.sql`;
+const DB_SCHEMA_FILE_PATH = `../../../sql/schema.sql`;
 const DB_FILL_FILE_PATH = `../../../sql/fill-db.sql`;
-const DB_QUERIES_FILE_PATH = `../../../sql/queries.sql`;
-const ARTICLE_TITLES_PATH = `../../data/titles.txt`;
-const ARTICLE_DESCRIPTIONS_PATH = `../../data/descriptions.txt`;
-const ARTICLE_CATEGORIES_PATH = `../../data/categories.txt`;
-const COMMENTS_PATH = `../../data/comments.txt`;
+const ARTICLE_TITLES_PATH = `../data/titles.txt`;
+const ARTICLE_DESCRIPTIONS_PATH = `../data/descriptions.txt`;
+const CATEGORIES_PATH = `../data/categories.txt`;
+const COMMENTS_PATH = `../data/comments.txt`;
 const LOG_FILE_PATH = `../../../logs/api.log`;
-const UPLOAD_DIR_PATH = `../public/upload/img/`;
+const UPLOAD_DIR_PATH = `src/express/public/upload/img/`;
 const TEMPLATES_DIR_NAME = `templates`;
 const UPLOADED_FILE_INPUT_NAME = `upload`;
 const PUBLIC_DIR_NAME = `public`;
 const UPLOADED_IMG_OUTPUT_FROMAT = `jpeg`;
+const SEEDERS_IMG_DIR_PATH = `db/seeders/seedersImgs/`;
+const MOCK_SEEDERS_DIR_PATH = `db/mockSeeders/`;
 
 // Front
 const DEFAULT_PORT_FRONT = 8080;
@@ -68,7 +70,8 @@ const MAX_ID_LENGTH = 10;
 const LAST_COMMENTS_MAX_NUM = 4;
 const MAX_UPLOAD_FILE_SIZE = 1 * 1024 * 1024; // 1 Mb
 const PAGINATION_WIDTH = 2;
-const EXPIRY_PERIOD = 10 * 60 * 1000; // 10 minustes
+const EXPIRY_PERIOD_DEV = 10 * 60 * 1000; // 10 minustes in dev mode
+const EXPIRY_PERIOD_PROD = 10 * 60 * 60 * 1000; // 10 hours in prod mode
 const ARTICLE_PICTURE_JPEG_QUALITY = 90;
 
 const TextVisibleLimit = {
@@ -130,10 +133,6 @@ const HoursGap = {
   MIN: 1,
   MAX: 12,
 };
-const CommentsNum = {
-  MIN: 2,
-  MAX: 4,
-};
 const CommentsSentencesNum = {
   MIN: 1,
   MAX: 2,
@@ -162,20 +161,22 @@ module.exports = {
   Aliase,
 
   // File names and paths
-  FILE_NAME,
-  FILE_PATH,
   ARTICLE_TITLES_PATH,
   ARTICLE_DESCRIPTIONS_PATH,
-  ARTICLE_CATEGORIES_PATH,
+  CATEGORIES_PATH,
   COMMENTS_PATH,
   TEMPLATES_DIR_NAME,
   UPLOAD_DIR_PATH,
   PUBLIC_DIR_NAME,
   UPLOADED_FILE_INPUT_NAME,
+  SQL_FILES_DIR_PATH,
+  DB_CREATE_FILE_PATH,
+  DB_SCHEMA_FILE_PATH,
   DB_FILL_FILE_PATH,
-  DB_QUERIES_FILE_PATH,
   LOG_FILE_PATH,
   UPLOADED_IMG_OUTPUT_FROMAT,
+  SEEDERS_IMG_DIR_PATH,
+  MOCK_SEEDERS_DIR_PATH,
 
   // Front
   DEFAULT_PORT_FRONT,
@@ -183,7 +184,8 @@ module.exports = {
   LAST_COMMENTS_MAX_NUM,
   MAX_UPLOAD_FILE_SIZE,
   PAGINATION_WIDTH,
-  EXPIRY_PERIOD,
+  EXPIRY_PERIOD_DEV,
+  EXPIRY_PERIOD_PROD,
   ARTICLE_PICTURE_JPEG_QUALITY,
   TextVisibleLimit,
   HumanizedDateFormat,
@@ -196,6 +198,5 @@ module.exports = {
   CategoriesNum,
   DaysGap,
   HoursGap,
-  CommentsNum,
   CommentsSentencesNum,
 };

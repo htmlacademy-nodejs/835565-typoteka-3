@@ -1,20 +1,20 @@
 'use strict';
 
 const help = require(`./help`);
-const generate = require(`./generate`);
 const version = require(`./version`);
 const server = require(`./server`);
-const fill = require(`./fill`);
-const filldb = require(`./fill-db`);
-const generateSeeders = require(`../../../db/generate-seeders`);
+const createDB = require(`./create-db`);
+const createSchema = require(`./create-schema`);
+const fillDB = require(`./fill-db`);
+const generateSeeders = require(`./generate-seeders`);
 
 const Cli = {
-  [generate.name]: generate,
   [help.name]: help,
   [version.name]: version,
   [server.name]: server,
-  [fill.name]: fill,
-  [filldb.name]: filldb,
+  [createDB.name]: createDB,
+  [createSchema.name]: createSchema,
+  [fillDB.name]: fillDB,
   [generateSeeders.name]: generateSeeders,
 };
 

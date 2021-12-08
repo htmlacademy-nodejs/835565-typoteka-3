@@ -1,28 +1,30 @@
 'use strict';
 const chalk = require(`chalk`);
-const generate = require(`./generate`);
 const version = require(`./version`);
 const server = require(`./server`);
-const fill = require(`./fill`);
+const createDB = require(`./create-db`);
+const createSchema = require(`./create-schema`);
 const fillDB = require(`./fill-db`);
 
 const moduleName = `--help`;
 
 const helpMessage = `
-  Программа запускает http-сервер и формирует файл с данными для API
+  Учебный проект «Типотека» от HTML Academy.
+
   Гайд:
-  service.js <command>
-  
+  ./src/service/
+  node service.js <command>
+
   Команды:
-  ${version.name}:              выводит номер версии
-  ${generate.name} <count>:     формирует файл mocks.json
+  ${version.name}:              выводит номер версии приложения
   ${moduleName}:                 справка
   ${server.name}:               запускает http-сервер
-  ${fill.name} <count>          формирует файлы sql запросов
-  ${fillDB.name} <count>        генерирует данные и заполняет БД
+  ${createDB.name}            формирует .sql файл для создания базы данных
+  ${createSchema.name}         формирует .sql файл схемы базы данных
+  ${fillDB.name} <count>       формирует .sql файл для начального заполнения базы данных
 `;
 
 module.exports = {
   name: moduleName,
-  run: () => console.info(chalk.gray(helpMessage))
+  run: () => console.info(chalk.yellow(helpMessage))
 };

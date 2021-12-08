@@ -21,9 +21,7 @@ block content
                       value=(article ? article.createdAt : ``)
                     )
               button.new-publication__button.button.button--colored(type='submit') Опубликовать
-            a.popup__button.button.button--popup-close(aria-label='Закрыть окно')
-              | Закрыть
-              | окно
+            a.popup__button.button.button--popup-close(href=`${backURL}` aria-label='Закрыть окно') Закрыть окно
             +insertErrorMessages(validationMessages)
             .new-publication__form.form
               .form__wrapper.form__wrapper--intro
