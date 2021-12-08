@@ -36,7 +36,7 @@ let backURL;
  */
 articlesRouter.get(`/add`, [checkAuth, admin, csrfProtection], async (req, res) => {
   const {user} = req.session;
-  backURL = req.headers.referer || `/`;
+  backURL = req.get(`Referer`);
 
   try {
     const categories = await api.getCategories({needCount: false});
@@ -103,7 +103,7 @@ articlesRouter.post(`/add`, [...routePostMiddlewareSet], async (req, res) => {
 articlesRouter.get(`/edit/:id`, [checkAuth, admin, csrfProtection], async (req, res) => {
   const {user} = req.session;
   const {id} = req.params;
-  backURL = req.headers.referer || `/`;
+  backURL = req.get(`Referer`);
 
   try {
     const [article, categories] = await Promise.all([
@@ -176,7 +176,8 @@ articlesRouter.post(`/edit/:id`, [...routePostMiddlewareSet], async (req, res) =
 articlesRouter.get(`/:id`, csrfProtection, async (req, res) => {
   const {user} = req.session;
   const {id} = req.params;
-  backURL = req.headers.referer || `/`;
+
+  backURL = req.get(`Referer`);
 
   try {
     const article = await api.getArticle({id, viewMode: true});

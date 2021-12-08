@@ -85,7 +85,7 @@ mainRouter.get(`/`, async (req, res) => {
  */
 mainRouter.get(`/register`, (req, res) => {
   const {user} = req.session;
-  backURL = req.headers.referer || `/`;
+  backURL = req.get(`Referer`);
 
   if (user) {
     res.redirect(`/`);
@@ -125,7 +125,7 @@ mainRouter.post(`/register`, uploadFile, resizeAvatar, async (req, res) => {
  */
 mainRouter.get(`/login`, (req, res) => {
   const {user} = req.session;
-  backURL = req.headers.referer || `/`;
+  backURL = req.get(`Referer`);
 
   if (user) {
     res.redirect(`/`);
