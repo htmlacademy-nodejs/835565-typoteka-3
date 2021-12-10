@@ -74,6 +74,11 @@ const EXPIRY_PERIOD_DEV = 10 * 60 * 1000; // 10 minustes in dev mode
 const EXPIRY_PERIOD_PROD = 10 * 60 * 60 * 1000; // 10 hours in prod mode
 const ARTICLE_PICTURE_JPEG_QUALITY = 90;
 
+const SocketAction = {
+  CREATE_ARTICLE: `article:created`,
+  CREATE_COMMENT: `comment:created`
+};
+
 const TextVisibleLimit = {
   COMMENT: 100,
   ANNOUNCE: 100,
@@ -187,6 +192,7 @@ module.exports = {
   EXPIRY_PERIOD_DEV,
   EXPIRY_PERIOD_PROD,
   ARTICLE_PICTURE_JPEG_QUALITY,
+  SocketAction,
   TextVisibleLimit,
   HumanizedDateFormat,
   HttpCode,

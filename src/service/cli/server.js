@@ -1,6 +1,8 @@
 'use strict';
 
 const express = require(`express`);
+const http = require(`http`);
+const socket = require(`../lib/socket`);
 const helmet = require(`helmet`);
 const {queryParser} = require(`express-query-parser`);
 
@@ -17,6 +19,10 @@ const {
 
 const logger = getLogger({name: `api`});
 const app = express();
+const server = http.createServer(app);
+
+const io = socket(server);
+app.locals.socketio = io;
 
 app.use(express.json());
 
@@ -79,11 +85,16 @@ module.exports = {
     const [customPort] = args;
     const port = Number.parseInt(customPort, 10) || DEFAULT_PORT_SERVER;
 
-    app.listen(port, (error) => {
-      if (error) {
-        return logger.error(`Error while hosting server`, error);
-      }
-      return logger.info(`Listening to port ${port}`);
-    });
+    try {
+      server.listen(port, (error) => {
+        if (error) {
+          return logger.error(`Error while hosting server`, error);
+        }
+        return logger.info(`Listening to port ${port}`);
+      });
+    } catch (error) {
+      logger.error(`An error occured: ${error.message}`);
+      process.exit(ExitCode.ERROR);
+    }
   }
 };

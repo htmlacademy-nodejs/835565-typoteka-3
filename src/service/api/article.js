@@ -1,7 +1,7 @@
 'use strict';
 
 const {Router} = require(`express`);
-const {HttpCode} = require(`../../const`);
+const {HttpCode, SocketAction} = require(`../../const`);
 
 const {articleValidator, articleExists} = require(`../middlewares/article-middlewares`);
 const {commentValidator, commentExists} = require(`../middlewares/comment-middlewares`);
@@ -58,6 +58,10 @@ module.exports = (app, articlesService, commentService) => {
 
   articlesRouter.post(`/`, articleValidator, async (req, res) => {
     const newArticle = await articlesService.create(req.body);
+
+    const io = req.app.locals.socketio;
+    const article = await articlesService.findOne({articleId: newArticle.id, viewMode: true});
+    io.emit(SocketAction.CREATE_ARTICLE, article);
 
     return res.status(HttpCode.CREATED)
       .json(newArticle);

@@ -13,7 +13,7 @@ block content
         h3.preview__name
           a.preview__name-link(href=`/articles/${previewArticle.id}`) #{previewArticle.title}
         p.preview__text #{previewArticle.announce}
-        a.preview__comment(href='#')
+        a.preview__comment(href=`/articles/${previewArticle.id}`)
           | Комментарии
           span.preview__cloud
           b.preview__comment-count #{previewArticle.comments.length}
