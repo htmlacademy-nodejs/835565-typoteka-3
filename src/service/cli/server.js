@@ -31,7 +31,7 @@ app.use(
       contentSecurityPolicy: {
         useDefaults: true,
         directives: {
-          "script-src": [`'unsafe-eval'`, `http://localhost:${DEFAULT_PORT_SERVER}`],
+          "script-src": [`'self'`, `http://localhost:${DEFAULT_PORT_SERVER}`],
         }
       }
     })

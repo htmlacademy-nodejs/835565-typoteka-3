@@ -11,7 +11,7 @@ const articlesRoutes = require(`./routes/articles-routes`);
 const sequelize = require(`../service/lib/sequelize`);
 const SequelizeStore = require(`connect-session-sequelize`)(session.Store);
 
-const {TEMPLATES_DIR_NAME, PUBLIC_DIR_NAME, DEFAULT_PORT_FRONT, Env, EXPIRY_PERIOD_DEV, HttpCode, EXPIRY_PERIOD_PROD} = require(`../const`);
+const {TEMPLATES_DIR_NAME, PUBLIC_DIR_NAME, DEFAULT_PORT_FRONT, Env, EXPIRY_PERIOD_DEV, HttpCode, EXPIRY_PERIOD_PROD, CSP_CONNECT_SRC_ALLOWED, CSP_SCRIPT_SRC_ALLOWED} = require(`../const`);
 
 const {SESSION_SECRET} = process.env;
 let expPeriod = EXPIRY_PERIOD_PROD;
@@ -45,7 +45,8 @@ app.use(
       contentSecurityPolicy: {
         useDefaults: true,
         directives: {
-          "script-src": [`'unsafe-eval'`, `http://localhost:${DEFAULT_PORT_FRONT}`],
+          "script-src": [`'unsafe-eval'`, ...CSP_SCRIPT_SRC_ALLOWED],
+          "connect-src": [`'self'`, ...CSP_CONNECT_SRC_ALLOWED],
         }
       },
       referrerPolicy: {
