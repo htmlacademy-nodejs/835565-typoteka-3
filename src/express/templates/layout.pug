@@ -21,6 +21,10 @@ html(lang='ru')
       include partials/header.pug
       block content
       include partials/footer.pug
+      include partials/post-template.pug
+      include partials/comment-template.pug
 
+script(src='https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.4.0/socket.io.min.js')
 script(src='../../js/vendor.js')
 script(src='../../js/main.js')
+script(src='../../js/socket.js')

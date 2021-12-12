@@ -17,13 +17,6 @@ const Env = {
   PRODUCTION: `production`
 };
 
-const HttpMethod = {
-  GET: `GET`,
-  POST: `POST`,
-  PUT: `PUT`,
-  DELETE: `DELETE`
-};
-
 // DB
 const ANNOUNCE_CHAR_LENGTH = 1000;
 const FILE_TYPES = [`image/png`, `image/jpg`, `image/jpeg`];
@@ -73,6 +66,19 @@ const PAGINATION_WIDTH = 2;
 const EXPIRY_PERIOD_DEV = 10 * 60 * 1000; // 10 minustes in dev mode
 const EXPIRY_PERIOD_PROD = 10 * 60 * 60 * 1000; // 10 hours in prod mode
 const ARTICLE_PICTURE_JPEG_QUALITY = 90;
+const CSP_SCRIPT_SRC_ALLOWED = [
+  `localhost:${DEFAULT_PORT_FRONT}`,
+  `cdnjs.cloudflare.com`
+];
+const CSP_CONNECT_SRC_ALLOWED = [
+  `ws://localhost:${DEFAULT_PORT_SERVER}`,
+  `http://localhost:${DEFAULT_PORT_SERVER}`
+];
+
+const SocketAction = {
+  CREATE_ARTICLE: `article:created`,
+  CREATE_COMMENT: `comment:created`
+};
 
 const TextVisibleLimit = {
   COMMENT: 100,
@@ -82,6 +88,13 @@ const TextVisibleLimit = {
 const HumanizedDateFormat = {
   SHORT: `YYYY-MM-DD`,
   FULL: `DD.MM.YYYY, HH:mm`,
+};
+
+const HttpMethod = {
+  GET: `GET`,
+  POST: `POST`,
+  PUT: `PUT`,
+  DELETE: `DELETE`
 };
 
 const HttpCode = {
@@ -187,6 +200,9 @@ module.exports = {
   EXPIRY_PERIOD_DEV,
   EXPIRY_PERIOD_PROD,
   ARTICLE_PICTURE_JPEG_QUALITY,
+  CSP_SCRIPT_SRC_ALLOWED,
+  CSP_CONNECT_SRC_ALLOWED,
+  SocketAction,
   TextVisibleLimit,
   HumanizedDateFormat,
   HttpCode,

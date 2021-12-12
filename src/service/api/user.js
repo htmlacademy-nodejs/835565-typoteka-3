@@ -38,7 +38,10 @@ module.exports = (app, userService) => {
       return;
     }
 
-    const passwordIsCorrect = await passwordUtility.compare(password, user.passwordHash);
+    const passwordIsCorrect = await passwordUtility.compare(
+        password,
+        user.passwordHash
+    );
 
     if (passwordIsCorrect) {
       delete user.passwordHash;
@@ -48,4 +51,3 @@ module.exports = (app, userService) => {
     }
   });
 };
-

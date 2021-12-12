@@ -1,7 +1,7 @@
 'use strict';
 
 const {Router} = require(`express`);
-const {HttpCode} = require(`../../const`);
+const {HttpCode, SocketAction} = require(`../../const`);
 
 const {articleValidator, articleExists} = require(`../middlewares/article-middlewares`);
 const {commentValidator, commentExists} = require(`../middlewares/comment-middlewares`);
@@ -11,7 +11,11 @@ const articlesRouter = new Router();
 
 module.exports = (app, articlesService, commentService) => {
   app.use(`/articles`, articlesRouter);
-  const requestValidationMiddlewareSet = [routeParamsValidator, articleExists(articlesService)];
+
+  const requestValidationMiddlewareSet = [
+    routeParamsValidator,
+    articleExists(articlesService),
+  ];
 
   /**
    * Main route to get articles
@@ -36,7 +40,6 @@ module.exports = (app, articlesService, commentService) => {
     return res.status(HttpCode.OK).json(articles);
   });
 
-
   /**
    * Current single ARTICLE routes
    * to handle CRUD operations
@@ -59,48 +62,74 @@ module.exports = (app, articlesService, commentService) => {
   articlesRouter.post(`/`, articleValidator, async (req, res) => {
     const newArticle = await articlesService.create(req.body);
 
+    const io = req.app.locals.socketio;
+    const article = await articlesService.findOne({
+      articleId: newArticle.id,
+      viewMode: true,
+    });
+    io.emit(SocketAction.CREATE_ARTICLE, article);
+
     return res.status(HttpCode.CREATED)
       .json(newArticle);
   });
 
-  articlesRouter.put(`/:articleId`, [...requestValidationMiddlewareSet, articleValidator], async (req, res) => {
-    const {articleId} = req.params;
+  articlesRouter.put(
+      `/:articleId`,
+      [...requestValidationMiddlewareSet, articleValidator],
+      async (req, res) => {
+        const {articleId} = req.params;
 
-    await articlesService.update({id: articleId, update: req.body});
+        await articlesService.update({id: articleId, update: req.body});
 
-    return res.status(HttpCode.OK)
-      .send(`Updated`);
-  });
+        return res.status(HttpCode.OK)
+          .send(`Updated`);
+      }
+  );
 
-  articlesRouter.delete(`/:articleId`, [...requestValidationMiddlewareSet], async (req, res) => {
-    const {articleId} = req.params;
+  articlesRouter.delete(
+      `/:articleId`,
+      [...requestValidationMiddlewareSet],
+      async (req, res) => {
+        const {articleId} = req.params;
 
-    await articlesService.drop(articleId);
+        await articlesService.drop(articleId);
 
-    return res.status(HttpCode.OK)
-      .send(`Deleted`);
-  });
-
+        return res.status(HttpCode.OK)
+          .send(`Deleted`);
+      }
+  );
 
   /**
    * Current article's COMMENTS routes
    * to handle CRUD operations
    */
-  articlesRouter.post(`/:articleId/comments`, [...requestValidationMiddlewareSet, commentValidator], async (req, res) => {
-    const {articleId} = req.params;
+  articlesRouter.post(
+      `/:articleId/comments`,
+      [...requestValidationMiddlewareSet, commentValidator],
+      async (req, res) => {
+        const {articleId} = req.params;
 
-    const newComment = await commentService.create(articleId, req.body);
+        const newComment = await commentService.create(articleId, req.body);
 
-    return res.status(HttpCode.CREATED)
-      .json(newComment);
-  });
+        const io = req.app.locals.socketio;
+        const comment = await commentService.findOne(newComment.id);
+        io.emit(SocketAction.CREATE_COMMENT, comment);
 
-  articlesRouter.delete(`/:articleId/comments/:commentId`, [...requestValidationMiddlewareSet, commentExists(commentService)], async (req, res) => {
-    const {commentId} = req.params;
+        return res.status(HttpCode.CREATED)
+          .json(newComment);
+      }
+  );
 
-    await commentService.drop(commentId);
+  articlesRouter.delete(
+      `/:articleId/comments/:commentId`,
+      [...requestValidationMiddlewareSet, commentExists(commentService)],
+      async (req, res) => {
+        const {commentId} = req.params;
 
-    return res.status(HttpCode.OK)
-      .send(`Deleted`);
-  });
+        await commentService.drop(commentId);
+
+        return res.status(HttpCode.OK)
+          .send(`Deleted`);
+      }
+  );
 };
