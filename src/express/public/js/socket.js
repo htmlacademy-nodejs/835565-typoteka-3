@@ -3,9 +3,14 @@
  */
 const DEFAULT_PORT_SERVER = 3000;
 const ARTICLES_PER_PAGE = 8;
+const LAST_COMMENTS_MAX_NUM = 4;
 const SocketAction = {
   CREATE_ARTICLE: `article:created`,
   CREATE_COMMENT: `comment:created`,
+};
+const TextVisibleLimit = {
+  COMMENT: 100,
+  ANNOUNCE: 100,
 };
 
 /**
@@ -140,5 +145,9 @@ const createCommentElement = (comment) => {
 
   socket.addEventListener(SocketAction.CREATE_ARTICLE, (article) => {
     updatePreviewList(article);
+  });
+
+  socket.addEventListener(SocketAction.CREATE_COMMENT, (comment) => {
+    updateLastCommentsList(comment);
   });
 })();

@@ -27,7 +27,15 @@ class CommentService {
   }
 
   async findOne(id) {
-    return await this._Comment.findByPk(id);
+    return await this._Comment.findOne({
+      where: {id},
+      include: [
+        {
+          model: this._User,
+          attributes: {exclude: [`passwordHash`]}
+        }
+      ]
+    });
   }
 
   async findAll() {
