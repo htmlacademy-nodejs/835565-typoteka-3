@@ -45,10 +45,10 @@ const validationErrorHandler = (error) => error.response?.data.split(`\n`) || [e
 
 const getRandomMockArticleId = (mockArticles) => getRandomNum(1, mockArticles.length);
 
-const adaptArticleToClient = (article) => (
+const adaptFormDataToClient = (data) => (
   {
-    ...article,
-    categories: article.categories?.map((category) => ({id: +category}))
+    ...data,
+    categories: data.categories?.map((categoryId) => ({id: +categoryId}))
   }
 );
 
@@ -82,7 +82,7 @@ module.exports = {
   humanizeDate,
   validationErrorHandler,
   getRandomMockArticleId,
-  adaptArticleToClient,
+  adaptFormDataToClient,
   createDirs,
   copyFiles,
 };

@@ -7,12 +7,18 @@ const {uploadFile, resizePicture} = require(`../middlewares/upload`);
 const checkAuth = require(`../middlewares/auth`);
 const {getLogger} = require(`../../service/lib/logger`);
 
-const {humanizeDate, validationErrorHandler, adaptArticleToClient} = require(`../../utils/utils-common`);
+const {
+  humanizeDate,
+  validationErrorHandler,
+  adaptFormDataToClient
+} = require(`../../utils/utils-common`);
+
 const {
   HumanizedDateFormat,
   ARTICLES_PER_PAGE,
   PAGINATION_WIDTH
 } = require(`../../const`);
+
 const admin = require(`../middlewares/admin`);
 
 const csrfProtection = csrf();
@@ -26,7 +32,13 @@ const utils = {
   PAGINATION_WIDTH
 };
 
-const routePostMiddlewareSet = [checkAuth, admin, uploadFile, resizePicture, csrfProtection];
+const routePostMiddlewareSet = [
+  checkAuth,
+  admin,
+  uploadFile,
+  resizePicture,
+  csrfProtection
+];
 let backURL;
 
 /**
@@ -84,7 +96,7 @@ articlesRouter.post(`/add`, [...routePostMiddlewareSet], async (req, res) => {
 
     const options = {
       user,
-      article: adaptArticleToClient(newArticle),
+      article: adaptFormDataToClient(newArticle),
       categories,
       validationMessages: validationErrorHandler(error),
       csrfToken: req.csrfToken(),
@@ -158,7 +170,7 @@ articlesRouter.post(`/edit/:id`, [...routePostMiddlewareSet], async (req, res) =
     const options = {
       id,
       user,
-      article: adaptArticleToClient(articleData),
+      article: adaptFormDataToClient(articleData),
       categories,
       validationMessages: validationErrorHandler(errors),
       csrfToken: req.csrfToken(),

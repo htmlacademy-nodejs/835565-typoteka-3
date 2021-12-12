@@ -17,13 +17,6 @@ const Env = {
   PRODUCTION: `production`
 };
 
-const HttpMethod = {
-  GET: `GET`,
-  POST: `POST`,
-  PUT: `PUT`,
-  DELETE: `DELETE`
-};
-
 // DB
 const ANNOUNCE_CHAR_LENGTH = 1000;
 const FILE_TYPES = [`image/png`, `image/jpg`, `image/jpeg`];
@@ -95,6 +88,13 @@ const TextVisibleLimit = {
 const HumanizedDateFormat = {
   SHORT: `YYYY-MM-DD`,
   FULL: `DD.MM.YYYY, HH:mm`,
+};
+
+const HttpMethod = {
+  GET: `GET`,
+  POST: `POST`,
+  PUT: `PUT`,
+  DELETE: `DELETE`
 };
 
 const HttpCode = {

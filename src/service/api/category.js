@@ -2,14 +2,22 @@
 
 const {Router} = require(`express`);
 const {HttpCode} = require(`../../const`);
-const {categoryExists, categoryHasArticle, categoryValidator} = require(`../middlewares/category-middlewares`);
+const {
+  categoryExists,
+  categoryHasArticle,
+  categoryValidator,
+} = require(`../middlewares/category-middlewares`);
 const routeParamsValidator = require(`../middlewares/route-params-validator`);
 
 const categoriesRouter = new Router();
 
 module.exports = (app, categoryService) => {
   app.use(`/categories`, categoriesRouter);
-  const categoryMiddlewareSet = [routeParamsValidator, categoryExists(categoryService)];
+
+  const categoryMiddlewareSet = [
+    routeParamsValidator,
+    categoryExists(categoryService),
+  ];
 
   categoriesRouter.get(`/`, async (req, res) => {
     const {needCount} = req.query;
@@ -27,38 +35,50 @@ module.exports = (app, categoryService) => {
       .json(newCategory);
   });
 
-  categoriesRouter.get(`/:categoryId`, categoryMiddlewareSet, async (req, res) => {
-    const {categoryId} = req.params;
-    const {limit, offset} = req.query;
+  categoriesRouter.get(
+      `/:categoryId`,
+      categoryMiddlewareSet,
+      async (req, res) => {
+        const {categoryId} = req.params;
+        const {limit, offset} = req.query;
 
-    const [category, {count, articlesByCategory}] = await Promise.all([
-      categoryService.findOne({id: categoryId, needCount: false}),
-      categoryService.findPage({categoryId, limit, offset})
-    ]);
+        const [category, {count, articlesByCategory}] = await Promise.all([
+          categoryService.findOne({id: categoryId, needCount: false}),
+          categoryService.findPage({categoryId, limit, offset}),
+        ]);
 
-    return res.status(HttpCode.OK)
-      .json({
-        category,
-        count,
-        articlesByCategory
-      });
-  });
+        return res.status(HttpCode.OK)
+          .json({
+            category,
+            count,
+            articlesByCategory,
+          });
+      }
+  );
 
-  categoriesRouter.put(`/:categoryId`, [...categoryMiddlewareSet, categoryValidator], async (req, res) => {
-    const {categoryId} = req.params;
+  categoriesRouter.put(
+      `/:categoryId`,
+      [...categoryMiddlewareSet, categoryValidator],
+      async (req, res) => {
+        const {categoryId} = req.params;
 
-    await categoryService.update({id: categoryId, update: req.body});
+        await categoryService.update({id: categoryId, update: req.body});
 
-    return res.status(HttpCode.OK)
-      .send(`Updated`);
-  });
+        return res.status(HttpCode.OK)
+          .send(`Updated`);
+      }
+  );
 
-  categoriesRouter.delete(`/:categoryId`, [...categoryMiddlewareSet, categoryHasArticle(categoryService)], async (req, res) => {
-    const {categoryId} = req.params;
+  categoriesRouter.delete(
+      `/:categoryId`,
+      [...categoryMiddlewareSet, categoryHasArticle(categoryService)],
+      async (req, res) => {
+        const {categoryId} = req.params;
 
-    await categoryService.drop({id: categoryId});
+        await categoryService.drop({id: categoryId});
 
-    return res.status(HttpCode.OK)
-      .send(`Deleted`);
-  });
+        return res.status(HttpCode.OK)
+          .send(`Deleted`);
+      }
+  );
 };
