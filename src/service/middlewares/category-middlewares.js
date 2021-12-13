@@ -4,6 +4,10 @@ const Joi = require(`joi`);
 
 const {HttpCode} = require(`../../const`);
 
+const CategoryNameLimit = {
+  MIN: 5,
+  MAX: 30
+};
 const ErrorCategoryMessage = {
   CATEGORY_NAME_EMPTY: `Укажите название категории!`,
   CATEGORY_NAME_MIN: `Название категории слишком короткое. Минимум 5 символов.`,
@@ -14,8 +18,8 @@ const ErrorCategoryMessage = {
 const schema = Joi.object({
   name: Joi.string()
     .trim()
-    .min(5)
-    .max(30)
+    .min(CategoryNameLimit.MIN)
+    .max(CategoryNameLimit.MAX)
     .required()
     .messages({'string.empty': ErrorCategoryMessage.CATEGORY_NAME_EMPTY})
     .messages({'string.min': ErrorCategoryMessage.CATEGORY_NAME_MIN})

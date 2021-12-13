@@ -1,8 +1,10 @@
 'use strict';
 
 const Joi = require(`joi`);
-const {HttpCode, USER_NAME_REGEXP} = require(`../../const`);
+const {HttpCode} = require(`../../const`);
 
+const PASSWORD_MIN_LENGTH = 6;
+const USER_NAME_REGEXP = /[^0-9$&+,:;=?@#|'<>.^*()%!]+$/;
 const ErrorRegisterMessage = {
   NAME: `Имя содержит некорректные символы`,
   NAME_EMPTY: `Укажите имя`,
@@ -41,7 +43,7 @@ const schema = Joi.object({
 
   password: Joi.string()
     .trim()
-    .min(6)
+    .min(PASSWORD_MIN_LENGTH)
     .required()
     .messages({'string.empty': ErrorRegisterMessage.PASSWORD_EMPTY})
     .messages({'string.min': ErrorRegisterMessage.PASSWORD}),
