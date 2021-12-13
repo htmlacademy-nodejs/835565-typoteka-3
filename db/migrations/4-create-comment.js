@@ -1,6 +1,6 @@
 'use strict';
 
-const {Aliase} = require(`../../src/const`);
+const {Aliase, COMMENT_CHAR_LENGTH} = require(`../../src/const`);
 
 module.exports = {
   up: async (queryInterface, Sequelize) => {
@@ -13,7 +13,8 @@ module.exports = {
       },
       text: {
         allowNull: false,
-        type: Sequelize.STRING
+        // eslint-disable-next-line new-cap
+        type: Sequelize.STRING(COMMENT_CHAR_LENGTH)
       },
       createdAt: {
         allowNull: false,
