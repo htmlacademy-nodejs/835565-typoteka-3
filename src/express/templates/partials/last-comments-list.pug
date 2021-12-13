@@ -3,5 +3,5 @@ block content
     each comment in comments
       li.last__list-item
         +smallUserAvatar(comment.user)(class='last__list-image')
-        b.last__list-name #{comment.user.firstName} #{comment.user.lastName}
+        b.last__list-name #{(comment.user.firstName + ' ' + comment.user.lastName)}
         +lastCommentText(comment)

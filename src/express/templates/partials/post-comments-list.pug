@@ -6,6 +6,6 @@ block content
           +fullsizeUserAvatar(comment.user)
         .comments__text
           .comments__head
-            p #{comment.user.firstName} #{comment.user.lastName} •
+            p #{(comment.user.firstName + ' ' + comment.user.lastName)} •
             time.comments__date(datetime=comment.createdAt) #{humanizeDate(HumanizedDateFormat.FULL, comment.createdAt)}
           p.comments__message #{comment.text}
