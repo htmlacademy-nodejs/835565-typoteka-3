@@ -9,7 +9,7 @@ const CommentService = require(`../../data-service/comment-service`);
 const sequelize = require(`../../lib/sequelize`);
 const defineModels = require(`../../models`);
 const {mockArticles, mockComments} = require(`./test-mocks`);
-const {createApp} = require(`./test-setup`);
+const {createApp} = require(`./createTestApp`);
 const {HttpCode, LAST_COMMENTS_MAX_NUM} = require(`../../../const`);
 
 const createAPI = async () => {

@@ -12,7 +12,7 @@ const defineModels = require(`../../models`);
 const socket = require(`../../lib/socket`);
 const http = require(`http`);
 const {mockArticles} = require(`./test-mocks`);
-const {createApp} = require(`./test-setup`);
+const {createApp} = require(`./createTestApp`);
 
 const {getRandomMockArticleId} = require(`../../../utils/utils-common`);
 

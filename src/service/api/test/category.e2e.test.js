@@ -8,7 +8,7 @@ const defineModels = require(`../../models`);
 const sequelize = require(`../../lib/sequelize`);
 const {HttpCode} = require(`../../../const`);
 const {mockCategories} = require(`./test-mocks`);
-const {createApp} = require(`./test-setup`);
+const {createApp} = require(`./createTestApp`);
 
 const createAPI = async () => {
   const app = createApp();

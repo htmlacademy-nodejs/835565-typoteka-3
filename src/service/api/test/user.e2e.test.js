@@ -6,7 +6,7 @@ const user = require(`../user`);
 const UserService = require(`../../data-service/user-service`);
 const sequelize = require(`../../lib/sequelize`);
 const defineModels = require(`../../models`);
-const {createApp} = require(`./test-setup`);
+const {createApp} = require(`./createTestApp`);
 
 const {HttpCode} = require(`../../../const`);
 const {mockUsers} = require(`./test-mocks`);
