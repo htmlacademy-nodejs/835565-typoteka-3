@@ -46,6 +46,10 @@ const validationErrorHandler = (error) => error.response?.data.split(`\n`) || [e
 
 const getRandomMockArticleId = (mockArticles) => getRandomNum(1, mockArticles.length);
 
+const findArticlesByTitle = (articles, title) => {
+  return articles.filter((article) => article.title === title);
+};
+
 const adaptFormDataToClient = (data) => (
   {
     ...data,
@@ -83,6 +87,7 @@ module.exports = {
   humanizeDate,
   validationErrorHandler,
   getRandomMockArticleId,
+  findArticlesByTitle,
   adaptFormDataToClient,
   createDirs,
   copyFiles,

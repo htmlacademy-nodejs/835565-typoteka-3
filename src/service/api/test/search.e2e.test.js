@@ -7,9 +7,9 @@ const search = require(`../search`);
 const SearchService = require(`../../data-service/search-service`);
 const sequelize = require(`../../lib/sequelize`);
 const {mockArticles} = require(`./test-mocks`);
-const {createApp, findArticlesByTitle} = require(`./test-setup`);
+const {createApp} = require(`./createTestApp`);
 const {HttpCode} = require(`../../../const`);
-const {getRandomNum} = require(`../../../utils/utils-common`);
+const {getRandomNum, findArticlesByTitle} = require(`../../../utils/utils-common`);
 
 const createAPI = async () => {
   const app = createApp();
