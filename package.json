@@ -4,9 +4,9 @@
   "description": "Типотека",
   "main": "./src/service/service.js",
   "scripts": {
-    "test": "npm run eslint && npm run jest",
-    "jest": "jest",
     "eslint": "eslint --ext .js src/",
+    "pretest": "cross-env NODE_ENV=test npm run db:test:reset",
+    "test": "cross-env NODE_ENV=test jest --testTimeout=10000 --no-cache",
     "generate-seeders": "node ./src/service/service.js --generate-seeders 10",
     "createdb": "node -r dotenv/config ./src/service/service.js --create-db",
     "create-schema": "node ./src/service/service.js --create-schema",
@@ -22,7 +22,13 @@
     "db:migrate": "cross-env NODE_ENV=development npx sequelize-cli db:migrate",
     "db:seed": "cross-env NODE_ENV=development npx sequelize-cli db:seed:all",
     "db:init": "npm run db:create && npm run generate-seeders && npm run db:migrate && npm run db:seed",
-    "db:reset": "npm run db:drop && npm run db:create && npm run generate-seeders && npm run db:migrate && npm run db:seed"
+    "db:reset": "npm run db:drop && npm run db:create && npm run generate-seeders && npm run db:migrate && npm run db:seed",
+    "db:test:drop": "cross-env NODE_ENV=test npx sequelize-cli db:drop",
+    "db:test:create": "cross-env NODE_ENV=test npx sequelize-cli db:create",
+    "db:test:migrate": "cross-env NODE_ENV=test npx sequelize-cli db:migrate",
+    "db:test:seed": "cross-env NODE_ENV=test npx sequelize-cli db:seed:all",
+    "db:test:init": "npm run db:test:create && npm run generate-seeders && npm run db:test:migrate && npm run db:test:seed",
+    "db:test:reset": "npm run db:test:drop && npm run db:test:create && npm run db:test:migrate && npm run db:test:seed"
   },
   "repository": {
     "type": "git",
@@ -34,6 +40,12 @@
     "url": "https://github.com/bremxx/835565-typoteka-3/issues"
   },
   "homepage": "https://github.com/bremxx/835565-typoteka-3#readme",
+  "jest": {
+    "testEnvironment": "node",
+    "coveragePathIgnorePatterns": [
+      "/node_modules/"
+    ]
+  },
   "devDependencies": {
     "eslint": "7.24.0",
     "eslint-config-htmlacademy": "0.6.0",

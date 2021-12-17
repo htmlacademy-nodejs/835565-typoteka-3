@@ -52,7 +52,7 @@ mixin adminHeader(user)
       ul.header__nav-list
         if user
           li.header__list-item
-            p #{user.firstName} #{user.lastName}
+            p #{(user.firstName + ' ' + user.lastName)}
           li.header__list-item
             a.header__exit(href='/logout') Выйти
     a.header__avatar.avatar

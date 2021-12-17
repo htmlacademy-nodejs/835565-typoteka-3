@@ -2,53 +2,71 @@
 
 const request = require(`supertest`);
 
+const defineModels = require(`../../models`);
 const search = require(`../search`);
 const SearchService = require(`../../data-service/search-service`);
+const sequelize = require(`../../lib/sequelize`);
+const {mockArticles} = require(`./test-mocks`);
+const {createApp} = require(`./createTestApp`);
 const {HttpCode} = require(`../../../const`);
-const {mockArticles, mockCategories, mockUsers} = require(`./test-mocks`);
-const initDB = require(`../../lib/init-db`);
-const {mockApp, mockDB} = require(`./test-setup`);
+const {getRandomNum, findArticlesByTitle} = require(`../../../utils/utils-common`);
 
-beforeAll(async () => {
-  await initDB(mockDB, {categories: mockCategories, articles: mockArticles, users: mockUsers});
-  search(mockApp, new SearchService(mockDB));
-});
+const createAPI = async () => {
+  const app = createApp();
+  defineModels(sequelize);
+  search(app, new SearchService(sequelize));
+  return app;
+};
 
+/* eslint-disable max-nested-callbacks */
 describe(`Search API.`, () => {
 
   describe(`Positive search result.`, () => {
     let response;
-    const receivedMockArticle = mockArticles[0];
+    let app;
+    const queryString =
+      mockArticles[getRandomNum(0, mockArticles.length - 1)].title;
+    const matchingArticles = findArticlesByTitle(mockArticles, queryString);
 
     beforeAll(async () => {
-      response = await request(mockApp)
+      app = await createAPI();
+      response = await request(app)
         .get(`/search`)
         .query({
-          query: `Рок`
+          query: queryString,
         });
     });
 
-    test(`Received status OK`, () => expect(response.statusCode).toBe(HttpCode.OK));
-    test(`Found 1 mock article`, () => expect(response.body.length).toEqual(1));
-    test(`Received article's title corresponds query`, () => expect(response.body[0].title).toEqual(receivedMockArticle.title));
+    test(`Received status OK`, () =>
+      expect(response.statusCode).toBe(HttpCode.OK));
+
+    test(`Found ${matchingArticles.length} result(s)`, () => expect(response.body.length).toEqual(matchingArticles.length));
+
+    test(`Received article's title corresponds query`, () => {
+      expect(
+          response.body.forEach((item, i) =>
+            expect(item.title).toEqual(matchingArticles[i].title)
+          )
+      );
+    });
   });
 
   describe(`Negative search result.`, () => {
+    let app;
+
+    beforeAll(async () => {
+      app = await createAPI();
+    });
 
     test(`Returns 404 if nothing is found`, () =>
-      request(mockApp)
-      .get(`/search`)
-      .query({
-        query: `Абракадабра`
-      })
-      .expect(HttpCode.NOT_FOUND)
-    );
+      request(app)
+        .get(`/search`)
+        .query({
+          query: `Абракадабра`,
+        })
+        .expect(HttpCode.NOT_FOUND));
 
     test(`Returns 400 if query string is absent`, () =>
-      request(mockApp)
-        .get(`/search`)
-        .expect(HttpCode.BAD_REQUEST)
-    );
+      request(app).get(`/search`).expect(HttpCode.BAD_REQUEST));
   });
 });
-

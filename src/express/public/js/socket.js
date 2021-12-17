@@ -95,7 +95,7 @@ const createCommentElement = (comment) => {
     ? `../upload/img/${comment.user.avatarSmall}`
     : `../../img/blank_user-small.png`;
   commentElement.querySelector(`.last__list-name`)
-    .textContent = `${comment.user.firstName} ${comment.user.lastName}`
+    .textContent = (comment.user.firstName + ` ` + comment.user.lastName)
   commentElement.querySelector(`.last__list-link`)
     .href = `/articles/${comment.articleId}`;
   commentElement.querySelector(`.last__list-link`)

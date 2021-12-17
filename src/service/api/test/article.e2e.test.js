@@ -7,24 +7,28 @@ const jestDate = require(`jest-date`);
 const article = require(`../article`);
 const ArticleService = require(`../../data-service/article-service`);
 const CommentService = require(`../../data-service/comment-service`);
-const {mockArticles, mockCategories, mockUsers} = require(`./test-mocks`);
-const initDB = require(`../../lib/init-db`);
-const {mockApp, mockDB} = require(`./test-setup`);
+const sequelize = require(`../../lib/sequelize`);
+const defineModels = require(`../../models`);
+const socket = require(`../../lib/socket`);
+const http = require(`http`);
+const {mockArticles} = require(`./test-mocks`);
+const {createApp} = require(`./createTestApp`);
 
-const {getRandomMockArticleId, getRandomNum} = require(`../../../utils/utils-common`);
+const {getRandomMockArticleId} = require(`../../../utils/utils-common`);
+
 const {
   HttpCode,
   HOT_ARTICLES_LIMIT,
   COMMENTS_COUNT_KEY_NAME,
-  ARTICLES_PER_PAGE
+  ARTICLES_PER_PAGE,
+  DEFAULT_PORT_SERVER,
 } = require(`../../../const`);
 
 const createAPI = async () => {
-  await initDB(mockDB, {categories: mockCategories, articles: mockArticles, users: mockUsers});
-
-  article(mockApp, new ArticleService(mockDB), new CommentService(mockDB));
-
-  return mockApp;
+  defineModels(sequelize);
+  const app = createApp();
+  article(app, new ArticleService(sequelize), new CommentService(sequelize));
+  return app;
 };
 
 const newArticle = {
@@ -32,23 +36,22 @@ const newArticle = {
   createdAt: `2021-08-21T21:19:10+03:00`,
   announce: `Анонс новой статьи должен содержать не менее 30 символов.`,
   categories: [1, 2, 4],
-  userId: 1
-  // fullText: `Это содержание новой статьи.`, // full text field is not required
-  // picture: `1.jpg`, // picture is not requires
+  userId: 1,
+  // fullText is not required
+  // picture is not requires
 };
 
 const newComment = {
   text: `Новый валидный комментарий длиной не менее 20 символов`,
-  userId: 1
+  userId: 1,
 };
 
 const articleId = 1;
-const unexistingArticleId = mockArticles.length + 1;
+const commentedArticleId = 1;
 
 
 /* eslint-disable max-nested-callbacks */
 describe(`Articles API.`, () => {
-
   /**
    * Testing API request for most commented articles
    */
@@ -65,29 +68,33 @@ describe(`Articles API.`, () => {
       receivedData = response.body.hot;
     });
 
-    test(`Received status 200`, () => expect(response.statusCode).toBe(HttpCode.OK));
+    test(`Received status 200`, () =>
+      expect(response.statusCode).toBe(HttpCode.OK));
 
-    test(`Received number of items should match the limit`, () => expect(receivedData.length).toBe(HOT_ARTICLES_LIMIT));
+    test(`Received number of items should match the limit`, () =>
+      expect(receivedData.length).toBe(HOT_ARTICLES_LIMIT));
 
     test(`Received items should have 'commentsCount' key`, () => {
       expect(
-          receivedData.forEach(
-              (item) => expect(item).toHaveProperty(COMMENTS_COUNT_KEY_NAME)
+          receivedData.forEach((item) =>
+            expect(item).toHaveProperty(COMMENTS_COUNT_KEY_NAME)
           )
       );
     });
 
     test(`'commentsCount' key should have non-zero value`, () => {
       expect(
-          receivedData.forEach(
-              (item) => expect(item[COMMENTS_COUNT_KEY_NAME]).toBeTruthy()
+          receivedData.forEach((item) =>
+            expect(item[COMMENTS_COUNT_KEY_NAME]).toBeTruthy()
           )
       );
     });
 
     test(`Received items should be ordered by number of comments descending`, () => {
-      expect(receivedData[0][COMMENTS_COUNT_KEY_NAME])
-        .toBeGreaterThanOrEqual(receivedData[receivedData.length - 1][COMMENTS_COUNT_KEY_NAME]);
+      expect(
+          +receivedData[0][COMMENTS_COUNT_KEY_NAME]).toBeGreaterThanOrEqual(
+          +receivedData[receivedData.length - 1][COMMENTS_COUNT_KEY_NAME]
+      );
     });
   });
 
@@ -107,20 +114,19 @@ describe(`Articles API.`, () => {
       receivedData = response.body.recent;
     });
 
-    test(`Received status 200`, () => expect(response.statusCode).toBe(HttpCode.OK));
+    test(`Received status 200`, () =>
+      expect(response.statusCode).toBe(HttpCode.OK));
 
     test(`Received number of items should match the limit`, () =>
-      expect(receivedData.articles.length).toBe(ARTICLES_PER_PAGE)
-    );
+      expect(receivedData.articles.length).toBe(ARTICLES_PER_PAGE));
 
     test(`Received number of items should match the mock articles number`, () =>
-      expect(receivedData.count).toBe(mockArticles.length)
-    );
+      expect(receivedData.count).toBe(mockArticles.length));
 
     test(`Received items should include comments`, () => {
       expect(
-          receivedData.articles.forEach(
-              (item) => expect(item).toHaveProperty(`comments`)
+          receivedData.articles.forEach((item) =>
+            expect(item).toHaveProperty(`comments`)
           )
       );
     });
@@ -129,8 +135,10 @@ describe(`Articles API.`, () => {
       expect(
           receivedData.articles.forEach((_item, i, arr) => (
             (i < arr.length - 1) &&
-            expect(new Date(arr[i].createdAt)).toBeAfter(new Date(arr[i + 1].createdAt)))
-          )
+            expect(
+                new Date(arr[i].createdAt)).toBeAfter(new Date(arr[i + 1].createdAt)
+            )
+          ))
       );
     });
   });
@@ -150,11 +158,11 @@ describe(`Articles API.`, () => {
         .get(`/articles/${requestedArticleId}`);
     });
 
-    test(`Received status 200`, () => expect(response.statusCode).toBe(HttpCode.OK));
+    test(`Received status 200`, () =>
+      expect(response.statusCode).toBe(HttpCode.OK));
 
     test(`Received item should match corresponding mock article by title`, () =>
-      expect(response.body.title).toBe(requestedMockArticle.title)
-    );
+      expect(response.body.title).toBe(requestedMockArticle.title));
 
     test(`Received item should have a list of comments if ViewMode parameter is active`, async () => {
       response = await request(app)
@@ -165,12 +173,10 @@ describe(`Articles API.`, () => {
     });
 
     test(`Received status 404 if unexisting article is requested`, async () => {
-      response = await request(app)
-        .get(`/articles/${unexistingArticleId}`);
+      response = await request(app).get(`/articles/9999`);
       expect(response.statusCode).toBe(HttpCode.NOT_FOUND);
     });
   });
-
 
   /**
    * Testing API request for adding new article
@@ -178,6 +184,7 @@ describe(`Articles API.`, () => {
   describe(`API creates new article if data is valid:`, () => {
     let app;
     let response;
+    let io;
 
     const validArticle = {
       title: `Новая валидная статья с заголовком не менее 30 символов `,
@@ -185,24 +192,37 @@ describe(`Articles API.`, () => {
       announce: `Анонс новой статьи должен содержать не менее 30 символов.`,
       fullText: `Это содержание новой статьи.`,
       categories: [1, 2, 4],
-      picture: `1.jpg`,
-      userId: 1
+      fullsizePicture: `1.jpg`,
+      previewPicture: `2.jpg`,
+      userId: 1,
     };
 
     beforeAll(async () => {
       app = await createAPI();
+
+      const server = http.createServer(app);
+      io = socket(server);
+      app.locals.socketio = io;
+      server.listen(DEFAULT_PORT_SERVER);
+
       response = await request(app)
         .post(`/articles`)
         .send(validArticle);
     });
 
-    test(`Received status 201`, () => expect(response.statusCode).toBe(HttpCode.CREATED));
+    afterAll(() => {
+      io.close();
+    });
+
+
+    test(`Received status 201`, () =>
+      expect(response.statusCode).toBe(HttpCode.CREATED));
 
     test(`Articles count should increace after adding new article`, async () => {
       response = await request(app)
         .get(`/articles`);
 
-      expect(response.body.total.length).toBe(unexistingArticleId);
+      expect(response.body.total.length).toBe(mockArticles.length + 1);
     });
   });
 
@@ -228,7 +248,7 @@ describe(`Articles API.`, () => {
       const invalidArticles = [
         {...newArticle, title: true},
         {...newArticle, announce: `короткий анонс`},
-        {...newArticle, categories: `строка вместо массива`}
+        {...newArticle, categories: `строка вместо массива`},
       ];
 
       for (const invalidArticle of invalidArticles) {
@@ -239,7 +259,6 @@ describe(`Articles API.`, () => {
       }
     });
   });
-
 
   /**
    * Testing API request for editing an article
@@ -256,11 +275,11 @@ describe(`Articles API.`, () => {
         .send(newArticle);
     });
 
-    test(`Received status 200`, () => expect(response.statusCode).toBe(HttpCode.OK));
+    test(`Received status 200`, () =>
+      expect(response.statusCode).toBe(HttpCode.OK));
 
     test(`Article should be updated`, async () => {
-      response = await request(app)
-        .get(`/articles/${requestedArticleId}`);
+      response = await request(app).get(`/articles/${requestedArticleId}`);
       expect(response.body.title).toBe(newArticle.title);
     });
   });
@@ -274,7 +293,7 @@ describe(`Articles API.`, () => {
 
     test(`Trying to change unexisting article should receive status 404`, async () => {
       await request(app)
-        .put(`/articles/${unexistingArticleId}`)
+        .put(`/articles/99999`)
         .send(newArticle)
         .expect(HttpCode.NOT_FOUND);
     });
@@ -291,40 +310,38 @@ describe(`Articles API.`, () => {
     });
   });
 
-
   /**
    * Testing API request for creating a comment
    */
   describe(`API creates new comment if data is valid:`, () => {
     let app;
     let response;
+    let io;
     const requestedArticleId = getRandomMockArticleId(mockArticles);
 
     beforeAll(async () => {
       app = await createAPI();
+
+      const server = http.createServer(app);
+      io = socket(server);
+      app.locals.socketio = io;
+      server.listen(DEFAULT_PORT_SERVER);
+
       response = await request(app)
         .post(`/articles/${requestedArticleId}/comments`)
         .send(newComment);
     });
 
-    test(`Received status 201`, () => expect(response.statusCode).toBe(HttpCode.CREATED));
-
-    test(`Number of comments should increace`, async () => {
-      response = await request(app)
-        .get(`/articles/${requestedArticleId}`)
-        .query({viewMode: true});
-
-      expect(response.body.comments.length).toBe(mockArticles[requestedArticleId - 1].comments.length + 1);
-    });
+    test(`Received status 201`, () =>
+      expect(response.statusCode).toBe(HttpCode.CREATED));
 
     test(`Trying to add comment to unexisting article should receive status 404`, async () => {
       response = await request(app)
-        .post(`/articles/${unexistingArticleId}/comments`)
+        .post(`/articles/9999/comments`)
         .send(newComment)
         .expect(HttpCode.NOT_FOUND);
     });
   });
-
 
   describe(`API does not create comment if data is invalid:`, () => {
     let app;
@@ -360,7 +377,6 @@ describe(`Articles API.`, () => {
     });
   });
 
-
   /**
    * Testing API request for deleting an article
    */
@@ -375,14 +391,8 @@ describe(`Articles API.`, () => {
         .delete(`/articles/${requestedArticleId}`);
     });
 
-    test(`Received status 200`, () => expect(response.statusCode).toBe(HttpCode.OK));
-
-    test(`Number of items should decrease`, async () => {
-      response = await request(app)
-        .get(`/articles`);
-
-      expect(response.body.total.length).toBe(mockArticles.length - 1);
-    });
+    test(`Received status 200`, () =>
+      expect(response.statusCode).toBe(HttpCode.OK));
 
     test(`Request for the deleted item should receive status 404`, async () => {
       response = await request(app)
@@ -392,34 +402,37 @@ describe(`Articles API.`, () => {
     });
   });
 
-
   /**
    * Testing API request for deleting a comment
    */
   describe(`API deletes a comment:`, () => {
     let app;
     let response;
-    const requestedCommentId = getRandomNum(1, mockArticles[articleId].comments.length);
+    const requestedCommentId = 7;
+    // let a;
 
     beforeAll(async () => {
       app = await createAPI();
+      // a = await request(app)
+      //   .get(`/articles/${commentedArticleId}`)
+      //   .query({viewMode: true});
+
       response = await request(app)
-        .delete(`/articles/${articleId}/comments/${requestedCommentId}`);
+        .delete(
+            `/articles/${commentedArticleId}/comments/${requestedCommentId}`
+        );
+      // console.log(a.body);
     });
 
-    test(`Received status 200`, () => expect(response.statusCode).toBe(HttpCode.OK));
 
-    test(`Number of comments should decrease`, async () => {
-      response = await request(app)
-        .get(`/articles/${articleId}`)
-        .query({viewMode: true});
-
-      expect(response.body.comments.length).toBe(mockArticles[articleId - 1].comments.length - 1);
-    });
+    test(`Received status 200`, () =>
+      expect(response.statusCode).toBe(HttpCode.OK));
 
     test(`Another request to delete this comment should receive status 404`, async () => {
       response = await request(app)
-        .delete(`/articles/${articleId}/comments/${requestedCommentId}`);
+        .delete(
+            `/articles/${commentedArticleId}/comments/${requestedCommentId}`
+        );
 
       expect(response.statusCode).toBe(HttpCode.NOT_FOUND);
     });

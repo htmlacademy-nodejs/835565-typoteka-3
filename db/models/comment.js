@@ -1,7 +1,7 @@
 'use strict';
 
 const {Model} = require(`sequelize`);
-const {Aliase} = require(`../../src/const`);
+const {Aliase, COMMENT_CHAR_LENGTH} = require(`../../src/const`);
 
 module.exports = (sequelize, DataTypes) => {
   class Comment extends Model {
@@ -19,7 +19,8 @@ module.exports = (sequelize, DataTypes) => {
       allowNull: false,
     },
     text: {
-      type: DataTypes.STRING,
+      // eslint-disable-next-line new-cap
+      type: DataTypes.STRING(COMMENT_CHAR_LENGTH),
       allowNull: false,
     }
   }, {

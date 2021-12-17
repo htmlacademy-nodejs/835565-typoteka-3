@@ -14,18 +14,20 @@ const ExitCode = {
 
 const Env = {
   DEVELOPMENT: `development`,
-  PRODUCTION: `production`
+  PRODUCTION: `production`,
+  TEST: `test`
 };
 
 // DB
-const ANNOUNCE_CHAR_LENGTH = 1000;
+const TITLE_CHAR_LENGTH = 250;
+const ANNOUNCE_CHAR_LENGTH = 250;
+const COMMENT_CHAR_LENGTH = 500;
 const FILE_TYPES = [`image/png`, `image/jpg`, `image/jpeg`];
 const ORDER_BY_LATEST_DATE = [`createdAt`, `DESC`];
 const HOT_ARTICLES_LIMIT = 4;
 const ARTICLES_PER_PAGE = 8;
 const COMMENTS_COUNT_KEY_NAME = `commentsCount`;
 const SALT_ROUNDS = 10;
-const USER_NAME_REGEXP = /[^0-9$&+,:;=?@#|'<>.^*()%!]+$/;
 
 const Aliase = {
   ARTICLE: `article`,
@@ -132,7 +134,7 @@ const AvatarImgSize = {
 // Mocks
 const SentencesNum = {
   MIN: 1,
-  MAX: 3,
+  MAX: 2,
 };
 const CategoriesNum = {
   MIN: 1,
@@ -145,6 +147,10 @@ const DaysGap = {
 const HoursGap = {
   MIN: 1,
   MAX: 12,
+};
+const MinutesGap = {
+  MIN: 10,
+  MAX: 50,
 };
 const CommentsSentencesNum = {
   MIN: 1,
@@ -163,14 +169,15 @@ module.exports = {
   HttpMethod,
 
   // DB
+  TITLE_CHAR_LENGTH,
   ANNOUNCE_CHAR_LENGTH,
+  COMMENT_CHAR_LENGTH,
   FILE_TYPES,
   ORDER_BY_LATEST_DATE,
   HOT_ARTICLES_LIMIT,
   ARTICLES_PER_PAGE,
   COMMENTS_COUNT_KEY_NAME,
   SALT_ROUNDS,
-  USER_NAME_REGEXP,
   Aliase,
 
   // File names and paths
@@ -214,5 +221,6 @@ module.exports = {
   CategoriesNum,
   DaysGap,
   HoursGap,
+  MinutesGap,
   CommentsSentencesNum,
 };

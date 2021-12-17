@@ -2,8 +2,28 @@
 
 const Joi = require(`joi`);
 
-const {HttpCode} = require(`../../const`);
+const {
+  HttpCode,
+  TITLE_CHAR_LENGTH,
+  ANNOUNCE_CHAR_LENGTH
+} = require(`../../const`);
 
+const ArticleInputLimit = {
+  title: {
+    MIN: 30,
+    MAX: TITLE_CHAR_LENGTH
+  },
+  announce: {
+    MIN: 30,
+    MAX: ANNOUNCE_CHAR_LENGTH
+  },
+  fullText: {
+    MAX: 1000
+  },
+  categories: {
+    MIN: 1
+  }
+};
 const ErrorArticleMessage = {
   CATEGORIES_EMPTY: `Не выбрана ни одна категория`,
   TITLE_EMPTY: `Укажите заголовок публикации`,
@@ -25,14 +45,14 @@ const schema = Joi.object({
         .integer()
         .positive()
   )
-  .min(1)
+  .min(ArticleInputLimit.categories.MIN)
   .required()
   .messages({'any.required': ErrorArticleMessage.CATEGORIES_EMPTY}),
 
   title: Joi.string()
     .trim()
-    .min(30)
-    .max(250)
+    .min(ArticleInputLimit.title.MIN)
+    .max(ArticleInputLimit.title.MAX)
     .required()
     .messages({
       'string.empty': ErrorArticleMessage.TITLE_EMPTY,
@@ -42,8 +62,8 @@ const schema = Joi.object({
 
   announce: Joi.string()
     .trim()
-    .min(30)
-    .max(250)
+    .min(ArticleInputLimit.announce.MIN)
+    .max(ArticleInputLimit.announce.MAX)
     .required()
     .messages({
       'string.empty': ErrorArticleMessage.ANNOUNCE_EMPTY,
@@ -54,7 +74,7 @@ const schema = Joi.object({
   fullText: Joi.string()
     .empty(``)
     .trim()
-    .max(1000)
+    .max(ArticleInputLimit.fullText.MAX)
     .messages({'string.max': ErrorArticleMessage.FULLTEXT_MAX}),
 
   fullsizePicture: Joi.string()

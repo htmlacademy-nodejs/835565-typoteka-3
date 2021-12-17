@@ -1,11 +1,16 @@
 'use strict';
 
 const Joi = require(`joi`);
-const {HttpCode} = require(`../../const`);
+const {HttpCode, COMMENT_CHAR_LENGTH} = require(`../../const`);
 
+const CommentTextLimit = {
+  MIN: 20,
+  MAX: COMMENT_CHAR_LENGTH
+};
 const ErrorCommentMessage = {
   TEXT_EMPTY: `Нельзя оставить пустой комментарий`,
   TEXT_MIN: `Комментарий слишком короткий. Минимум 20 символов`,
+  TEXT_MAX: `Комментарий слишком длинный. Максимум 500 символов`,
   USER_ID: `Некорректный идентификатор пользователя`,
   NOT_FOUND: `Искомый комментарий не найден`
 };
@@ -13,10 +18,12 @@ const ErrorCommentMessage = {
 const schema = Joi.object({
   text: Joi.string()
     .trim()
-    .min(20)
+    .min(CommentTextLimit.MIN)
+    .max(CommentTextLimit.MAX)
     .required()
     .messages({'string.empty': ErrorCommentMessage.TEXT_EMPTY})
-    .messages({'string.min': ErrorCommentMessage.TEXT_MIN}),
+    .messages({'string.min': ErrorCommentMessage.TEXT_MIN})
+    .messages({'string.max': ErrorCommentMessage.TEXT_MAX}),
 
   userId: Joi.number()
     .integer()
