@@ -15,12 +15,12 @@ Node.js, Express.js, PostgreSQL
 
 * __npm run createdb__ — создание .sql файла для инициализации базы данных;
 * __npm run create-schema__ — создание .sql файла схемы базы данных;
-* __npm run filldb__ — создание .sql файла для начального заполнения базы данных;
+* __npm run filldb__ — создание .sql файла для начального заполнения базы данных.
 
 #### Миграции
 
 * __npm run db:init__ — создание и наполнение базы данных с нуля;
-* __npm run db:reset__ — сброс базы данных и наполнение новыми тестовыми данными;
+* __npm run db:reset__ — сброс базы данных и наполнение новыми тестовыми данными.
 
   _команды для взаимодействия вручную_
 
@@ -28,7 +28,7 @@ Node.js, Express.js, PostgreSQL
 * __npm run db:drop__ — сброс базы данных;
 * __npm run db:create__ — создание базы;
 * __npm run db:migrate__ — осуществление миграции;
-* __npm run db:seed__ — наполнение новыми тестовыми данными;
+* __npm run db:seed__ — наполнение новыми тестовыми данными.
 
 
 ### Запуск приложения
@@ -40,7 +40,7 @@ Node.js, Express.js, PostgreSQL
   _либо_
 
 * __npm run start:ssr__ — запуск отдельно Server Side Rendering сервиса в production режиме;
-* __npm run start:rest__ — запуск отдельно REST API сервиса в production режиме;
+* __npm run start:rest__ — запуск отдельно REST API сервиса в production режиме.
 
 #### Development режим
 
@@ -49,7 +49,15 @@ Node.js, Express.js, PostgreSQL
   _либо_
 
 * __npm run start::front__ — запуск отдельно Server Side Rendering сервиса в development режиме;
-* __npm run start::back__ — запуск отдельно REST API сервиса в development режиме;
+* __npm run start::back__ — запуск отдельно REST API сервиса в development режиме.
+
+## Тестирование 
+
+REST API сервис покрыт тестами с использованием фреймворка Jest. 
+
+### Запуск тестов
+
+* __npm run test__ — создание отдельной базы данных для тестирования, наполнение моковыми данными, запуск тестов.
 
 ## Страницы приложения
 

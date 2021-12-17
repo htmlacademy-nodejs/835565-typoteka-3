@@ -4,33 +4,39 @@ const request = require(`supertest`);
 
 const category = require(`../category`);
 const CategoryService = require(`../../data-service/category-service`);
-const {mockArticles, mockCategories, mockUsers} = require(`./test-mocks`);
+const defineModels = require(`../../models`);
+const sequelize = require(`../../lib/sequelize`);
 const {HttpCode} = require(`../../../const`);
-const initDB = require(`../../lib/init-db`);
-const {mockApp, mockDB} = require(`./test-setup`);
+const {mockCategories} = require(`./test-mocks`);
+const {createApp} = require(`./test-setup`);
 
-
-beforeAll(async () => {
-  await initDB(mockDB, {categories: mockCategories, articles: mockArticles, users: mockUsers});
-  category(mockApp, new CategoryService(mockDB));
-});
+const createAPI = async () => {
+  const app = createApp();
+  defineModels(sequelize);
+  category(app, new CategoryService(sequelize));
+  return app;
+};
 
 describe(`Category API.`, () => {
+  let app;
   let response;
 
   beforeAll(async () => {
-    response = await request(mockApp)
+    app = await createAPI();
+    response = await request(app)
       .get(`/categories`)
       .query({needCount: false});
   });
 
   test(`Received status OK`, () => expect(response.statusCode).toBe(HttpCode.OK));
+
   test(`Received number of items should match number of mock categories`,
       () => expect(response.body.length).toBe(mockCategories.length)
   );
+
   test(`Received list should match mock categories list`,
       () => expect(response.body.map((item) => item.name)).toEqual(
-          expect.arrayContaining(mockCategories)
+          expect.arrayContaining(mockCategories.map((item) => item.name))
       )
   );
 
@@ -39,7 +45,7 @@ describe(`Category API.`, () => {
   });
 
   test(`Received items should have 'count' key if "needCount: true" passed to query`, async () => {
-    response = await request(mockApp)
+    response = await request(app)
       .get(`/categories`)
       .query({needCount: true});
 

@@ -5,7 +5,7 @@ const fs = require(`fs`).promises;
 const path = require(`path`);
 const dayjs = require(`dayjs`);
 
-const {DaysGap, HoursGap} = require(`../const`);
+const {DaysGap, HoursGap, MinutesGap} = require(`../const`);
 
 const getRandomNum = (min, max) => {
   min = Math.ceil(min);
@@ -24,7 +24,8 @@ const shuffle = (someArray) => {
 const getRandomDate = () => {
   const randomDaysGap = getRandomNum(DaysGap.MIN, DaysGap.MAX);
   const randomHoursGap = getRandomNum(HoursGap.MIN, HoursGap.MAX);
-  return dayjs().add(-randomDaysGap, `day`).add(-randomHoursGap, `hour`).format();
+  const randomMinutesGap = getRandomNum(MinutesGap.MIN, MinutesGap.MAX);
+  return dayjs().add(-randomDaysGap, `day`).add(-randomHoursGap, `hour`).add(-randomMinutesGap, `minute`).format();
 };
 
 const readContent = async (filePath) => {

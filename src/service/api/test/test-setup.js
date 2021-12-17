@@ -2,14 +2,19 @@
 
 const express = require(`express`);
 const {queryParser} = require(`express-query-parser`);
-const Sequelize = require(`sequelize`);
 
-const mockDB = new Sequelize(`sqlite::memory:`, {logging: false});
-const mockApp = express();
-mockApp.use(express.json());
-mockApp.use(queryParser({parseBoolean: true}));
+const findArticlesByTitle = (articles, title) => {
+  return articles.filter((article) => article.title === title);
+};
+
+const createApp = () => {
+  const app = express();
+  app.use(express.json());
+  app.use(queryParser({parseBoolean: true}));
+  return app;
+};
 
 module.exports = {
-  mockApp,
-  mockDB
+  findArticlesByTitle,
+  createApp,
 };

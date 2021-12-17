@@ -6,34 +6,21 @@ const jestDate = require(`jest-date`);
 
 const comment = require(`../comment`);
 const CommentService = require(`../../data-service/comment-service`);
+const sequelize = require(`../../lib/sequelize`);
+const defineModels = require(`../../models`);
+const {mockArticles, mockComments} = require(`./test-mocks`);
+const {createApp} = require(`./test-setup`);
 const {HttpCode, LAST_COMMENTS_MAX_NUM} = require(`../../../const`);
-const {mockArticles, mockCategories, mockUsers} = require(`./test-mocks`);
-const initDB = require(`../../lib/init-db`);
-const {mockApp, mockDB} = require(`./test-setup`);
 
 const createAPI = async () => {
-  await initDB(mockDB, {categories: mockCategories, articles: mockArticles, users: mockUsers});
-
-  comment(mockApp, new CommentService(mockDB));
-
-  return mockApp;
+  const app = createApp();
+  defineModels(sequelize);
+  comment(app, new CommentService(sequelize));
+  return app;
 };
-
-
-const getCommentsFromArticles = (articles) => {
-  const comments = articles.reduce((acc, currentArticle) => {
-    currentArticle.comments.forEach((item) => acc.push(item.text));
-    return acc;
-  }, []);
-  return comments;
-};
-
-const mockComments = getCommentsFromArticles(mockArticles);
-
 
 /* eslint-disable max-nested-callbacks */
 describe(`Comment API.`, () => {
-
   /**
    * Testing API request for all comments in DB
    */
@@ -43,27 +30,18 @@ describe(`Comment API.`, () => {
 
     beforeAll(async () => {
       app = await createAPI();
-      response = await request(app)
-        .get(`/comments`);
+      response = await request(app).get(`/comments`);
     });
 
-    test(`Received status OK`, () => expect(response.statusCode).toBe(HttpCode.OK));
+    test(`Received status OK`, () =>
+      expect(response.statusCode).toBe(HttpCode.OK));
 
-    test(`Received number of items should match number of mock comments`,
-        () => expect(response.body.length).toBe(mockComments.length)
-    );
-
-    test(`Received list should match mock comments list`,
-        () => expect(response.body.map((item) => item.text)).toEqual(
-            expect.arrayContaining(mockComments)
-        )
-    );
+    test(`Received number of items should match number of mock comments`, () =>
+      expect(response.body.length).toBe(mockComments.length));
 
     test(`Received items should have 'userId' key`, () => {
       expect(
-          response.body.forEach(
-              (item) => expect(item).toHaveProperty(`userId`)
-          )
+          response.body.forEach((item) => expect(item).toHaveProperty(`userId`))
       );
     });
 
@@ -76,14 +54,16 @@ describe(`Comment API.`, () => {
     });
 
     test(`Received items should contain 'article' object with the title of corresponding article`, () => {
+      // console.log(response.body);
       expect(
-          response.body.forEach(
-              (item) => expect(item).toHaveProperty(`article`, {title: mockArticles[item.articleId - 1].title})
+          response.body.forEach((item) =>
+            expect(item).toHaveProperty(`article`, {
+              title: mockArticles[item.articleId - 1].title,
+            })
           )
       );
     });
   });
-
 
   describe(`API returns a list of last comments or main page:`, () => {
     let app;
@@ -96,11 +76,11 @@ describe(`Comment API.`, () => {
         .query({limit: LAST_COMMENTS_MAX_NUM});
     });
 
-    test(`Received status OK`, () => expect(response.statusCode).toBe(HttpCode.OK));
+    test(`Received status OK`, () =>
+      expect(response.statusCode).toBe(HttpCode.OK));
 
-    test(`Received number of items should match limit`,
-        () => expect(response.body.length).toBe(LAST_COMMENTS_MAX_NUM)
-    );
+    test(`Received number of items should match limit`, () =>
+      expect(response.body.length).toBe(LAST_COMMENTS_MAX_NUM));
 
     test(`Received items should be ordered by date descending`, () => {
       expect(

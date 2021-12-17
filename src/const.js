@@ -14,7 +14,8 @@ const ExitCode = {
 
 const Env = {
   DEVELOPMENT: `development`,
-  PRODUCTION: `production`
+  PRODUCTION: `production`,
+  TEST: `test`
 };
 
 // DB
@@ -147,6 +148,10 @@ const HoursGap = {
   MIN: 1,
   MAX: 12,
 };
+const MinutesGap = {
+  MIN: 10,
+  MAX: 50,
+};
 const CommentsSentencesNum = {
   MIN: 1,
   MAX: 2,
@@ -216,5 +221,6 @@ module.exports = {
   CategoriesNum,
   DaysGap,
   HoursGap,
+  MinutesGap,
   CommentsSentencesNum,
 };

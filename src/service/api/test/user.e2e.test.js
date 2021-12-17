@@ -4,18 +4,18 @@ const request = require(`supertest`);
 
 const user = require(`../user`);
 const UserService = require(`../../data-service/user-service`);
-const initDB = require(`../../lib/init-db`);
-const {mockApp, mockDB} = require(`./test-setup`);
+const sequelize = require(`../../lib/sequelize`);
+const defineModels = require(`../../models`);
+const {createApp} = require(`./test-setup`);
 
 const {HttpCode} = require(`../../../const`);
-const {mockUsers, mockCategories, mockArticles} = require(`./test-mocks`);
+const {mockUsers} = require(`./test-mocks`);
 
 const createAPI = async () => {
-  await initDB(mockDB, {categories: mockCategories, articles: mockArticles, users: mockUsers});
-
-  user(mockApp, new UserService(mockDB));
-
-  return mockApp;
+  const app = createApp();
+  defineModels(sequelize);
+  user(app, new UserService(sequelize));
+  return app;
 };
 
 const validUserData = {
@@ -24,18 +24,19 @@ const validUserData = {
   lastName: `Фамилия`,
   password: `123456`,
   passwordRepeated: `123456`,
+  isAdmin: false,
   // avatar in not required
 };
 
+
 const validAuthData = {
-  email: mockUsers[0].email,
+  email: `ivanov@example.com`,
   password: `ivanov`
 };
 
 
 /* eslint-disable max-nested-callbacks */
 describe(`Users API.`, () => {
-
   /**
    * Testing API request for adding new user
    */
@@ -46,11 +47,12 @@ describe(`Users API.`, () => {
     beforeAll(async () => {
       app = await createAPI();
       response = await request(app)
-      .post(`/user`)
-      .send(validUserData);
+        .post(`/user`)
+        .send(validUserData);
     });
 
-    test(`Received status 201`, () => expect(response.statusCode).toBe(HttpCode.CREATED));
+    test(`Received status 201`, () =>
+      expect(response.statusCode).toBe(HttpCode.CREATED));
   });
 
   describe(`API refuses to create user if data is invalid:`, () => {
@@ -120,20 +122,22 @@ describe(`Users API.`, () => {
 
   describe(`API authenticate user if data is valid:`, () => {
     let response;
+    const admin = mockUsers.find((mockUser) => mockUser.isAdmin);
 
     beforeAll(async () => {
       const app = await createAPI();
       response = await request(app)
-      .post(`/user/auth`)
-      .send(validAuthData);
+        .post(`/user/auth`)
+        .send(validAuthData);
     });
 
-    test(`Received status 200`, () => expect(response.statusCode).toBe(HttpCode.OK));
+    test(`Received status 200`, () =>
+      expect(response.statusCode).toBe(HttpCode.OK));
 
     test(`User name is correct`, () => {
       const {firstName, lastName} = response.body;
-      expect(firstName).toBe(mockUsers[0].firstName);
-      expect(lastName).toBe(mockUsers[0].lastName);
+      expect(firstName).toBe(admin.firstName);
+      expect(lastName).toBe(admin.lastName);
     });
   });
 
