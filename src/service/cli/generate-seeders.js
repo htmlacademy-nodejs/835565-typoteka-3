@@ -38,8 +38,8 @@ module.exports = {
     };
 
     try {
+      createDirs([MOCK_SEEDERS_DIR_PATH, UPLOAD_DIR_PATH]);
       await Promise.all([
-        createDirs([MOCK_SEEDERS_DIR_PATH, UPLOAD_DIR_PATH]),
         copyFiles(
             path.resolve(process.cwd(), SEEDERS_IMG_DIR_PATH),
             path.resolve(process.cwd(), UPLOAD_DIR_PATH)
