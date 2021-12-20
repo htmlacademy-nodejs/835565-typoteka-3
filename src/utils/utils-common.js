@@ -1,7 +1,7 @@
 'use strict';
 
 const chalk = require(`chalk`);
-const fs = require(`fs`).promises;
+const fs = require(`fs`);
 const path = require(`path`);
 const dayjs = require(`dayjs`);
 
@@ -30,7 +30,7 @@ const getRandomDate = () => {
 
 const readContent = async (filePath) => {
   try {
-    const content = await fs.readFile(filePath, `utf8`);
+    const content = await fs.promises.readFile(filePath, `utf8`);
     return content.trim().split(`\n`);
   } catch (error) {
     console.error(chalk.red(error));
@@ -57,11 +57,11 @@ const adaptFormDataToClient = (data) => (
   }
 );
 
-const createDirs = async (dirpaths) => {
+const createDirs = (dirpaths) => {
   console.info(chalk.green(`Creating folders...`));
   for (const dirpath of dirpaths) {
     console.info(chalk.green(`Creating folder: ${dirpath}`));
-    await fs.mkdir(path.resolve(process.cwd(), dirpath), {
+    fs.mkdirSync(path.resolve(process.cwd(), dirpath), {
       recursive: true,
     });
   }
@@ -69,12 +69,12 @@ const createDirs = async (dirpaths) => {
 };
 
 const copyFiles = async (sourceDir, targetDir) => {
-  const files = await fs.readdir(sourceDir);
+  const files = await fs.promises.readdir(sourceDir);
   console.info(chalk.green(`Copying mock images...`));
 
   for (const file of files) {
     console.info(chalk.green(`Copying file: ${file}`));
-    await fs.copyFile(path.join(sourceDir, file), path.join(targetDir, file));
+    await fs.promises.copyFile(path.join(sourceDir, file), path.join(targetDir, file));
   }
   console.info(chalk.green(`Finished. \n`));
 };

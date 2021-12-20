@@ -15,13 +15,12 @@ module.exports = {
     const content = generateDbSchema();
 
     try {
-      await Promise.all([
-        createDirs([SQL_FILES_DIR_PATH]),
-        fs.writeFile(
-            path.resolve(__dirname, DB_SCHEMA_FILE_PATH),
-            content
-        )
-      ]);
+      createDirs([SQL_FILES_DIR_PATH]);
+      await fs.writeFile(
+          path.resolve(__dirname, DB_SCHEMA_FILE_PATH),
+          content
+      );
+
       console.info(chalk.green(`Operation success. File created.`));
       process.exit();
     } catch (error) {

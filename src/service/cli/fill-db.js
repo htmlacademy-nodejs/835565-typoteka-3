@@ -93,13 +93,12 @@ module.exports = {
     const contentToFill = generateQueryToFillDB(valuesToFill);
 
     try {
-      await Promise.all([
-        createDirs([SQL_FILES_DIR_PATH]),
-        fs.writeFile(
-            path.resolve(__dirname, DB_FILL_FILE_PATH),
-            contentToFill
-        )
-      ]);
+      createDirs([SQL_FILES_DIR_PATH]);
+      await fs.writeFile(
+          path.resolve(__dirname, DB_FILL_FILE_PATH),
+          contentToFill
+      );
+
       console.info(chalk.green(`Operation success. File created.`));
       process.exit();
     } catch (error) {
