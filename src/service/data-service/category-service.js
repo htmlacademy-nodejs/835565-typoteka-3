@@ -69,11 +69,11 @@ class CategoryService {
         order: [ORDER_BY_LATEST_DATE]
       });
       return result.map((item) => item.get());
-    } else {
-      return this._Category.findAll({
-        raw: true,
-      });
     }
+
+    return this._Category.findAll({
+      raw: true,
+    });
   }
 
   async findPage({categoryId, limit, offset}) {

@@ -7,17 +7,6 @@ const USER_ARGV_INDEX = 2;
 const DEFAULT_PORT_SERVER = 3000;
 const API_PREFIX = `/api`;
 
-const ExitCode = {
-  SUCCESS: 0,
-  ERROR: 1,
-};
-
-const Env = {
-  DEVELOPMENT: `development`,
-  PRODUCTION: `production`,
-  TEST: `test`
-};
-
 // DB
 const TITLE_CHAR_LENGTH = 250;
 const ANNOUNCE_CHAR_LENGTH = 250;
@@ -28,18 +17,6 @@ const HOT_ARTICLES_LIMIT = 4;
 const ARTICLES_PER_PAGE = 8;
 const COMMENTS_COUNT_KEY_NAME = `commentsCount`;
 const SALT_ROUNDS = 10;
-
-const Aliase = {
-  ARTICLE: `article`,
-  ARTICLES: `articles`,
-  COMMENT: `comment`,
-  COMMENTS: `comments`,
-  CATEGORY: `category`,
-  CATEGORIES: `categories`,
-  ARTICLES_CATEGORIES: `articlesCategories`,
-  USERS: `users`,
-  USER: `user`
-};
 
 // File names and paths
 const SQL_FILES_DIR_PATH = `./sql/`;
@@ -77,6 +54,32 @@ const CSP_CONNECT_SRC_ALLOWED = [
   `http://localhost:${DEFAULT_PORT_SERVER}`
 ];
 
+// Cli
+const ExitCode = {
+  SUCCESS: 0,
+  ERROR: 1,
+};
+
+const Env = {
+  DEVELOPMENT: `development`,
+  PRODUCTION: `production`,
+  TEST: `test`
+};
+
+// DB
+const Aliase = {
+  ARTICLE: `article`,
+  ARTICLES: `articles`,
+  COMMENT: `comment`,
+  COMMENTS: `comments`,
+  CATEGORY: `category`,
+  CATEGORIES: `categories`,
+  ARTICLES_CATEGORIES: `articlesCategories`,
+  USERS: `users`,
+  USER: `user`
+};
+
+// Front
 const SocketAction = {
   CREATE_ARTICLE: `article:created`,
   CREATE_COMMENT: `comment:created`

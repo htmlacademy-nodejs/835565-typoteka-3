@@ -1,10 +1,10 @@
 'use strict';
 
 const axios = require(`axios`);
-const {TIMEOUT, DEFAULT_PORT_SERVER, HttpMethod} = require(`../const`);
+const {TIMEOUT, DEFAULT_PORT_SERVER, API_PREFIX, HttpMethod} = require(`../const`);
 
 const port = process.env.API_PORT || DEFAULT_PORT_SERVER;
-const defaultUrl = `http://localhost:${port}/api/`;
+const defaultUrl = `http://localhost:${port}${API_PREFIX}/`;
 
 class API {
   constructor(baseURL, timeout) {
@@ -12,11 +12,6 @@ class API {
       baseURL,
       timeout
     });
-  }
-
-  async _load(url, options) {
-    const response = await this._http.request({url, ...options});
-    return response.data;
   }
 
   auth({email, password}) {
@@ -108,6 +103,11 @@ class API {
     return this._load(`/categories/${id}`, {
       method: HttpMethod.DELETE
     });
+  }
+
+  async _load(url, options) {
+    const response = await this._http.request({url, ...options});
+    return response.data;
   }
 }
 

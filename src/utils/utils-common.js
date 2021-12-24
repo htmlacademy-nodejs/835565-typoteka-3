@@ -59,12 +59,12 @@ const adaptFormDataToClient = (data) => (
 
 const createDirs = (dirpaths) => {
   console.info(chalk.green(`Creating folders...`));
-  for (const dirpath of dirpaths) {
+  dirpaths.forEach((dirpath) => {
     console.info(chalk.green(`Creating folder: ${dirpath}`));
     fs.mkdirSync(path.resolve(process.cwd(), dirpath), {
       recursive: true,
     });
-  }
+  });
   console.info(chalk.green(`Finished. \n`));
 };
 
@@ -79,6 +79,8 @@ const copyFiles = async (sourceDir, targetDir) => {
   console.info(chalk.green(`Finished. \n`));
 };
 
+const logMessage = (msg) => console.log(msg);
+
 module.exports = {
   getRandomNum,
   shuffle,
@@ -91,5 +93,6 @@ module.exports = {
   adaptFormDataToClient,
   createDirs,
   copyFiles,
+  logMessage,
 };
 
