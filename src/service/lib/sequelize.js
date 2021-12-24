@@ -2,10 +2,11 @@
 
 const Sequelize = require(`sequelize`);
 const {Env} = require(`../../const`);
+const {logMessage} = require(`../../utils/utils-common`);
 const {DB_NAME, DB_NAME_TEST, DB_USER, DB_PASSWORD, DB_HOST, DB_PORT} = process.env;
 
 let dbName = DB_NAME;
-let needLogging = (msg) => console.log(msg);
+let logging = logMessage;
 
 const envVariablesAreMissing = [
   DB_NAME, DB_USER, DB_PASSWORD, DB_HOST, DB_PORT
@@ -19,7 +20,7 @@ if (process.env.NODE_ENV === Env.DEVELOPMENT) {
 
 if (process.env.NODE_ENV === Env.TEST) {
   dbName = DB_NAME_TEST;
-  needLogging = false;
+  logging = false;
 }
 
 module.exports = new Sequelize(
@@ -27,7 +28,7 @@ module.exports = new Sequelize(
       host: DB_HOST,
       port: DB_PORT,
       dialect: `postgres`,
-      logging: needLogging,
+      logging,
       pool: {
         max: 5,
         min: 0,

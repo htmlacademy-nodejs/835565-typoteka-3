@@ -79,6 +79,8 @@ const copyFiles = async (sourceDir, targetDir) => {
   console.info(chalk.green(`Finished. \n`));
 };
 
+const logMessage = (msg) => console.log(msg);
+
 module.exports = {
   getRandomNum,
   shuffle,
@@ -91,5 +93,6 @@ module.exports = {
   adaptFormDataToClient,
   createDirs,
   copyFiles,
+  logMessage,
 };
 
