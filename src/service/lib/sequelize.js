@@ -5,7 +5,7 @@ const {Env} = require(`../../const`);
 const {DB_NAME, DB_NAME_TEST, DB_USER, DB_PASSWORD, DB_HOST, DB_PORT} = process.env;
 
 let dbName = DB_NAME;
-let needLogging = true;
+let needLogging = (msg) => console.log(msg);
 
 const envVariablesAreMissing = [
   DB_NAME, DB_USER, DB_PASSWORD, DB_HOST, DB_PORT
