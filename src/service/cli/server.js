@@ -44,17 +44,24 @@ app.use(API_PREFIX, routes);
 
 app.use((req, res) => {
   switch (res.status) {
-    case HttpCode.NOT_FOUND:
+    case HttpCode.NOT_FOUND: {
       res.status(HttpCode.NOT_FOUND)
         .render(`errors/404`);
       logger.error(`Route not found: ${req.url}`);
       break;
-
-    case HttpCode.SERVER_ERROR:
+    }
+    case HttpCode.SERVER_ERROR: {
       res.status(HttpCode.SERVER_ERROR)
         .render(`errors/500`);
       logger.error(`Internal server error on route: ${req.url}`);
       break;
+    }
+    default: {
+      res.status(res.statusCode)
+        .render(`errors/500`);
+      logger.error(`Error with status code ${res.statusCode} on route: ${req.url}`);
+      break;
+    }
   }
 });
 
